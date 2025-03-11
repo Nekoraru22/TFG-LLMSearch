@@ -1,25 +1,28 @@
-from sqlite_manager import DatabaseManager
-from flask import Flask
+from controllers.watchdog_controller import WatchdogsController
+from controllers.sqlite_controller import DatabaseController
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
 
-# TODO: Crear una función que vigile un directorio y ejecute una acción cuando se detecte un cambio
-def watch_folder():
-    pass
-
-
+# TODO: GET the web page
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
 
 
-if __name__ == "__main__":
-    app.run()
+# post /watchdog that receives the query parameters path and action
+@app.route("/query", methods=["POST"])
+def query():
+    query = request.args.get("query")
+    if query:
+        # TODO: Execute task Search
+        pass
 
-    # Crear una instancia del gestor de base de datos
-    db_manager = DatabaseManager("data/ejemplo.db")
-    
+    return jsonify({"status": "ok"})
+
+
+def database_init(db_manager: DatabaseController):
     # Conectar a la base de datos
     if db_manager.connect():
         # Crear una tabla
@@ -66,3 +69,17 @@ if __name__ == "__main__":
         
         # Desconectar de la base de datos
         db_manager.disconnect()
+
+
+if __name__ == "__main__":
+    # Iniciar la vigilancia en segundo plano
+    watcher = WatchdogsController("./filesystem")
+    watcher.start()
+
+    # Iniciar la base de datos y crear la estructura
+    db_manager = DatabaseController("data/database.db")
+    database_init(db_manager)
+
+    # Iniciar backend de Flask
+    app.run()
+    

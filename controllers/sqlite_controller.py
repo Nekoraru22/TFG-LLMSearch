@@ -1,14 +1,15 @@
-import sqlite3
 from typing import List, Tuple, Any, Optional
+
+import sqlite3
 import os
 
 
-class DatabaseManager:
+class DatabaseController:
     """
     Clase para gestionar operaciones básicas con bases de datos SQLite.
     """
     
-    def __init__(self, db_file: str):
+    def __init__(self, db_file: str) -> None:
         """
         Inicializa la conexión a la base de datos.
         
