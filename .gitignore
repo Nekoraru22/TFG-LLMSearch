@@ -2,3 +2,4 @@ myenv/
 data/*
 __pycache__
 .vscode
+filesystem/*

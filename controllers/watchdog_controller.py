@@ -1,6 +1,8 @@
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from watchdog.observers import Observer
 
+from controllers.prefect_controller import show_stars
+
 import threading
 import logging
 import time
@@ -29,6 +31,7 @@ class CustomHandler(FileSystemEventHandler):
         logging.info(f"Created file: {event.src_path}")
         # Registrar cuándo se creó el archivo
         self.recently_created[event.src_path] = time.time()
+        show_stars(["PrefectHQ/prefect"])
         
 
     def on_modified(self, event) -> None:
@@ -50,6 +53,7 @@ class CustomHandler(FileSystemEventHandler):
         
         # Si llegamos aquí, registrar la modificación normalmente
         logging.info(f"Modified file: {event.src_path}")
+        show_stars(["pydantic/pydantic"])
         
         
     def on_deleted(self, event: FileSystemEvent) -> None:
@@ -59,10 +63,12 @@ class CustomHandler(FileSystemEventHandler):
         Args:
             event: Evento de eliminación
         """
-        logging.info(f"Deleted file: {event.src_path}")
         # Limpiar el registro si el archivo es eliminado
         if event.src_path in self.recently_created:
             del self.recently_created[event.src_path]
+        
+        logging.info(f"Deleted file: {event.src_path}")
+        show_stars(["huggingface/transformers"])
 
 
 class WatchdogsController:

@@ -1,5 +1,6 @@
 from controllers.watchdog_controller import WatchdogsController
 from controllers.sqlite_controller import DatabaseController
+from controllers.prefect_controller import show_stars
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -16,8 +17,11 @@ def hello_world():
 def query():
     query = request.args.get("query")
     if query:
-        # TODO: Execute task Search
-        pass
+        show_stars([
+            "PrefectHQ/prefect",
+            "pydantic/pydantic",
+            "huggingface/transformers"
+        ])
 
     return jsonify({"status": "ok"})
 
@@ -82,4 +86,3 @@ if __name__ == "__main__":
 
     # Iniciar backend de Flask
     app.run()
-    
