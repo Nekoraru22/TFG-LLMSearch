@@ -1,6 +1,6 @@
 from controllers.watchdog_controller import WatchdogsController
 from controllers.sqlite_controller import DatabaseController
-from controllers.prefect_controller import show_stars
+from controllers.prefect_controller import proccess_query
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -15,13 +15,12 @@ def hello_world():
 # post /watchdog that receives the query parameters path and action
 @app.route("/query", methods=["POST"])
 def query():
-    query = request.args.get("query")
-    if query:
-        show_stars([
-            "PrefectHQ/prefect",
-            "pydantic/pydantic",
-            "huggingface/transformers"
-        ])
+    if request.json is not None:
+        query = request.json.get("query")
+        if query:
+            proccess_query(query)
+    else:
+        return jsonify({"error": "Invalid JSON body"}), 400
 
     return jsonify({"status": "ok"})
 
@@ -85,4 +84,4 @@ if __name__ == "__main__":
     database_init(db_manager)
 
     # Iniciar backend de Flask
-    app.run()
+    app.run(debug=True, port=5000, host="0.0.0.0")

@@ -1,28 +1,54 @@
-import httpx
+import random, random
+import time
 from prefect import flow, task
 
 
 @flow(log_prints=True)
-def show_stars(github_repos: list[str]):
-    """Flow: Show the number of stars that GitHub repos have"""
-    for repo in github_repos:
-        # Call Task 1
-        repo_stats = fetch_stats(repo)
+def new_file(file: str):
+    """
+    Process a new file
+    
+    Args:
+        file: The path to the file
+    """
+    meow(file)
 
-        # Call Task 2
-        stars = get_stars(repo_stats)
 
-        # Print the result
-        print(f"{repo}: {stars} stars")
+@flow(log_prints=True)
+def modified_file(file: str):
+    """
+    Process a modified file
+    
+    Args:
+        file: The path to the file
+    """
+    meow(file)
+
+
+@flow(log_prints=True)
+def deleted_file(file: str):
+    """
+    Process a deleted file
+    
+    Args:
+        file: The path to the file
+    """
+    meow(file)
+
+
+@flow(log_prints=True)
+def proccess_query(query: str):
+    """
+    Process a query
+
+    Args:
+        query: The query to process
+    """
+    meow(query)
 
 
 @task
-def fetch_stats(github_repo: str):
-    """Task 1: Fetch the statistics for a GitHub repo"""
-    return httpx.get(f"https://api.github.com/repos/{github_repo}").json()
-
-
-@task
-def get_stars(repo_stats: dict):
-    """Task 2: Get the number of stars from GitHub repo statistics"""
-    return repo_stats['stargazers_count']
+def meow(message: str):
+    """Prueba"""
+    print(message)
+    time.sleep(random.randint(1, 5))

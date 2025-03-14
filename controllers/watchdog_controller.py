@@ -1,7 +1,7 @@
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from watchdog.observers import Observer
 
-from controllers.prefect_controller import show_stars
+from controllers.prefect_controller import new_file, modified_file, deleted_file
 
 import threading
 import logging
@@ -18,7 +18,7 @@ class CustomHandler(FileSystemEventHandler):
         Inicializa el manejador de eventos.
         """
         self.recently_created = {}
-        self.cooldown = 1.0  # tiempo en segundos para ignorar modificaciones después de crear
+        self.cooldown = 10.0  # tiempo en segundos para ignorar modificaciones después de crear
         
 
     def on_created(self, event) -> None:
@@ -31,7 +31,7 @@ class CustomHandler(FileSystemEventHandler):
         logging.info(f"Created file: {event.src_path}")
         # Registrar cuándo se creó el archivo
         self.recently_created[event.src_path] = time.time()
-        show_stars(["PrefectHQ/prefect"])
+        new_file(str(event.src_path))
         
 
     def on_modified(self, event) -> None:
@@ -46,14 +46,14 @@ class CustomHandler(FileSystemEventHandler):
         if event.src_path in self.recently_created:
             # Si la modificación ocurre dentro del periodo de cooldown después de la creación, ignorarla
             if current_time - self.recently_created[event.src_path] <= self.cooldown:
-                return  # No registrar la modificación
+                return # No registrar la modificación
             else:
                 # Después del periodo de cooldown, eliminamos el archivo de la lista de recién creados
                 del self.recently_created[event.src_path]
         
         # Si llegamos aquí, registrar la modificación normalmente
         logging.info(f"Modified file: {event.src_path}")
-        show_stars(["pydantic/pydantic"])
+        modified_file(str(event.src_path))
         
         
     def on_deleted(self, event: FileSystemEvent) -> None:
@@ -68,7 +68,7 @@ class CustomHandler(FileSystemEventHandler):
             del self.recently_created[event.src_path]
         
         logging.info(f"Deleted file: {event.src_path}")
-        show_stars(["huggingface/transformers"])
+        deleted_file(str(event.src_path))
 
 
 class WatchdogsController:
