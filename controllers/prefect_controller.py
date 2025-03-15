@@ -4,7 +4,7 @@ from prefect import flow, task
 
 
 @flow(log_prints=True)
-def new_file(file: str):
+def new_file(file: str) -> None:
     """
     Process a new file
     
@@ -15,7 +15,7 @@ def new_file(file: str):
 
 
 @flow(log_prints=True)
-def modified_file(file: str):
+def modified_file(file: str) -> None:
     """
     Process a modified file
     
@@ -26,7 +26,7 @@ def modified_file(file: str):
 
 
 @flow(log_prints=True)
-def deleted_file(file: str):
+def deleted_file(file: str) -> None:
     """
     Process a deleted file
     
@@ -37,18 +37,19 @@ def deleted_file(file: str):
 
 
 @flow(log_prints=True)
-def proccess_query(query: str):
+def proccess_query(query: str) -> str:
     """
     Process a query
 
     Args:
         query: The query to process
     """
-    meow(query)
+    return meow(query)
 
 
 @task
-def meow(message: str):
+def meow(message: str) -> str:
     """Prueba"""
-    print(message)
     time.sleep(random.randint(1, 5))
+    print(message)
+    return message

@@ -1,2 +1,10 @@
+chromadb==0.6.3
 Flask
-watchdog
+flask_cors==5.0.1
+matplotlib==3.10.1
+numpy==2.2.3
+pandas==2.2.3
+prefect==3.2.13
+scikit_learn==1.6.1
+sentence_transformers==3.4.1
+watchdog==6.0.0

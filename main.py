@@ -1,31 +1,40 @@
 from controllers.watchdog_controller import WatchdogsController
 from controllers.sqlite_controller import DatabaseController
 from controllers.prefect_controller import proccess_query
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="./llm-search-front/dist",
+    template_folder="./llm-search-front/dist"
+)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 
 
-# TODO: GET the web page
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def web_page():
+    return render_template("index.html")
 
+@app.route("/assets/<path:path>")
+def serve_assets(path):
+    return send_from_directory("./llm-search-front/dist/assets", path)
 
-# post /watchdog that receives the query parameters path and action
-@app.route("/query", methods=["POST"])
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory("./llm-search-front/dist", "favicon.ico")
+
+@app.route("/api/query", methods=["POST"])
 def query():
     if request.json is not None:
         query = request.json.get("query")
         if query:
-            proccess_query(query)
-    else:
-        return jsonify({"error": "Invalid JSON body"}), 400
-
-    return jsonify({"status": "ok"})
+            result = proccess_query(query)
+            return jsonify({"result": result})
+    return jsonify({"message": "Invalid JSON body"}), 400
 
 
-def database_init(db_manager: DatabaseController):
+def database_init(db_manager: DatabaseController) -> None:
     # Conectar a la base de datos
     if db_manager.connect():
         # Crear una tabla
