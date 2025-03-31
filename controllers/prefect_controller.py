@@ -1,6 +1,14 @@
 import random, random
 import time
+
+from lmstudio import PredictionResult
+
+from controllers.llm_studio_controller import LLMStudioController
+
 from prefect import flow, task
+
+# Load LLM Studio model
+llm = LLMStudioController("192.168.1.137", 25565, "gemma-3-12b-it")
 
 
 @flow(log_prints=True)
@@ -11,7 +19,7 @@ def new_file(file: str) -> None:
     Args:
         file: The path to the file
     """
-    meow(file)
+    analyze_image(file)
 
 
 @flow(log_prints=True)
@@ -45,6 +53,16 @@ def proccess_query(query: str) -> str:
         query: The query to process
     """
     return meow(query)
+
+
+@task
+def analyze_image(image: str) -> PredictionResult:
+    """
+    Analyze an image
+    """
+    result = llm.analyze(image=image)
+    print(result) # TODO: A la base de datos formateado xD
+    return result
 
 
 @task
