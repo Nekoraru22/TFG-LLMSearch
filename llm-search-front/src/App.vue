@@ -26,7 +26,7 @@
                   <div class="h-px bg-zinc-800 w-full"></div>
 
                   <div class="space-y-5">
-                    <!-- New input for host editing -->
+                    <!-- API Host input -->
                     <div class="space-y-2">
                       <label for="host" class="text-zinc-200">API Host</label>
                       <input 
@@ -34,7 +34,17 @@
                         type="text"
                         v-model="host" 
                         class="w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-white"
+                        @keyup.enter="fetchModels"
                       />
+                    </div>
+
+                    <!-- Button to manually load models -->
+                    <div>
+                      <button 
+                        @click="fetchModels" 
+                        class="w-full rounded-md bg-violet-600 hover:bg-violet-700 text-white py-2 transition-all duration-300">
+                        Load Models
+                      </button>
                     </div>
 
                     <!-- Dynamically obtained model drop-down -->
@@ -50,6 +60,7 @@
                       </select>
                     </div>
 
+                    <!-- Temperature slider -->
                     <div class="space-y-2">
                       <label for="temperature" class="text-zinc-200">Temperature {{ temperature.toFixed(1) }}</label>
                       <input
@@ -154,7 +165,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import axios from 'axios';
 import { Settings, Send, Bot, User } from 'lucide-vue-next';
 
@@ -177,6 +188,7 @@ const host = ref('http://localhost:5000');
 
 // Function to fetch models from the server
 const fetchModels = () => {
+  models.value = [];
   axios.get(host.value + '/api/models')
     .then(response => {
       models.value = response.data;
@@ -186,16 +198,10 @@ const fetchModels = () => {
     })
     .catch(error => {
       console.error("Error fetching models:", error);
-      models.value = [];
     });
 };
 
-// Watch for changes in the host variable and reload models if it changes
-watch(host, (newHost, oldHost) => {
-  if (newHost !== oldHost) {
-    fetchModels();
-  }
-});
+// Removed the automatic watch on host changes
 
 // Function to reset the chat
 const resetChat = () => {
