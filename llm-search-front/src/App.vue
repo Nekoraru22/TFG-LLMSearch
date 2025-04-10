@@ -41,12 +41,16 @@
                       <input type="checkbox" id="sound" class="toggle" />
                     </div>
 
+                    <!-- Desplegable de modelos obtenido dinámicamente -->
                     <div class="space-y-2">
                       <label for="model" class="text-zinc-200">AI Model</label>
-                      <select id="model" class="w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-white">
-                        <option value="gpt-3.5">GPT-3.5</option>
-                        <option value="gpt-4">GPT-4</option>
-                        <option value="claude">Claude</option>
+                      <select 
+                        id="model" 
+                        v-model="selectedModel" 
+                        class="w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-white">
+                        <option v-for="model in models" :key="model" :value="model">
+                          {{ model }}
+                        </option>
                       </select>
                     </div>
 
@@ -65,6 +69,13 @@
                         <span>Precise</span>
                         <span>Creative</span>
                       </div>
+                    </div>
+
+                    <!-- Botón para reiniciar el chat -->
+                    <div class="pt-4 border-t border-zinc-800">
+                      <button @click="resetChat" class="w-full rounded-md bg-rose-600 hover:bg-rose-500 text-white py-2">
+                        Reiniciar Chat
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -89,24 +100,20 @@
               <div
                 :class="`flex gap-3 max-w-[80%] ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`"
               >
-              <div
-                :class="`h-9 w-9 min-h-[2.25rem] min-w-[2.25rem] flex-shrink-0 rounded-full flex items-center justify-center ${
-                  message.sender === 'assistant'
-                    ? 'border-2 border-violet-500 bg-gradient-to-br from-violet-600 to-indigo-600'
-                    : 'bg-gradient-to-br from-emerald-500 to-teal-500'
-                }`"
-              >
-                <div class="text-white flex items-center justify-center">
-                  <User v-if="message.sender === 'user'" class="h-4 w-4 min-h-[1rem] min-w-[1rem] flex-shrink-0" />
-                  <Bot v-else class="h-4 w-4 min-h-[1rem] min-w-[1rem] flex-shrink-0" />
-                </div>
-              </div>
                 <div
-                  :class="`rounded-2xl p-4 ${
-                    message.sender === 'user'
+                  :class="`h-9 w-9 min-h-[2.25rem] min-w-[2.25rem] flex-shrink-0 rounded-full flex items-center justify-center ${message.sender === 'assistant'
+                      ? 'border-2 border-violet-500 bg-gradient-to-br from-violet-600 to-indigo-600'
+                      : 'bg-gradient-to-br from-emerald-500 to-teal-500'}`"
+                >
+                  <div class="text-white flex items-center justify-center">
+                    <User v-if="message.sender === 'user'" class="h-4 w-4 min-h-[1rem] min-w-[1rem] flex-shrink-0" />
+                    <Bot v-else class="h-4 w-4 min-h-[1rem] min-w-[1rem] flex-shrink-0" />
+                  </div>
+                </div>
+                <div
+                  :class="`rounded-2xl p-4 ${message.sender === 'user'
                       ? 'bg-gradient-to-br from-emerald-500/90 to-teal-600/90 text-white shadow-lg shadow-emerald-500/10'
-                      : 'bg-zinc-800/80 border border-zinc-700/50 shadow-lg shadow-violet-500/5 text-white'
-                  }`"
+                      : 'bg-zinc-800/80 border border-zinc-700/50 shadow-lg shadow-violet-500/5 text-white'}`"
                 >
                   <div v-if="message.id === typingMessageId" class="typing-indicator">
                     <span></span>
@@ -152,6 +159,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
+import axios from 'axios';
 import { Settings, Send, Bot, User } from 'lucide-vue-next';
 
 // State
@@ -170,51 +178,89 @@ const temperature = ref(0.7);
 const inputFocused = ref(false);
 const typingMessageId = ref(null);
 
-// Enable dark mode on component mount
+// Estado para los modelos y el modelo seleccionado
+const models = ref([]);
+const selectedModel = ref("");
+
+// Asegúrate de ajustar la variable "host" a la URL de tu backend
+const host = 'http://localhost:5000';
+
+// Función para obtener los modelos desde el endpoint
+const fetchModels = async () => {
+  try {
+    const response = await axios.get(`${host}/api/models`);
+    // Se asume que el endpoint devuelve un arreglo, por ejemplo: ["GPT-3.5", "GPT-4", "Claude"]
+    models.value = response.data;
+    if (models.value.length > 0) {
+      selectedModel.value = models.value[0];
+    }
+  } catch (err) {
+    console.error("Error fetching models:", err);
+  }
+};
+
+// Función para reiniciar el chat
+const resetChat = () => {
+  messages.value = [
+    {
+      id: "1",
+      content: "Hello! How can I help you today?",
+      sender: "assistant",
+      timestamp: new Date(),
+    }
+  ];
+  inputValue.value = "";
+};
+
 onMounted(() => {
-  document.documentElement.classList.add("dark");
+  fetchModels();
 });
 
-// Function to handle sending a new message
 const handleSendMessage = async () => {
   if (inputValue.value.trim() === "") return;
-  
-  // Add user message
+
   const userMessage = {
     id: Date.now().toString(),
     content: inputValue.value,
     sender: "user",
     timestamp: new Date(),
   };
-  
+
   messages.value.push(userMessage);
-  
-  // Clear input
-  inputValue.value = "";
-  
-  // Add typing indicator
   const typingId = (Date.now() + 1).toString();
+  inputValue.value = "";
+
   await nextTick();
-  
+
   messages.value.push({
     id: typingId,
     content: "",
     sender: "assistant",
     timestamp: new Date(),
   });
-  
+
   typingMessageId.value = typingId;
-  
-  // Simulate assistant response after delay
-  setTimeout(() => {
-    typingMessageId.value = null;
-    
-    // Find and update the typing message
+
+  try {
+    const response = await axios.post(`${host}/api/query`, {
+      query: userMessage.content,
+      temperature: temperature.value,
+      model: selectedModel.value,
+    });
+
     const index = messages.value.findIndex(m => m.id === typingId);
     if (index !== -1) {
-      messages.value[index].content = `I received your message: "${userMessage.content}"`;
+      messages.value[index].content = response.data.result || "No response.";
     }
-  }, 1500);
+  } catch (err) {
+    const index = messages.value.findIndex(m => m.id === typingId);
+    if (index !== -1) {
+      messages.value[index].content = "There was an error getting a response.";
+    }
+    console.error(err);
+  } finally {
+    typingMessageId.value = null;
+  }
 };
 </script>
 
