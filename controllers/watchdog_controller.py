@@ -10,60 +10,60 @@ import time
 
 class CustomHandler(FileSystemEventHandler):
     """
-    Clase que maneja los eventos de creación, modificación y eliminación de archivos.
+    Class that handles file creation, modification, and deletion events.
     """
     
     def __init__(self) -> None:
         """
-        Inicializa el manejador de eventos.
+        Initializes the event handler.
         """
         self.recently_created = {}
-        self.cooldown = 10.0  # tiempo en segundos para ignorar modificaciones después de crear
+        self.cooldown = 10.0  # Cooldown period in seconds
         
 
     def on_created(self, event) -> None:
         """
-        Método que se ejecuta cuando se crea un archivo.
+        Method that is executed when a file is created.
 
         Args:
-            event: Evento de creación de
+            event: Event of creation
         """
         logging.info(f"Created file: {event.src_path}")
-        # Registrar cuándo se creó el archivo
+        # Store the creation time of the file
         self.recently_created[event.src_path] = time.time()
         new_file(str(event.src_path))
         
 
     def on_modified(self, event) -> None:
         """
-        Método que se ejecuta cuando se modifica un archivo.
+        Method that is executed when a file is modified.
 
         Args:
-            event: Evento de modificación
+            event: Event of modification
         """
         current_time = time.time()
-        # Verificar si el archivo fue creado recientemente
+        # Check if the file was recently created
         if event.src_path in self.recently_created:
-            # Si la modificación ocurre dentro del periodo de cooldown después de la creación, ignorarla
+            # If the modification occurs within the cooldown period after creation, ignore it
             if current_time - self.recently_created[event.src_path] <= self.cooldown:
-                return # No registrar la modificación
+                return # Ignore the modification event
             else:
-                # Después del periodo de cooldown, eliminamos el archivo de la lista de recién creados
+                # After the cooldown period, remove the file from the recently created list
                 del self.recently_created[event.src_path]
         
-        # Si llegamos aquí, registrar la modificación normalmente
+        # If we reach here, log the modification normally
         logging.info(f"Modified file: {event.src_path}")
         modified_file(str(event.src_path))
         
         
     def on_deleted(self, event: FileSystemEvent) -> None:
         """
-        Método que se ejecuta cuando se elimina un archivo.
+        Method that is executed when a file is deleted.
 
         Args:
-            event: Evento de eliminación
+            event: Event of deletion
         """
-        # Limpiar el registro si el archivo es eliminado
+        # Clear the record if the file is deleted
         if event.src_path in self.recently_created:
             del self.recently_created[event.src_path]
         
@@ -73,15 +73,15 @@ class CustomHandler(FileSystemEventHandler):
 
 class WatchdogsController:
     """
-    Clase que controla la vigilancia de un directorio con Watchdog.
+    Class that controls the monitoring of a directory with Watchdog.
     """
 
     def __init__(self, path: str) -> None:
         """
-        Inicializa el controlador de vigilancia.
+        Initializes the watchdog controller.
 
         Args:
-            path: Ruta al directorio a vigilar
+            path: Path to the directory to monitor
         """
         self.path = path
         self.event_handler = CustomHandler()
@@ -93,7 +93,7 @@ class WatchdogsController:
 
     def _watch_directory(self) -> None:
         """
-        Método interno que ejecuta la vigilancia en segundo plano.
+        Method that runs the monitoring in the background.
         """
         self.observer = Observer()
         self.observer.schedule(self.event_handler, self.path, recursive=True)
@@ -103,7 +103,9 @@ class WatchdogsController:
             while self.running:
                 time.sleep(1)
         except Exception as e:
-            logging.error(f"Error en la vigilancia: {e}")
+            logging.error(f"Error in the watchdog thread: {e}")
+        except KeyboardInterrupt:
+            logging.info("Keyboard interrupt received, stopping the watchdog thread.")
         finally:
             if self.observer:
                 self.observer.stop()
@@ -112,31 +114,31 @@ class WatchdogsController:
 
     def start(self) -> None:
         """
-        Inicia la vigilancia del directorio en segundo plano.
+        Initializes the watchdog thread and starts monitoring the directory.
         """
         if self.watcher_thread and self.watcher_thread.is_alive():
-            logging.warning("La vigilancia ya está en ejecución")
+            logging.warning("The watchdog thread is already running.")
             return
             
         self.running = True
         self.watcher_thread = threading.Thread(target=self._watch_directory)
-        self.watcher_thread.daemon = True  # El hilo se cerrará cuando el programa principal termine
+        self.watcher_thread.daemon = True  # The thread will exit when the main program exits
         self.watcher_thread.start()
-        logging.info(f"Vigilancia iniciada en segundo plano para: {self.path}")
+        logging.info(f"Watchdog thread started in background for: {self.path}")
 
 
     def stop(self) -> None:
         """
-        Detiene la vigilancia del directorio.
+        Stops the directory monitoring.
         """
         self.running = False
         if self.watcher_thread:
-            self.watcher_thread.join(timeout=2)  # Esperar hasta 2 segundos a que termine
+            self.watcher_thread.join(timeout=2)  # Wait for 2 seconds for it to finish
             if self.watcher_thread.is_alive():
-                logging.warning("No se pudo detener el hilo de vigilancia correctamente")
+                logging.warning("The watchdog thread did not finish in time.")
         
         if self.observer:
             self.observer.stop()
             self.observer.join()
             
-        logging.info("Vigilancia detenida")
+        logging.info("Watchdog thread stopped.")

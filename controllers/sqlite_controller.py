@@ -6,15 +6,15 @@ import os
 
 class DatabaseController:
     """
-    Clase para gestionar operaciones básicas con bases de datos SQLite.
+    Class to manage basic operations with SQLite databases.
     """
     
     def __init__(self, db_file: str) -> None:
         """
-        Inicializa la conexión a la base de datos.
+        Initializes the database connection.
         
         Args:
-            db_file: Ruta al archivo de la base de datos
+            db_file: Path to the database file
         """
         self.db_file = db_file
         self.connection = None
@@ -23,54 +23,54 @@ class DatabaseController:
 
     def connect(self) -> bool:
         """
-        Establece la conexión con la base de datos.
+        Establishes the connection with the database.
         
         Returns:
-            bool: True si la conexión fue exitosa, False en caso contrario
+            bool: True if the connection was successful, False otherwise
         """
         try:
-            # Verifica si la base de datos existe
+            # Checks if the database exists
             db_exists = os.path.exists(self.db_file)
             
-            # Conecta a la base de datos
+            # Connects to the database
             self.connection = sqlite3.connect(self.db_file)
             self.cursor = self.connection.cursor()
             
             if not db_exists:
-                print(f"Base de datos '{self.db_file}' creada exitosamente.")
+                print(f"Database '{self.db_file}' created successfully.")
             else:
-                print(f"Conexión exitosa a '{self.db_file}'.")
+                print(f"Successful connection to '{self.db_file}'.")
             
             return True
         except sqlite3.Error as e:
-            print(f"Error al conectar a la base de datos: {e}")
+            print(f"Error connecting to the database: {e}")
             return False
-    
+        
 
     def disconnect(self) -> None:
         """
-        Cierra la conexión con la base de datos.
+        Closes the connection to the database.
         """
         if self.connection:
             self.connection.close()
-            print("Conexión cerrada.")
+            print("Connection closed.")
             self.connection = None
             self.cursor = None
-    
+        
 
     def execute_query(self, query: str, params: tuple = ()) -> bool:
         """
-        Ejecuta una consulta SQL sin retorno de datos (CREATE, INSERT, UPDATE, DELETE).
+        Executes an SQL query without returning data (CREATE, INSERT, UPDATE, DELETE).
         
         Args:
-            query: Consulta SQL a ejecutar
-            params: Parámetros para la consulta (opcional)
+            query: SQL query to execute
+            params: Parameters for the query (optional)
             
         Returns:
-            bool: True si la ejecución fue exitosa, False en caso contrario
+            bool: True if the execution was successful, False otherwise
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return False
             
         try:
@@ -78,202 +78,202 @@ class DatabaseController:
             self.connection.commit()
             return True
         except sqlite3.Error as e:
-            print(f"Error al ejecutar la consulta: {e}")
+            print(f"Error executing query: {e}")
             return False
-    
+        
 
     def execute_select(self, query: str, params: tuple = ()) -> List[Tuple[Any]]:
         """
-        Ejecuta una consulta SQL con retorno de datos (SELECT).
+        Executes an SQL query that returns data (SELECT).
         
         Args:
-            query: Consulta SQL a ejecutar
-            params: Parámetros para la consulta (opcional)
+            query: SQL query to execute
+            params: Parameters for the query (optional)
             
         Returns:
-            List[Tuple[Any]]: Resultados de la consulta
+            List[Tuple[Any]]: Query results
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return []
             
         try:
             self.cursor.execute(query, params)
             return self.cursor.fetchall()
         except sqlite3.Error as e:
-            print(f"Error al ejecutar la consulta SELECT: {e}")
+            print(f"Error executing SELECT query: {e}")
             return []
-    
+        
 
     def create_table(self, table_name: str, columns: dict) -> bool:
         """
-        Crea una tabla en la base de datos.
+        Creates a table in the database.
         
         Args:
-            table_name: Nombre de la tabla
-            columns: Diccionario con nombres de columnas y sus tipos
+            table_name: Name of the table
+            columns: Dictionary with column names and their types
             
         Returns:
-            bool: True si la creación fue exitosa, False en caso contrario
+            bool: True if the creation was successful, False otherwise
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return False
             
         try:
-            # Construye la definición de columnas
+            # Build column definitions
             columns_definition = ", ".join([f"{col} {data_type}" for col, data_type in columns.items()])
             
-            # Crea la consulta SQL
+            # Creates the SQL query
             query = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_definition})"
             
-            # Ejecuta la consulta
+            # Executes the query
             self.cursor.execute(query)
             self.connection.commit()
-            print(f"Tabla '{table_name}' creada exitosamente.")
+            print(f"Table '{table_name}' created successfully.")
             return True
         except sqlite3.Error as e:
-            print(f"Error al crear la tabla: {e}")
+            print(f"Error creating table: {e}")
             return False
-    
+        
     
     def insert_data(self, table_name: str, data: dict) -> Optional[int]:
         """
-        Inserta datos en una tabla.
+        Inserts data into a table.
         
         Args:
-            table_name: Nombre de la tabla
-            data: Diccionario con nombres de columnas y valores a insertar
+            table_name: Name of the table
+            data: Dictionary with column names and values to insert
             
         Returns:
-            Optional[int]: ID del último registro insertado o None en caso de error
+            Optional[int]: ID of the last inserted row or None in case of error
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return None
             
         try:
-            # Obtiene los nombres de las columnas y los valores
+            # Gets the column names and values
             columns = ", ".join(data.keys())
             placeholders = ", ".join(["?" for _ in data])
             values = tuple(data.values())
             
-            # Crea la consulta SQL
+            # Creates the SQL query
             query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
             
-            # Ejecuta la consulta
+            # Executes the query
             self.cursor.execute(query, values)
             self.connection.commit()
             
-            # Retorna el ID del último registro insertado
+            # Returns the ID of the last inserted row
             return self.cursor.lastrowid
         except sqlite3.Error as e:
-            print(f"Error al insertar datos: {e}")
+            print(f"Error inserting data: {e}")
             return None
-    
+        
 
     def update_data(self, table_name: str, data: dict, condition: str, condition_params: tuple) -> int:
         """
-        Actualiza datos en una tabla.
+        Updates data in a table.
         
         Args:
-            table_name: Nombre de la tabla
-            data: Diccionario con nombres de columnas y nuevos valores
-            condition: Condición WHERE para la actualización
-            condition_params: Parámetros para la condición
+            table_name: Name of the table
+            data: Dictionary with column names and new values
+            condition: WHERE condition for the update
+            condition_params: Parameters for the condition
             
         Returns:
-            int: Número de filas afectadas
+            int: Number of rows affected
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return 0
             
         try:
-            # Construye la parte SET de la consulta
+            # Constructs the SET clause of the query
             set_clause = ", ".join([f"{column} = ?" for column in data.keys()])
             values = tuple(data.values()) + condition_params
             
-            # Crea la consulta SQL
+            # Creates the SQL query
             query = f"UPDATE {table_name} SET {set_clause} WHERE {condition}"
             
-            # Ejecuta la consulta
+            # Executes the query
             self.cursor.execute(query, values)
             self.connection.commit()
             
-            # Retorna el número de filas afectadas
+            # Returns the number of rows affected
             return self.cursor.rowcount
         except sqlite3.Error as e:
-            print(f"Error al actualizar datos: {e}")
+            print(f"Error updating data: {e}")
             return 0
-    
+        
 
     def delete_data(self, table_name: str, condition: str = "", condition_params: tuple = ()) -> int:
         """
-        Elimina datos de una tabla.
+        Deletes data from a table.
         
         Args:
-            table_name: Nombre de la tabla
-            condition: Condición WHERE para la eliminación (opcional)
-            condition_params: Parámetros para la condición (opcional)
+            table_name: Name of the table
+            condition: WHERE condition for deletion (optional)
+            condition_params: Parameters for the condition (optional)
             
         Returns:
-            int: Número de filas afectadas
+            int: Number of rows affected
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return 0
             
         try:
-            # Crea la consulta SQL
+            # Creates the SQL query
             query = f"DELETE FROM {table_name}"
             
-            # Agrega la condición si existe
+            # Adds the condition if it exists
             if condition:
                 query += f" WHERE {condition}"
             
-            # Ejecuta la consulta
+            # Executes the query
             self.cursor.execute(query, condition_params)
             self.connection.commit()
             
-            # Retorna el número de filas afectadas
+            # Returns the number of rows affected
             return self.cursor.rowcount
         except sqlite3.Error as e:
-            print(f"Error al eliminar datos: {e}")
+            print(f"Error deleting data: {e}")
             return 0
-    
+        
 
     def table_exists(self, table_name: str) -> bool:
         """
-        Verifica si una tabla existe en la base de datos.
+        Checks if a table exists in the database.
         
         Args:
-            table_name: Nombre de la tabla
+            table_name: Name of the table
             
         Returns:
-            bool: True si la tabla existe, False en caso contrario
+            bool: True if the table exists, False otherwise
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return False
             
         query = "SELECT name FROM sqlite_master WHERE type='table' AND name=?"
         self.cursor.execute(query, (table_name,))
         return bool(self.cursor.fetchone())
-    
+        
 
     def get_table_info(self, table_name: str) -> List[Tuple[Any]]:
         """
-        Obtiene información sobre las columnas de una tabla.
+        Gets information about the columns of a table.
         
         Args:
-            table_name: Nombre de la tabla
+            table_name: Name of the table
             
         Returns:
-            List[Tuple[Any]]: Información de las columnas
+            List[Tuple[Any]]: Column information
         """
         if not self.connection or not self.cursor:
-            print("Error: No hay conexión a la base de datos. Llame a connect() primero.")
+            print("Error: There is no connection to the database. Call connect() first.")
             return []
             
         try:
@@ -281,5 +281,5 @@ class DatabaseController:
             self.cursor.execute(query)
             return self.cursor.fetchall()
         except sqlite3.Error as e:
-            print(f"Error al obtener información de la tabla: {e}")
+            print(f"Error getting table information: {e}")
             return []
