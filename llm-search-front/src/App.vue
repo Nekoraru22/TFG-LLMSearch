@@ -26,22 +26,18 @@
                   <div class="h-px bg-zinc-800 w-full"></div>
 
                   <div class="space-y-5">
-                    <div class="flex items-center justify-between">
-                      <label for="dark-mode" class="text-zinc-200">Dark Mode</label>
-                      <input type="checkbox" id="dark-mode" v-model="darkMode" class="toggle" />
+                    <!-- New input for host editing -->
+                    <div class="space-y-2">
+                      <label for="host" class="text-zinc-200">API Host</label>
+                      <input 
+                        id="host" 
+                        type="text"
+                        v-model="host" 
+                        class="w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-white"
+                      />
                     </div>
 
-                    <div class="flex items-center justify-between">
-                      <label for="notifications" class="text-zinc-200">Notifications</label>
-                      <input type="checkbox" id="notifications" class="toggle" />
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                      <label for="sound" class="text-zinc-200">Sound Effects</label>
-                      <input type="checkbox" id="sound" class="toggle" />
-                    </div>
-
-                    <!-- Desplegable de modelos obtenido dinámicamente -->
+                    <!-- Dynamically obtained model drop-down -->
                     <div class="space-y-2">
                       <label for="model" class="text-zinc-200">AI Model</label>
                       <select 
@@ -55,14 +51,14 @@
                     </div>
 
                     <div class="space-y-2">
-                      <label for="temperature" class="text-zinc-200">Temperature</label>
+                      <label for="temperature" class="text-zinc-200">Temperature {{ temperature.toFixed(1) }}</label>
                       <input
                         id="temperature"
                         type="range"
                         min="0"
                         max="1"
                         step="0.1"
-                        v-model="temperature"
+                        v-model.number="temperature"
                         class="w-full accent-violet-500"
                       />
                       <div class="flex justify-between text-xs text-zinc-400">
@@ -71,7 +67,7 @@
                       </div>
                     </div>
 
-                    <!-- Botón para reiniciar el chat -->
+                    <!-- Button to restart the chat -->
                     <div class="pt-4 border-t border-zinc-800">
                       <button @click="resetChat" class="w-full rounded-md bg-rose-600 hover:bg-rose-500 text-white py-2">
                         Reiniciar Chat
@@ -129,7 +125,7 @@
       </div>
     </div>
 
-    <!-- Copilot-style input area - fixed at bottom -->
+    <!-- Input area -->
     <div class="fixed bottom-0 left-0 right-0 py-6 bg-transparent flex justify-center">
       <div class="w-full max-w-3xl px-4">
         <div class="relative">
@@ -158,11 +154,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import axios from 'axios';
 import { Settings, Send, Bot, User } from 'lucide-vue-next';
 
-// State
 const messages = ref([
   {
     id: "1",
@@ -173,33 +168,36 @@ const messages = ref([
 ]);
 const inputValue = ref("");
 const isSettingsOpen = ref(false);
-const darkMode = ref(true);
 const temperature = ref(0.7);
 const inputFocused = ref(false);
 const typingMessageId = ref(null);
-
-// Estado para los modelos y el modelo seleccionado
 const models = ref([]);
 const selectedModel = ref("");
+const host = ref('http://localhost:5000');
 
-// Asegúrate de ajustar la variable "host" a la URL de tu backend
-const host = 'http://localhost:5000';
-
-// Función para obtener los modelos desde el endpoint
-const fetchModels = async () => {
-  try {
-    const response = await axios.get(`${host}/api/models`);
-    // Se asume que el endpoint devuelve un arreglo, por ejemplo: ["GPT-3.5", "GPT-4", "Claude"]
-    models.value = response.data;
-    if (models.value.length > 0) {
-      selectedModel.value = models.value[0];
-    }
-  } catch (err) {
-    console.error("Error fetching models:", err);
-  }
+// Function to fetch models from the server
+const fetchModels = () => {
+  axios.get(host.value + '/api/models')
+    .then(response => {
+      models.value = response.data;
+      if (models.value.length > 0) {
+        selectedModel.value = models.value[0];
+      }
+    })
+    .catch(error => {
+      console.error("Error fetching models:", error);
+      models.value = [];
+    });
 };
 
-// Función para reiniciar el chat
+// Watch for changes in the host variable and reload models if it changes
+watch(host, (newHost, oldHost) => {
+  if (newHost !== oldHost) {
+    fetchModels();
+  }
+});
+
+// Function to reset the chat
 const resetChat = () => {
   messages.value = [
     {
@@ -216,6 +214,7 @@ onMounted(() => {
   fetchModels();
 });
 
+// Function to handle sending messages
 const handleSendMessage = async () => {
   if (inputValue.value.trim() === "") return;
 
@@ -242,7 +241,7 @@ const handleSendMessage = async () => {
   typingMessageId.value = typingId;
 
   try {
-    const response = await axios.post(`${host}/api/query`, {
+    const response = await axios.post(host.value + '/api/query', {
       query: userMessage.content,
       temperature: temperature.value,
       model: selectedModel.value,
@@ -265,40 +264,6 @@ const handleSendMessage = async () => {
 </script>
 
 <style scoped>
-/* Custom toggle switch styling */
-.toggle {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-  appearance: none;
-  background-color: #374151;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.toggle:checked {
-  background-color: #8b5cf6;
-}
-
-.toggle::before {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  top: 2px;
-  left: 2px;
-  background-color: white;
-  transition: transform 0.3s;
-}
-
-.toggle:checked::before {
-  transform: translateX(20px);
-}
-
-/* Typing indicator animation */
 .typing-indicator {
   display: flex;
   align-items: center;
@@ -338,7 +303,6 @@ const handleSendMessage = async () => {
   }
 }
 
-/* Message animations */
 .message-enter-active,
 .message-leave-active {
   transition: all 0.3s ease;
@@ -354,7 +318,6 @@ const handleSendMessage = async () => {
   transform: translateY(-20px);
 }
 
-/* Fade transition */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -365,7 +328,6 @@ const handleSendMessage = async () => {
   opacity: 0;
 }
 
-/* Slide transition */
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.3s ease;

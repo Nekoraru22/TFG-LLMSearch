@@ -7,7 +7,7 @@ import numpy as np
 import chromadb
 
 
-def crear_embeddings(textos):
+def create_embeddings(textos):
     """
     Creates embeddings for a list of texts using Sentence Transformers.
     
@@ -22,7 +22,7 @@ def crear_embeddings(textos):
     return embeddings
 
 
-def crear_chroma_db(collection_name="my_collection", persist_directory="./chroma_db"):
+def create_chroma_db(collection_name="my_collection", persist_directory="./chroma_db"):
     """
     Creates a ChromaDB instance and a collection.
     
@@ -50,7 +50,7 @@ def crear_chroma_db(collection_name="my_collection", persist_directory="./chroma
     return collection
 
 
-def agregar_documentos(collection, documentos, embeddings=None, metadatos=None, ids=None):
+def add_documents(collection, documentos, embeddings=None, metadatos=None, ids=None):
     """
     Adds documents to a Chroma collection.
     
@@ -84,7 +84,7 @@ def agregar_documentos(collection, documentos, embeddings=None, metadatos=None, 
         )
 
 
-def buscar_similares(collection, query, n_results=3, embeddings=None):
+def search_similar(collection, query, n_results=3, embeddings=None):
     """
     Searches for documents similar to a query in the Chroma collection.
     
@@ -111,7 +111,7 @@ def buscar_similares(collection, query, n_results=3, embeddings=None):
     return resultados
 
 
-def visualizar_embeddings_3d(embeddings, labels=None, title="3D Embeddings Visualization", highlight_index=None, figsize=(10, 8)):
+def visualize_embeddings_3d(embeddings, labels=None, title="3D Embeddings Visualization", highlight_index=None, figsize=(10, 8)):
     """
     Visualizes embeddings in a 3D space using PCA to reduce dimensionality.
     
@@ -173,7 +173,7 @@ def visualizar_embeddings_3d(embeddings, labels=None, title="3D Embeddings Visua
     return fig
 
 
-def visualizar_matriz_distancias(embeddings, labels=None, figsize=(10, 8)):
+def visualize_matriz_distances(embeddings, labels=None, figsize=(10, 8)):
     """
     Visualizes a distance matrix between embeddings.
     
@@ -239,19 +239,19 @@ def prove() -> None:
     ]
     
     # Create embeddings for the documents
-    embeddings = crear_embeddings(documentos)
+    embeddings = create_embeddings(documentos)
     
     # Create a Chroma collection with persistence
-    collection = crear_chroma_db("example_embeddings", "./data/chroma_db")
+    collection = create_chroma_db("example_embeddings", "./data/chroma_db")
     
     # Add documents with custom embeddings
     metadatos = [{"type": "definition", "source": "example"} for _ in range(len(documentos))]
     ids = [f"doc_{i}" for i in range(len(documentos))]
-    agregar_documentos(collection, documentos, embeddings, metadatos, ids)
+    add_documents(collection, documentos, embeddings, metadatos, ids)
     
     # Perform a search
     query = "What are embeddings?"
-    resultados = buscar_similares(collection, query, n_results=3)
+    resultados = search_similar(collection, query, n_results=3)
     
     print("\nSearch results for:", query)
     if resultados['documents'] is not None and resultados["distances"] is not None:
@@ -264,11 +264,11 @@ def prove() -> None:
     labels = [f"Doc {i}: {doc[:20]}..." for i, doc in enumerate(documentos)]
     
     # Visualize with the query point highlighted
-    query_embedding = crear_embeddings([query])[0]
+    query_embedding = create_embeddings([query])[0]
     all_embeddings = np.vstack([embeddings, query_embedding])
     all_labels = labels + [f"Query: {query}"]
     
-    fig = visualizar_embeddings_3d(
+    fig = visualize_embeddings_3d(
         embeddings=all_embeddings,
         labels=all_labels, 
         title="3D Embeddings Visualization with Query",
@@ -276,7 +276,7 @@ def prove() -> None:
     )
     
     # Visualize the distance matrix
-    fig_matriz, df_dist = visualizar_matriz_distancias(embeddings, labels)
+    fig_matriz, df_dist = visualize_matriz_distances(embeddings, labels)
     
     plt.show()
     
