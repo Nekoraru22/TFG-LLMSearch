@@ -26,7 +26,7 @@ class DatabaseController:
         Establishes the connection with the database.
         
         Returns:
-            bool: True if the connection was successful, False otherwise
+            True if the connection was successful, False otherwise
         """
         try:
             # Checks if the database exists
@@ -67,7 +67,7 @@ class DatabaseController:
             params: Parameters for the query (optional)
             
         Returns:
-            bool: True if the execution was successful, False otherwise
+            True if the execution was successful, False otherwise
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")
@@ -91,7 +91,7 @@ class DatabaseController:
             params: Parameters for the query (optional)
             
         Returns:
-            List[Tuple[Any]]: Query results
+            Query results
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")
@@ -114,7 +114,7 @@ class DatabaseController:
             columns: Dictionary with column names and their types
             
         Returns:
-            bool: True if the creation was successful, False otherwise
+            True if the creation was successful, False otherwise
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")
@@ -146,7 +146,7 @@ class DatabaseController:
             data: Dictionary with column names and values to insert
             
         Returns:
-            Optional[int]: ID of the last inserted row or None in case of error
+            ID of the last inserted row or None in case of error
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")
@@ -183,7 +183,7 @@ class DatabaseController:
             condition_params: Parameters for the condition
             
         Returns:
-            int: Number of rows affected
+            Number of rows affected
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")
@@ -218,7 +218,7 @@ class DatabaseController:
             condition_params: Parameters for the condition (optional)
             
         Returns:
-            int: Number of rows affected
+            Number of rows affected
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")
@@ -251,7 +251,7 @@ class DatabaseController:
             table_name: Name of the table
             
         Returns:
-            bool: True if the table exists, False otherwise
+            True if the table exists, False otherwise
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")
@@ -270,7 +270,7 @@ class DatabaseController:
             table_name: Name of the table
             
         Returns:
-            List[Tuple[Any]]: Column information
+            Column information
         """
         if not self.connection or not self.cursor:
             print("Error: There is no connection to the database. Call connect() first.")

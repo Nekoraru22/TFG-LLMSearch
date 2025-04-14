@@ -8,10 +8,12 @@ import subprocess
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 
-from prefect import flow, task
-from lmstudio import PredictionResult
 from controllers.llm_studio_controller import LLMStudioController
 from controllers.chroma_controller import ChromaClient
+
+from chromadb import QueryResult
+from prefect import flow, task
+from lmstudio import PredictionResult
 
 # Load LLM Studio model
 llm = LLMStudioController("192.168.1.137", 25565, "gemma-3-12b-it")
@@ -40,7 +42,7 @@ def new_file(file_path: str) -> None:
     metadata = get_image_metadata.submit(file_path)
 
     # Wait for the tasks to complete
-    result = result.result()
+    result = result.result() + "\n" + f"Path: \"{file_path}\""
     metadata = metadata.result()
     print(metadata)
 
@@ -50,7 +52,7 @@ def new_file(file_path: str) -> None:
     # Create metadata for the image
     embeddings = chroma_db.create_embeddings([result])
     ids = [f"doc_{uuid.uuid4()}"]
-    chroma_db.add_documents(documents=[result], embeddings=embeddings, ids=ids) # , metadatas=[metadata]
+    chroma_db.add_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
 
 
 @flow(log_prints=True)
@@ -83,7 +85,8 @@ def proccess_query(query: str, model: str, temperature: float) -> PredictionResu
     Args:
         query: The query to process
     """
-    return rag_query(query, model, temperature)
+    relevant_db_data = rag_query_with_db(query, n_results=3)
+    return rag_query(query, relevant_db_data, model, temperature)
 
 
 @task
@@ -100,13 +103,40 @@ def analyze_image(image_path: str) -> str:
     print(result)
     return str(result)
 
+def flatten_dict(d: dict, parent_key: str = '', sep: str = '_') -> dict:
+    """
+    Aplana un diccionario anidado. Cada clave resultante será la concatenación de las claves
+    de cada nivel separadas por `sep`.
+    """
+    items = {}
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            # Si el diccionario está vacío, lo serializamos a JSON
+            if not v:
+                items[new_key] = json.dumps(v)
+            else:
+                items.update(flatten_dict(v, new_key, sep=sep))
+        elif isinstance(v, list):
+            # Convertimos las listas a una cadena JSON
+            items[new_key] = json.dumps(v)
+        elif v is None:
+            # Opcional: puedes usar una cadena vacía o mantener "None" como string
+            items[new_key] = ""
+        else:
+            items[new_key] = v
+    return items
+
 @task
 def get_image_metadata(image_path: str) -> dict:
     """
-    Get metadata from an image
-
+    Obtiene metadatos de una imagen y los aplana para que cada valor sea un tipo básico.
+    
     Args:
-        image_path: The path to the image
+        image_path: La ruta hacia la imagen.
+        
+    Returns:
+        Un diccionario con los metadatos aplanados, listo para almacenarlos sin perder información.
     """
     metadata = {
         "basic_info": {},
@@ -117,11 +147,11 @@ def get_image_metadata(image_path: str) -> dict:
         "exiftool_data": {}
     }
     
-    # Check if file exists
+    # Verificar si el archivo existe
     if not os.path.isfile(image_path):
-        return {"error": f"File not found: {image_path}"}
+        return {"error": f"Archivo no encontrado: {image_path}"}
     
-    # Get basic file information
+    # Información básica del archivo
     file_stats = os.stat(image_path)
     metadata["basic_info"] = {
         "filename": os.path.basename(image_path),
@@ -132,9 +162,9 @@ def get_image_metadata(image_path: str) -> dict:
     }
     
     try:
-        # Open the image with PIL
+        # Abrir la imagen con PIL
         with Image.open(image_path) as img:
-            # Get basic image information
+            # Actualizar información básica de la imagen
             metadata["basic_info"].update({
                 "format": img.format,
                 "mode": img.mode,
@@ -143,23 +173,21 @@ def get_image_metadata(image_path: str) -> dict:
                 "resolution": img.info.get("dpi", None)
             })
             
-            # Extract EXIF data - using getexif() instead of _getexif()
+            # Extraer datos EXIF
             exif_data = {}
             try:
                 exif_data = img.getexif()
             except (AttributeError, TypeError):
-                # Fallback for older versions or unsupported formats
                 if hasattr(img, '_getexif'):
                     try:
                         exif_data = img.getexif() or {}
                     except Exception:
                         pass
             
-            # Process EXIF data if available
+            # Procesar EXIF si está disponible
             if exif_data:
                 for tag_id, value in exif_data.items():
                     tag = TAGS.get(tag_id, tag_id)
-                    # Handle GPS data specially
                     if tag == "GPSInfo":
                         gps_data = {}
                         for gps_tag_id, gps_value in value.items():
@@ -169,13 +197,13 @@ def get_image_metadata(image_path: str) -> dict:
                     else:
                         metadata["exif_data"][tag] = value
             
-            # Alternative method for EXIF in case the above fails
+            # Método alternativo para extraer EXIF
             if not metadata["exif_data"]:
                 for key, value in img.info.items():
                     if str(key).upper().startswith('EXIF'):
                         metadata["exif_data"][key] = value
             
-            # Extract ICC profile if available
+            # Extraer perfil ICC
             icc_profile = img.info.get('icc_profile')
             if icc_profile:
                 metadata["icc_profile"]["present"] = True
@@ -185,23 +213,21 @@ def get_image_metadata(image_path: str) -> dict:
     
     except Exception as e:
         metadata["basic_info"]["error"] = str(e)
-        metadata["exif_data"]["error"] = str(e) 
+        metadata["exif_data"]["error"] = str(e)
     
-    # Use ExifTool for more comprehensive metadata extraction
+    # Utilizar ExifTool para una extracción más completa de metadatos
     try:
-        # Run ExifTool with JSON output
         result = subprocess.run(
             ["exiftool", "-j", "-a", "-u", "-G1", image_path],
             capture_output=True, 
             text=True, 
             check=True
         )
-        
         exiftool_data = json.loads(result.stdout)
         if exiftool_data and len(exiftool_data) > 0:
             metadata["exiftool_data"] = exiftool_data[0]
             
-            # Extract specific metadata sections if present
+            # Extraer secciones específicas (como IPTC y XMP)
             for key, value in exiftool_data[0].items():
                 if ":" in key:
                     section, name = key.split(":", 1)
@@ -209,22 +235,50 @@ def get_image_metadata(image_path: str) -> dict:
                         metadata["iptc_data"][name] = value
                     elif section == "XMP":
                         metadata["xmp_data"][name] = value
-    
     except Exception as e:
         metadata["exiftool_data"]["error"] = str(e)
         metadata["exiftool_data"]["output"] = None
-    
-    return metadata
+
+    # Aplanar el diccionario de metadatos para cumplir con el formato requerido
+    flat_metadata = flatten_dict(metadata)
+    return flat_metadata
 
 @task
-def rag_query(query: str, model: str, temperature: float) -> PredictionResult:
+def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature: float) -> PredictionResult:
     """
     Process a query using RAG (Retrieval-Augmented Generation)
     """
     llm.model = model
-    result = llm.analyze(prompt=query, temperature=temperature)
+    print(f"RELEVANT DATA: {relevant_db_data['documents']}")
+    prompt = f"Query: {query}\n\nRelevant data:\n{relevant_db_data['documents']}"
+    result = llm.analyze(prompt=prompt, temperature=temperature)
     print(result)
     return result
+
+@task
+def rag_query_with_db(query: str, n_results: int = 3) -> QueryResult:
+    """
+    Procesa una consulta usando RAG (Retrieval-Augmented Generation) con ChromaDB
+
+    Args:
+        query: La consulta a procesar.
+        n_results: El número de resultados a retornar de la base de datos.
+
+    Returns:
+        QueryResult: Los resultados de la búsqueda, incluyendo documentos, distancias y metadatos.
+    """
+    relevant_db_data = chroma_db.search_similar(query, n_results)
+    
+    print("\nSearch results for:", query)
+    if (relevant_db_data['documents'] is not None and relevant_db_data['distances'] is not None):
+        for i, doc in enumerate(relevant_db_data['documents'][0]):
+            metadata = (relevant_db_data.get("metadatos", [[None]])[0][i]
+                        if relevant_db_data.get("metadatos") is not None else None)
+            print(f"{i+1}. {doc} (Distance: {relevant_db_data['distances'][0][i]:.4f}) - Metadata: {metadata}")
+    else:
+        print("No similar documents were found.")
+    
+    return relevant_db_data
 
 @task
 def meow(message: str) -> str:
