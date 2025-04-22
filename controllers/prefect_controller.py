@@ -34,6 +34,7 @@ def new_file(file_path: str) -> None:
     Args:
         file_path: The path to the file to process.
     """
+    # Check if the file is already in the database
     if chroma_db.check_duplicate(file_path):
         print(f"File {file_path} already exists in the database")
         return
@@ -53,15 +54,15 @@ def new_file(file_path: str) -> None:
     # 3) Image branch
     if mime.startswith(IMAGE_PREFIX):
         print(f"Detected image: {mime}")
-        # kick off your image tasks
+        # Kick off your image tasks
         img_res = analyze_image.submit(file_path)
         img_meta = get_image_metadata.submit(file_path, file_path_hash)
 
-        # wait & combine
+        # Wait & combine
         result = img_res.result()
         metadata = img_meta.result()
 
-        # embed + store
+        # Embed + store
         embeddings = chroma_db.create_embeddings([result])
         ids = [f"doc_{uuid.uuid4()}"]
         chroma_db.add_or_update_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
@@ -82,7 +83,7 @@ def new_file(file_path: str) -> None:
         print(content)
         print(result)
 
-        # embed + store
+        # Embed + store
         embeddings = chroma_db.create_embeddings([result])
         ids        = [f"doc_{uuid.uuid4()}"]
         metadata = {
@@ -109,7 +110,7 @@ def new_file(file_path: str) -> None:
         print(content)
         print(result)
 
-        # embed + store
+        # Embed + store
         embeddings = chroma_db.create_embeddings([result])
         ids = [f"doc_{uuid.uuid4()}"]
         metadata = {
@@ -128,6 +129,7 @@ def new_file(file_path: str) -> None:
         print(f"Unsupported file type ({mime}): {file_path}")
 
 
+# TODO: En lugar de crear una nueva entrada en la base datos, modificar la existente o eliminarla y crear una nueva.
 @flow(log_prints=True, flow_run_name='Modified file')
 def modified_file(file_path: str) -> None:
     """
@@ -136,7 +138,95 @@ def modified_file(file_path: str) -> None:
     Args:
         file_path: The path to the file
     """
-    meow(file_path)
+    file_path_hash = get_file_hash(file_path)
+
+    # 1) File existence check
+    if not os.path.isfile(file_path):
+        print(f"File does not exist: {file_path}")
+        return
+
+    # 2) Mime‐type detection
+    mime = get_mime_type(file_path)
+    if mime is None:
+        print(f"Could not determine MIME type for file: {file_path}")
+        return
+
+    # 3) Image branch
+    if mime.startswith(IMAGE_PREFIX):
+        print(f"Detected image: {mime}")
+        # Kick off your image tasks
+        img_res = analyze_image.submit(file_path)
+        img_meta = get_image_metadata.submit(file_path, file_path_hash)
+
+        # Wait & combine
+        result = img_res.result()
+        metadata = img_meta.result()
+
+        # Embed + store
+        embeddings = chroma_db.create_embeddings([result])
+        ids = [f"doc_{uuid.uuid4()}"]
+        chroma_db.add_or_update_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
+
+    # 4) PDF branch
+    elif mime == PDF_MIME:
+        print(f"Detected PDF: {file_path}")
+        # extract text with PyPDF2
+        reader = PdfReader(file_path)
+        text_chunks = []
+        for page in reader.pages:
+            text_chunks.append(page.extract_text() or "")
+        content = "\n".join(text_chunks)
+
+        # Summarize the content
+        result = summarize_text.submit(content)
+        result = result.result()
+        print(content)
+        print(result)
+
+        # Embed + store
+        embeddings = chroma_db.create_embeddings([result])
+        ids        = [f"doc_{uuid.uuid4()}"]
+        metadata = {
+            "path": file_path,
+            "filename": os.path.basename(file_path),
+            "size": os.path.getsize(file_path),
+            "creation_time": time.ctime(os.path.getctime(file_path)),
+            "modification_time": time.ctime(os.path.getmtime(file_path)),
+            "access_time": time.ctime(os.path.getatime(file_path)),
+            "page_count": len(reader.pages),
+            "hash": file_path_hash,
+        }
+        chroma_db.add_or_update_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
+
+    # 5) Plain‐text branch (e.g. .txt, .md, .csv…)
+    elif mime.startswith(TEXT_PREFIX):
+        print(f"Detected text file: {mime}")
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Summarize the content
+        result = summarize_text.submit(content)
+        result = result.result()
+        print(content)
+        print(result)
+
+        # Embed + store
+        embeddings = chroma_db.create_embeddings([result])
+        ids = [f"doc_{uuid.uuid4()}"]
+        metadata = {
+            "path": file_path,
+            "filename": os.path.basename(file_path),
+            "size": os.path.getsize(file_path),
+            "creation_time": time.ctime(os.path.getctime(file_path)),
+            "modification_time": time.ctime(os.path.getmtime(file_path)),
+            "access_time": time.ctime(os.path.getatime(file_path)),
+            "hash": file_path_hash,
+        }
+        chroma_db.add_or_update_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
+
+    # 6) Everything else
+    else:
+        print(f"Unsupported file type ({mime}): {file_path}")
 
 
 @flow(log_prints=True, flow_run_name='Deleted file')
@@ -306,10 +396,3 @@ def rag_query_with_db(query: str, n_results: int = 3) -> QueryResult:
     """
     relevant_db_data = chroma_db.search_similar(query, n_results)
     return relevant_db_data
-
-@task
-def meow(message: str) -> str:
-    """Prueba"""
-    time.sleep(random.randint(1, 5))
-    print(message)
-    return message
