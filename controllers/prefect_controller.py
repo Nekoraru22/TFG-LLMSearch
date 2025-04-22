@@ -14,7 +14,7 @@ from chromadb import QueryResult
 from prefect import flow, task
 from lmstudio import PredictionResult
 
-from utils import get_mime_type, IMAGE_PREFIX, TEXT_PREFIX, PDF_MIME
+from utils import get_mime_type, IMAGE_PREFIX, TEXT_PREFIX, PDF_MIME, get_file_hash
 
 # Load LLM Studio model
 llm = LLMStudioController("192.168.1.137", 25565, "gemma-3-12b-it")
@@ -30,7 +30,15 @@ chroma_db.create_chroma_collection(collection_name="llm_search_collection")
 def new_file(file_path: str) -> None:
     """
     Process a new file (image, PDF, or plain text).
+
+    Args:
+        file_path: The path to the file to process.
     """
+    if chroma_db.check_duplicate(file_path):
+        print(f"File {file_path} already exists in the database")
+        return
+    file_path_hash = get_file_hash(file_path)
+
     # 1) File existence check
     if not os.path.isfile(file_path):
         print(f"File does not exist: {file_path}")
@@ -47,19 +55,16 @@ def new_file(file_path: str) -> None:
         print(f"Detected image: {mime}")
         # kick off your image tasks
         img_res = analyze_image.submit(file_path)
-        img_meta = get_image_metadata.submit(file_path)
+        img_meta = get_image_metadata.submit(file_path, file_path_hash)
 
         # wait & combine
-        result_text = img_res.result()
-        metadata   = img_meta.result()
+        result = img_res.result()
+        metadata = img_meta.result()
 
         # embed + store
-        embeddings = chroma_db.create_embeddings([result_text])
-        ids        = [f"doc_{uuid.uuid4()}"]
-        chroma_db.add_documents(documents=[result_text],
-                                embeddings=embeddings,
-                                metadatas=[metadata],
-                                ids=ids)
+        embeddings = chroma_db.create_embeddings([result])
+        ids = [f"doc_{uuid.uuid4()}"]
+        chroma_db.add_or_update_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
 
     # 4) PDF branch
     elif mime == PDF_MIME:
@@ -88,8 +93,9 @@ def new_file(file_path: str) -> None:
             "modification_time": time.ctime(os.path.getmtime(file_path)),
             "access_time": time.ctime(os.path.getatime(file_path)),
             "page_count": len(reader.pages),
+            "hash": file_path_hash,
         }
-        chroma_db.add_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
+        chroma_db.add_or_update_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
 
     # 5) Plain‐text branch (e.g. .txt, .md, .csv…)
     elif mime.startswith(TEXT_PREFIX):
@@ -104,8 +110,8 @@ def new_file(file_path: str) -> None:
         print(result)
 
         # embed + store
-        embeddings = chroma_db.create_embeddings([content])
-        ids        = [f"doc_{uuid.uuid4()}"]
+        embeddings = chroma_db.create_embeddings([result])
+        ids = [f"doc_{uuid.uuid4()}"]
         metadata = {
             "path": file_path,
             "filename": os.path.basename(file_path),
@@ -113,8 +119,9 @@ def new_file(file_path: str) -> None:
             "creation_time": time.ctime(os.path.getctime(file_path)),
             "modification_time": time.ctime(os.path.getmtime(file_path)),
             "access_time": time.ctime(os.path.getatime(file_path)),
+            "hash": file_path_hash,
         }
-        chroma_db.add_documents(documents=[content], embeddings=embeddings, metadatas=[metadata], ids=ids)
+        chroma_db.add_or_update_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
 
     # 6) Everything else
     else:
@@ -122,25 +129,25 @@ def new_file(file_path: str) -> None:
 
 
 @flow(log_prints=True, flow_run_name='Modified file')
-def modified_file(file: str) -> None:
+def modified_file(file_path: str) -> None:
     """
     Process a modified file
     
     Args:
-        file: The path to the file
+        file_path: The path to the file
     """
-    meow(file)
+    meow(file_path)
 
 
 @flow(log_prints=True, flow_run_name='Deleted file')
-def deleted_file(file: str) -> None:
+def deleted_file(file_path: str) -> None:
     """
     Process a deleted file
     
     Args:
-        file: The path to the file
+        file_path: The path to the file
     """
-    meow(file)
+    chroma_db.delete_documents(file_path)
 
 
 @flow(log_prints=True, flow_run_name='Query')
@@ -189,7 +196,7 @@ def analyze_image(image_path: str) -> str:
     return str(result)
 
 @task
-def get_image_metadata(image_path: str) -> dict:
+def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
     """
     Obtiene metadatos de una imagen y los aplana para que cada valor sea un tipo básico.
     
@@ -208,7 +215,8 @@ def get_image_metadata(image_path: str) -> dict:
         "size": os.path.getsize(image_path),
         "creation_time": time.ctime(os.path.getctime(image_path)),
         "modification_time": time.ctime(os.path.getmtime(image_path)),
-        "access_time": time.ctime(os.path.getatime(image_path))
+        "access_time": time.ctime(os.path.getatime(image_path)),
+        "hash": file_path_hash,
     })
 
     try:
