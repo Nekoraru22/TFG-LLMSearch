@@ -6,6 +6,7 @@ from controllers.prefect_controller import new_file, modified_file, deleted_file
 import threading
 import logging
 import time
+import os
 
 
 class CustomHandler(FileSystemEventHandler):
@@ -17,8 +18,7 @@ class CustomHandler(FileSystemEventHandler):
         """
         Initializes the event handler.
         """
-        self.recently_created = {}
-        self.cooldown = 10.0  # Cooldown period in seconds
+        self.stats_cache = {}
         
 
     def on_created(self, event) -> None:
@@ -28,9 +28,18 @@ class CustomHandler(FileSystemEventHandler):
         Args:
             event: Event of creation
         """
+        # Ignore directories
+        if event.is_directory:
+            return
+        
+        # Add the file to the cache
+        try:
+            st = os.stat(event.src_path)
+        except FileNotFoundError:
+            return
+        self.stats_cache[event.src_path] = (st.st_mtime, st.st_size)
+
         logging.info(f"Created file: {event.src_path}")
-        # Store the creation time of the file
-        self.recently_created[event.src_path] = time.time()
         new_file(str(event.src_path))
         
 
@@ -41,18 +50,25 @@ class CustomHandler(FileSystemEventHandler):
         Args:
             event: Event of modification
         """
-        current_time = time.time()
-        # Check if the file was recently created
-        if event.src_path in self.recently_created:
-            # If the modification occurs within the cooldown period after creation, ignore it
-            if current_time - self.recently_created[event.src_path] <= self.cooldown:
-                return # Ignore the modification event
-            else:
-                # After the cooldown period, remove the file from the recently created list
-                del self.recently_created[event.src_path]
-        
-        # If we reach here, log the modification normally
-        logging.info(f"Modified file: {event.src_path}")
+        # Ignore directories
+        if event.is_directory:
+            return
+
+        try:
+            st = os.stat(event.src_path)
+        except FileNotFoundError:
+            return
+
+        new_stat = (st.st_mtime, st.st_size)
+        old_stat = self.stats_cache.get(event.src_path)
+
+        # If nothing really changed, skip.
+        if old_stat == new_stat:
+            return
+
+        # Update cache and fire
+        self.stats_cache[event.src_path] = new_stat
+        logging.info(f"Modified (real) file: {event.src_path}")
         modified_file(str(event.src_path))
         
         
@@ -63,10 +79,12 @@ class CustomHandler(FileSystemEventHandler):
         Args:
             event: Event of deletion
         """
-        # Clear the record if the file is deleted
-        if event.src_path in self.recently_created:
-            del self.recently_created[event.src_path]
-        
+        # Not worth to check if the event is a directory (is deleted so I cant check)
+
+        # Clean up the cache
+        if event.src_path in self.stats_cache:
+            del self.stats_cache[event.src_path]
+
         logging.info(f"Deleted file: {event.src_path}")
         deleted_file(str(event.src_path))
 
