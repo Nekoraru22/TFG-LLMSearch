@@ -3,10 +3,9 @@ import uuid
 import time
 import json
 import random
-import subprocess
 
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
+from PIL import Image, ExifTags
+from PyPDF2 import PdfReader
 
 from controllers.llm_studio_controller import LLMStudioController
 from controllers.chroma_controller import ChromaClient
@@ -15,47 +14,114 @@ from chromadb import QueryResult
 from prefect import flow, task
 from lmstudio import PredictionResult
 
+from utils import get_mime_type, IMAGE_PREFIX, TEXT_PREFIX, PDF_MIME
+
 # Load LLM Studio model
 llm = LLMStudioController("192.168.1.137", 25565, "gemma-3-12b-it")
 
 # Load ChromaDB client
 chroma_db = ChromaClient("./data/chroma_db")
 
+# Create or retrieve the ChromaDB collection
+chroma_db.create_chroma_collection(collection_name="llm_search_collection")
 
-@flow(log_prints=True)
+
+@flow(log_prints=True, flow_run_name='New file')
 def new_file(file_path: str) -> None:
     """
-    Process a new file
-    
-    Args:
-        file: The path to the file
+    Process a new file (image, PDF, or plain text).
     """
-    # Check if file exists
+    # 1) File existence check
     if not os.path.isfile(file_path):
         print(f"File does not exist: {file_path}")
         return
 
-    # TODO: If image, If other...
+    # 2) Mime‐type detection
+    mime = get_mime_type(file_path)
+    if mime is None:
+        print(f"Could not determine MIME type for file: {file_path}")
+        return
 
-    # Analyze the image and get metadata
-    result = analyze_image.submit(file_path)
-    metadata = get_image_metadata.submit(file_path)
+    # 3) Image branch
+    if mime.startswith(IMAGE_PREFIX):
+        print(f"Detected image: {mime}")
+        # kick off your image tasks
+        img_res = analyze_image.submit(file_path)
+        img_meta = get_image_metadata.submit(file_path)
 
-    # Wait for the tasks to complete
-    result = result.result() + "\n" + f"Path: \"{file_path}\""
-    metadata = metadata.result()
-    print(metadata)
+        # wait & combine
+        result_text = img_res.result()
+        metadata   = img_meta.result()
 
-    # Create or retrieve the ChromaDB collection
-    chroma_db.create_chroma_collection(collection_name="image_analysis_collection")
+        # embed + store
+        embeddings = chroma_db.create_embeddings([result_text])
+        ids        = [f"doc_{uuid.uuid4()}"]
+        chroma_db.add_documents(documents=[result_text],
+                                embeddings=embeddings,
+                                metadatas=[metadata],
+                                ids=ids)
 
-    # Create metadata for the image
-    embeddings = chroma_db.create_embeddings([result])
-    ids = [f"doc_{uuid.uuid4()}"]
-    chroma_db.add_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
+    # 4) PDF branch
+    elif mime == PDF_MIME:
+        print(f"Detected PDF: {file_path}")
+        # extract text with PyPDF2
+        reader = PdfReader(file_path)
+        text_chunks = []
+        for page in reader.pages:
+            text_chunks.append(page.extract_text() or "")
+        content = "\n".join(text_chunks)
+
+        # Summarize the content
+        result = summarize_text.submit(content)
+        result = result.result()
+        print(content)
+        print(result)
+
+        # embed + store
+        embeddings = chroma_db.create_embeddings([result])
+        ids        = [f"doc_{uuid.uuid4()}"]
+        metadata = {
+            "path": file_path,
+            "filename": os.path.basename(file_path),
+            "size": os.path.getsize(file_path),
+            "creation_time": time.ctime(os.path.getctime(file_path)),
+            "modification_time": time.ctime(os.path.getmtime(file_path)),
+            "access_time": time.ctime(os.path.getatime(file_path)),
+            "page_count": len(reader.pages),
+        }
+        chroma_db.add_documents(documents=[result], embeddings=embeddings, metadatas=[metadata], ids=ids)
+
+    # 5) Plain‐text branch (e.g. .txt, .md, .csv…)
+    elif mime.startswith(TEXT_PREFIX):
+        print(f"Detected text file: {mime}")
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Summarize the content
+        result = summarize_text.submit(content)
+        result = result.result()
+        print(content)
+        print(result)
+
+        # embed + store
+        embeddings = chroma_db.create_embeddings([content])
+        ids        = [f"doc_{uuid.uuid4()}"]
+        metadata = {
+            "path": file_path,
+            "filename": os.path.basename(file_path),
+            "size": os.path.getsize(file_path),
+            "creation_time": time.ctime(os.path.getctime(file_path)),
+            "modification_time": time.ctime(os.path.getmtime(file_path)),
+            "access_time": time.ctime(os.path.getatime(file_path)),
+        }
+        chroma_db.add_documents(documents=[content], embeddings=embeddings, metadatas=[metadata], ids=ids)
+
+    # 6) Everything else
+    else:
+        print(f"Unsupported file type ({mime}): {file_path}")
 
 
-@flow(log_prints=True)
+@flow(log_prints=True, flow_run_name='Modified file')
 def modified_file(file: str) -> None:
     """
     Process a modified file
@@ -66,7 +132,7 @@ def modified_file(file: str) -> None:
     meow(file)
 
 
-@flow(log_prints=True)
+@flow(log_prints=True, flow_run_name='Deleted file')
 def deleted_file(file: str) -> None:
     """
     Process a deleted file
@@ -77,7 +143,7 @@ def deleted_file(file: str) -> None:
     meow(file)
 
 
-@flow(log_prints=True)
+@flow(log_prints=True, flow_run_name='Query')
 def proccess_query(query: str, model: str, temperature: float) -> PredictionResult:
     """
     Process a query
@@ -88,6 +154,25 @@ def proccess_query(query: str, model: str, temperature: float) -> PredictionResu
     relevant_db_data = rag_query_with_db(query, n_results=3)
     return rag_query(query, relevant_db_data, model, temperature)
 
+
+@task
+def summarize_text(text: str) -> str:
+    """
+    Summarize a text
+
+    Args:
+        text: The text to summarize
+    """
+    llm.model = "gemma-3-12b-it"
+    prompt = f"""
+        Original text: {text}
+        Task: Summarize the content in a single sentence.
+        Output: A single sentence summary.
+    """
+    result = llm.analyze(prompt=prompt, temperature=0.5)
+
+    print(result)
+    return str(result)
 
 @task
 def analyze_image(image_path: str) -> str:
@@ -103,30 +188,6 @@ def analyze_image(image_path: str) -> str:
     print(result)
     return str(result)
 
-def flatten_dict(d: dict, parent_key: str = '', sep: str = '_') -> dict:
-    """
-    Aplana un diccionario anidado. Cada clave resultante será la concatenación de las claves
-    de cada nivel separadas por `sep`.
-    """
-    items = {}
-    for k, v in d.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-        if isinstance(v, dict):
-            # Si el diccionario está vacío, lo serializamos a JSON
-            if not v:
-                items[new_key] = json.dumps(v)
-            else:
-                items.update(flatten_dict(v, new_key, sep=sep))
-        elif isinstance(v, list):
-            # Convertimos las listas a una cadena JSON
-            items[new_key] = json.dumps(v)
-        elif v is None:
-            # Opcional: puedes usar una cadena vacía o mantener "None" como string
-            items[new_key] = ""
-        else:
-            items[new_key] = v
-    return items
-
 @task
 def get_image_metadata(image_path: str) -> dict:
     """
@@ -138,110 +199,55 @@ def get_image_metadata(image_path: str) -> dict:
     Returns:
         Un diccionario con los metadatos aplanados, listo para almacenarlos sin perder información.
     """
-    metadata = {
-        "basic_info": {},
-        "exif_data": {},
-        "iptc_data": {},
-        "xmp_data": {},
-        "icc_profile": {},
-        "exiftool_data": {}
-    }
-    
-    # Verificar si el archivo existe
-    if not os.path.isfile(image_path):
-        return {"error": f"Archivo no encontrado: {image_path}"}
-    
-    # Información básica del archivo
-    file_stats = os.stat(image_path)
-    metadata["basic_info"] = {
+    metadata = {}
+
+    # Información del sistema de archivos
+    metadata.update({
+        "path": image_path,
         "filename": os.path.basename(image_path),
-        "file_size_bytes": file_stats.st_size,
-        "file_size_mb": round(file_stats.st_size / (1024 * 1024), 2),
-        "last_modified": file_stats.st_mtime,
-        "created": file_stats.st_ctime
-    }
-    
+        "size": os.path.getsize(image_path),
+        "creation_time": time.ctime(os.path.getctime(image_path)),
+        "modification_time": time.ctime(os.path.getmtime(image_path)),
+        "access_time": time.ctime(os.path.getatime(image_path))
+    })
+
     try:
-        # Abrir la imagen con PIL
         with Image.open(image_path) as img:
-            # Actualizar información básica de la imagen
-            metadata["basic_info"].update({
+            # Información básica de la imagen
+            metadata.update({
                 "format": img.format,
                 "mode": img.mode,
                 "width": img.width,
-                "height": img.height,
-                "resolution": img.info.get("dpi", None)
+                "height": img.height
             })
-            
-            # Extraer datos EXIF
-            exif_data = {}
-            try:
-                exif_data = img.getexif()
-            except (AttributeError, TypeError):
-                if hasattr(img, '_getexif'):
-                    try:
-                        exif_data = img.getexif() or {}
-                    except Exception:
-                        pass
-            
-            # Procesar EXIF si está disponible
-            if exif_data:
-                for tag_id, value in exif_data.items():
-                    tag = TAGS.get(tag_id, tag_id)
-                    if tag == "GPSInfo":
-                        gps_data = {}
-                        for gps_tag_id, gps_value in value.items():
-                            gps_tag = GPSTAGS.get(gps_tag_id, gps_tag_id)
-                            gps_data[gps_tag] = gps_value
-                        metadata["exif_data"]["GPS"] = gps_data
-                    else:
-                        metadata["exif_data"][tag] = value
-            
-            # Método alternativo para extraer EXIF
-            if not metadata["exif_data"]:
-                for key, value in img.info.items():
-                    if str(key).upper().startswith('EXIF'):
-                        metadata["exif_data"][key] = value
-            
-            # Extraer perfil ICC
-            icc_profile = img.info.get('icc_profile')
-            if icc_profile:
-                metadata["icc_profile"]["present"] = True
-                metadata["icc_profile"]["size"] = len(icc_profile)
-            else:
-                metadata["icc_profile"]["present"] = False
-    
-    except Exception as e:
-        metadata["basic_info"]["error"] = str(e)
-        metadata["exif_data"]["error"] = str(e)
-    
-    # Utilizar ExifTool para una extracción más completa de metadatos
-    try:
-        result = subprocess.run(
-            ["exiftool", "-j", "-a", "-u", "-G1", image_path],
-            capture_output=True, 
-            text=True, 
-            check=True
-        )
-        exiftool_data = json.loads(result.stdout)
-        if exiftool_data and len(exiftool_data) > 0:
-            metadata["exiftool_data"] = exiftool_data[0]
-            
-            # Extraer secciones específicas (como IPTC y XMP)
-            for key, value in exiftool_data[0].items():
-                if ":" in key:
-                    section, name = key.split(":", 1)
-                    if section == "IPTC":
-                        metadata["iptc_data"][name] = value
-                    elif section == "XMP":
-                        metadata["xmp_data"][name] = value
-    except Exception as e:
-        metadata["exiftool_data"]["error"] = str(e)
-        metadata["exiftool_data"]["output"] = None
 
-    # Aplanar el diccionario de metadatos para cumplir con el formato requerido
-    flat_metadata = flatten_dict(metadata)
-    return flat_metadata
+            # Metadatos específicos del formato
+            if img.format == 'JPEG':
+                exif_data = img.getexif()
+                for tag_id, value in exif_data.items():
+                    tag = ExifTags.TAGS.get(tag_id, tag_id)
+                    if isinstance(value, bytes):
+                        try:
+                            value = value.decode('utf-8', errors='ignore')
+                        except Exception:
+                            value = str(value)
+                    metadata[f"EXIF_{tag}"] = value
+            else:
+                for key, value in img.info.items():
+                    metadata[f"INFO_{key}"] = value
+
+    except Exception as e:
+        metadata["error"] = str(e)
+
+    # Filtrar metadatos para cumplir con los requisitos de ChromaDB
+    chroma_metadata = {}
+    for key, value in metadata.items():
+        if isinstance(value, (str, int, float, bool)):
+            chroma_metadata[key] = value
+        else:
+            chroma_metadata[key] = str(value)
+
+    return chroma_metadata
 
 @task
 def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature: float) -> PredictionResult:
@@ -250,7 +256,30 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     """
     llm.model = model
     print(f"RELEVANT DATA: {relevant_db_data['documents']}")
-    prompt = f"Query: {query}\n\nRelevant data:\n{relevant_db_data['documents']}"
+
+    # Pre‑serialize to avoid f‑string brace issues
+    data_json = json.dumps({
+        "documents": relevant_db_data["documents"],
+        "metadatas": relevant_db_data["metadatas"]
+    }, indent=2)
+
+    prompt = f"""
+        Original Query: {query}
+
+        Relevant data (from ChromaDB):
+        {data_json}
+
+        Task:
+        - Discard entries irrelevant to the Original Query.
+        - Reorder only if strictly needed to match the query intent.
+        - Extract **only** the file paths (the substring after "Path:").
+        - **Output just** the final numbered list (start at 1), one path per line, with **no** additional text.
+
+        Example output:
+        Original Query: official document from the Spanish Ministry
+        1. ./filesystem/Notificacion_1742000847864 - copia.pdf
+    """
+
     result = llm.analyze(prompt=prompt, temperature=temperature)
     print(result)
     return result
@@ -268,16 +297,6 @@ def rag_query_with_db(query: str, n_results: int = 3) -> QueryResult:
         QueryResult: Los resultados de la búsqueda, incluyendo documentos, distancias y metadatos.
     """
     relevant_db_data = chroma_db.search_similar(query, n_results)
-    
-    print("\nSearch results for:", query)
-    if (relevant_db_data['documents'] is not None and relevant_db_data['distances'] is not None):
-        for i, doc in enumerate(relevant_db_data['documents'][0]):
-            metadata = (relevant_db_data.get("metadatos", [[None]])[0][i]
-                        if relevant_db_data.get("metadatos") is not None else None)
-            print(f"{i+1}. {doc} (Distance: {relevant_db_data['distances'][0][i]:.4f}) - Metadata: {metadata}")
-    else:
-        print("No similar documents were found.")
-    
     return relevant_db_data
 
 @task

@@ -9,3 +9,4 @@ scikit_learn==1.6.1
 sentence_transformers==3.4.1
 watchdog==6.0.0
 lmstudio==1.2.0
+PyPDF2==3.0.1

@@ -1,8 +1,8 @@
 import lmstudio as lms
 
 models: list[str] = [
-    "gemma-3-12b-it",
     "jonahhenry/mistral-7b-instruct-v0.2.Q4_K_M-GGUF",
+    "gemma-3-12b-it",
 ]
 
 class LLMStudioController:

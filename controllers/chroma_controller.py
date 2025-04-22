@@ -65,7 +65,6 @@ class ChromaClient:
         Adds documents to a Chroma collection.
         
         Args:
-            collection: Chroma collection
             documents: List of documents (strings)
             embeddings: List of embeddings. If None, they are generated automatically.
             metadatas: List of metadata (dictionaries) for each document
@@ -97,15 +96,14 @@ class ChromaClient:
             )
 
 
-    def search_similar(self, query, n_results=3, embeddings=None):
+    def search_similar(self, query: str, n_results: int = 3, embeddings = None):
         """
         Searches for documents similar to a query in the Chroma collection.
         
         Args:
-            collection (chromadb.Collection): Chroma collection
-            query (str): Query text
-            n_results (int): Number of results to return
-            embeddings (np.array, optional): Embedding of the query. If None, it is generated automatically.
+            query: Query text
+            n_results: Number of results to return
+            embeddings: Embedding of the query. If None, it is generated automatically.
         
         Returns:
             dict: Search results
