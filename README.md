@@ -8,3 +8,9 @@
 prefect server start
 ```
 https://docs.prefect.io/v3/manage/self-host
+
+# Para el Setup
+```bash
+pip install -e .
+LLMSearch --query "mapa del mundo"
+```

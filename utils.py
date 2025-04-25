@@ -11,7 +11,7 @@ def get_mime_type(path: str) -> str | None:
     Guess the MIME type based on file extension.
     Returns something like 'image/jpeg', 'text/plain', 'application/pdf', or None.
     """
-    mime_type, encoding = mimetypes.guess_type(path)
+    mime_type, _ = mimetypes.guess_type(path)
     return mime_type
 
 

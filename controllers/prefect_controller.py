@@ -2,7 +2,6 @@ import os
 import uuid
 import time
 import json
-import random
 
 from PIL import Image, ExifTags
 from PyPDF2 import PdfReader
@@ -241,7 +240,7 @@ def deleted_file(file_path: str) -> None:
 
 
 @flow(log_prints=True, flow_run_name='Query')
-def proccess_query(query: str, model: str, temperature: float) -> PredictionResult:
+def proccess_query(query: str, model: str, temperature: float, verbose: bool) -> PredictionResult:
     """
     Process a query
 
@@ -249,7 +248,7 @@ def proccess_query(query: str, model: str, temperature: float) -> PredictionResu
         query: The query to process
     """
     relevant_db_data = rag_query_with_db(query, n_results=3)
-    return rag_query(query, relevant_db_data, model, temperature)
+    return rag_query(query, relevant_db_data, model, temperature, verbose)
 
 
 @task
@@ -348,7 +347,7 @@ def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
     return chroma_metadata
 
 @task
-def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature: float) -> PredictionResult:
+def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature: float, verbose: bool) -> PredictionResult:
     """
     Process a query using RAG (Retrieval-Augmented Generation)
     """
@@ -361,6 +360,7 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
         "metadatas": relevant_db_data["metadatas"]
     }, indent=2)
 
+    # TODO: Con verbose=True, añadir pequeñas descripciones de cada documento aparte de solamente el path.
     prompt = f"""
         Original Query: {query}
 
