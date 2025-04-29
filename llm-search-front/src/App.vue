@@ -119,14 +119,14 @@
                 </div>
                 <div
                   :class="`rounded-2xl p-4 ${message.sender === 'user'
-                      ? 'bg-gradient-to-br from-emerald-500/90 to-teal-600/90 text-white shadow-lg shadow-emerald-500/10'
-                      : 'bg-zinc-800/80 border border-zinc-700/50 shadow-lg shadow-violet-500/5 text-white'}`"
+                      ? 'bg-gradient-to-br from-emerald-500/90 to-teal-600/90 shadow-lg shadow-emerald-500/10 text-white'
+                      : 'bg-zinc-800/80 border border-zinc-700/50 shadow-lg shadow-violet-500/5 text-white'} whitespace-pre-wrap break-words`"
                 >
-                  <div v-if="message.id === typingMessageId" class="typing-indicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
+                  <template v-if="message.id === typingMessageId">
+                    <div class="typing-indicator">
+                      <span></span><span></span><span></span> <!-- Each span represents a dot in the typing indicator -->
+                    </div>
+                  </template>
                   <template v-else>{{ message.content }}</template>
                 </div>
               </div>
@@ -141,18 +141,23 @@
       <div class="w-full max-w-3xl px-4">
         <div class="relative">
           <div class="relative flex items-center bg-zinc-900/90 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-700/50 transition-all duration-300 hover:border-zinc-600/70 focus-within:border-zinc-600/70">
-            <input
+            <textarea
+              ref="inputArea"
               v-model="inputValue"
-              @keyup.enter="handleSendMessage"
+              @keydown.enter="onEnter"
+              @input="autoResize"
               @focus="inputFocused = true"
               @blur="inputFocused = false"
-              placeholder="Ask me anything..."
-              class="flex-1 border-0 bg-transparent focus:outline-none text-white placeholder:text-zinc-400 text-base py-6 pl-6 pr-2 h-auto"
-            />
+              placeholder="Describe your file here..."
+              class="input-area flex-1 border-0 bg-transparent focus:outline-none text-white placeholder:text-zinc-400 text-base py-6 pl-6 pr-2 h-auto 
+                resize-none rounded-xl transition-all duration-300 focus:ring-0 focus:border-0 focus:shadow-none"
+              rows="1"
+              style="max-height: 200px; overflow-y: auto; resize: none;"
+            ></textarea>
             <div class="pr-4 flex items-center">
               <button
                 @click="handleSendMessage"
-                class="h-10 w-10 rounded-full bg-zinc-800 hover:bg-violet-600 transition-all duration-300 hover:scale-105 flex items-center justify-center"
+                class="h-10 w-10 rounded-full bg-zinc-800 hover:bg-violet-600 transition-all duration-300 hover:scale-105 flex items-center justify-center ms-2"
               >
                 <Send class="h-5 w-5 text-zinc-300" />
               </button>
@@ -172,7 +177,7 @@ import { Settings, Send, Bot, User } from 'lucide-vue-next';
 const messages = ref([
   {
     id: "1",
-    content: "Hello! How can I help you today?",
+    content: "Hey! I am here to help you finding the files you need ฅ⁠^⁠•⁠ﻌ⁠•⁠^⁠ฅ",
     sender: "assistant",
     timestamp: new Date(),
   }
@@ -184,26 +189,21 @@ const inputFocused = ref(false);
 const typingMessageId = ref(null);
 const models = ref([]);
 const selectedModel = ref("");
-const host = ref('http://localhost:5000');
+const host = ref('http://127.0.0.1:5000');
+const inputArea = ref(null);
 
-// Function to fetch models from the server
+// Fetch available models
 const fetchModels = () => {
   models.value = [];
-  axios.get(host.value + '/api/models')
+  axios.get(`${host.value}/api/models`)
     .then(response => {
       models.value = response.data;
-      if (models.value.length > 0) {
-        selectedModel.value = models.value[0];
-      }
+      if (models.value.length > 0) selectedModel.value = models.value[0];
     })
-    .catch(error => {
-      console.error("Error fetching models:", error);
-    });
+    .catch(err => console.error('Error fetching models:', err));
 };
 
-// Removed the automatic watch on host changes
-
-// Function to reset the chat
+// Reset chat to initial state
 const resetChat = () => {
   messages.value = [
     {
@@ -216,11 +216,25 @@ const resetChat = () => {
   inputValue.value = "";
 };
 
-onMounted(() => {
-  fetchModels();
-});
+// Handle enter key for sending or newline
+const onEnter = (e) => {
+  if (!e.shiftKey) {
+    e.preventDefault();
+    handleSendMessage();
+  }
+};
 
-// Function to handle sending messages
+// Auto-resize textarea up to a max height
+const autoResize = (e) => {
+  const el = e.target;
+  el.style.height = 'auto';
+  const maxHeight = 200; // máximo en píxeles
+  el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
+};
+
+onMounted(fetchModels);
+
+// Send user message and get assistant response
 const handleSendMessage = async () => {
   if (inputValue.value.trim() === "") return;
 
@@ -236,32 +250,25 @@ const handleSendMessage = async () => {
   inputValue.value = "";
 
   await nextTick();
+  // Reset textarea height after clearing
+  if (inputArea.value) {
+    inputArea.value.style.height = 'auto';
+  }
 
-  messages.value.push({
-    id: typingId,
-    content: "",
-    sender: "assistant",
-    timestamp: new Date(),
-  });
-
+  messages.value.push({ id: typingId, content: "", sender: "assistant", timestamp: new Date() });
   typingMessageId.value = typingId;
 
   try {
-    const response = await axios.post(host.value + '/api/query', {
+    const { data } = await axios.post(`${host.value}/api/query`, {
       query: userMessage.content,
       temperature: temperature.value,
       model: selectedModel.value,
     });
-
-    const index = messages.value.findIndex(m => m.id === typingId);
-    if (index !== -1) {
-      messages.value[index].content = response.data.result || "No response.";
-    }
+    const idx = messages.value.findIndex(m => m.id === typingId);
+    if (idx !== -1) messages.value[idx].content = data.result || "No response.";
   } catch (err) {
-    const index = messages.value.findIndex(m => m.id === typingId);
-    if (index !== -1) {
-      messages.value[index].content = "There was an error getting a response.";
-    }
+    const idx = messages.value.findIndex(m => m.id === typingMessageId);
+    if (idx !== -1) messages.value[idx].content = "There was an error getting a response.";
     console.error(err);
   } finally {
     typingMessageId.value = null;
@@ -276,7 +283,6 @@ const handleSendMessage = async () => {
   column-gap: 4px;
   height: 20px;
 }
-
 .typing-indicator span {
   display: block;
   width: 8px;
@@ -286,61 +292,35 @@ const handleSendMessage = async () => {
   animation: typing 1s infinite ease-in-out;
 }
 
-.typing-indicator span:nth-child(1) {
-  animation-delay: 0s;
+.input-area::-webkit-scrollbar {
+  width: 6px;
+}
+.input-area::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0);
+  border-radius: 3px;
+}
+.input-area::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,0.3);
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
+/* Firefox */
+.input-area {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.3) rgba(255,255,255,0.1);
 }
 
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.6;
-  }
-  30% {
-    transform: translateY(-4px);
-    opacity: 1;
-  }
-}
-
-.message-enter-active,
-.message-leave-active {
-  transition: all 0.3s ease;
-}
-
-.message-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.message-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(100%);
-}
+.typing-indicator span:nth-child(1) { animation-delay: 0s; }
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%,60%,100% { transform: translateY(0); opacity: 0.6; } 30% { transform: translateY(-4px); opacity: 1; } }
+.message-enter-active, .message-leave-active { transition: all 0.3s ease; }
+.message-enter-from { opacity: 0; transform: translateY(20px); }
+.message-leave-to { opacity: 0; transform: translateY(-20px); }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+.slide-enter-active, .slide-leave-active { transition: transform 0.3s ease; }
+.slide-enter-from, .slide-leave-to { transform: translateX(100%); }
 </style>
