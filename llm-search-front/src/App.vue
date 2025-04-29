@@ -1,7 +1,16 @@
 <template>
   <div class="min-h-screen w-full overflow-hidden bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 dark">
     <!-- Config button -->
-    <div class="fixed top-4 right-4 z-10">
+    <div class="fixed top-4 right-4 z-10 flex gap-2">
+      <!-- File Explorer Button -->
+      <button
+        @click="openFileExplorer"
+        class="rounded-full h-10 w-10 bg-zinc-800/80 backdrop-blur-lg border border-zinc-700/50 shadow-lg hover:bg-zinc-700/80 transition-all duration-300 hover:scale-105 flex items-center justify-center"
+      >
+        <FolderOpen class="h-5 w-5 text-zinc-300" />
+        <span class="sr-only">Open file explorer</span>
+      </button>
+      
       <button
         @click="isSettingsOpen = true"
         class="rounded-full h-10 w-10 bg-zinc-800/80 backdrop-blur-lg border border-zinc-700/50 shadow-lg hover:bg-zinc-700/80 transition-all duration-300 hover:scale-105 flex items-center justify-center"
@@ -9,6 +18,105 @@
         <Settings class="h-5 w-5 text-zinc-300" />
         <span class="sr-only">Open settings</span>
       </button>
+      
+      <!-- File Explorer Panel -->
+      <Teleport to="body">
+        <Transition name="fade">
+          <div v-if="isFileExplorerOpen" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" @click.self="isFileExplorerOpen = false">
+            <Transition name="zoom">
+              <div v-if="isFileExplorerOpen" class="w-4/5 max-w-2xl max-h-[80vh] bg-zinc-900 border border-zinc-800 rounded-xl text-white overflow-hidden shadow-2xl flex flex-col">
+                <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
+                      <FolderOpen class="h-4 w-4 text-white" />
+                    </div>
+                    <h2 class="text-lg font-semibold text-white">File Explorer</h2>
+                  </div>
+                  <button @click="isFileExplorerOpen = false" class="text-zinc-400 hover:text-white">
+                    <X class="h-5 w-5" />
+                  </button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-2">
+                  <div v-if="loading" class="flex justify-center items-center h-40">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500"></div>
+                  </div>
+                  
+                  <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    <button
+                      v-for="file in files"
+                      :key="file"
+                      @click="showFileDetails(file)"
+                      class="p-3 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-950/50 hover:bg-zinc-800/50 transition-all duration-200 text-left text-sm flex items-center gap-2 overflow-hidden"
+                    >
+                      <div class="flex-shrink-0">
+                        <FileText v-if="getFileExt(file) === 'txt' || getFileExt(file) === 'pdf'" class="h-5 w-5 text-zinc-300" />
+                        <Image v-else-if="isImageFile(file)" class="h-5 w-5 text-zinc-300" />
+                        <File v-else class="h-5 w-5 text-zinc-300" />
+                      </div>
+                      <div class="truncate flex-1">{{ getFileName(file) }}</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </Transition>
+      </Teleport>
+      
+      <!-- File Details Modal -->
+      <Teleport to="body">
+        <Transition name="fade">
+          <div v-if="isFileDetailsOpen" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" @click.self="isFileDetailsOpen = false">
+            <Transition name="zoom">
+              <div v-if="isFileDetailsOpen" class="w-4/5 max-w-2xl bg-zinc-900 border border-zinc-800 rounded-xl text-white overflow-hidden shadow-2xl flex flex-col">
+                <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center">
+                      <Info class="h-4 w-4 text-white" />
+                    </div>
+                    <h2 class="text-lg font-semibold text-white truncate">{{ getFileName(selectedFile) }}</h2>
+                  </div>
+                  <button @click="isFileDetailsOpen = false" class="text-zinc-400 hover:text-white">
+                    <X class="h-5 w-5" />
+                  </button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto">
+                  <div v-if="fileDetailsLoading" class="flex justify-center items-center h-40">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500"></div>
+                  </div>
+                  
+                  <div v-else class="p-4 space-y-4">
+                    <!-- File Description -->
+                    <div class="space-y-2">
+                      <h3 class="text-md font-medium text-violet-400">Description</h3>
+                      <div class="bg-zinc-950 rounded-lg p-3 border border-zinc-800">
+                        <p v-for="desc in fileDetails?.description" :key="desc" class="text-zinc-300">{{ desc }}</p>
+                        <p v-if="!fileDetails?.description?.length" class="text-zinc-500 italic">No description available</p>
+                      </div>
+                    </div>
+                    
+                    <!-- File Metadata -->
+                    <div class="space-y-2">
+                      <h3 class="text-md font-medium text-violet-400">Metadata</h3>
+                      <div class="bg-zinc-950 rounded-lg p-3 border border-zinc-800">
+                        <div v-if="fileDetails?.metadata?.length" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <div v-for="(value, key) in fileDetails.metadata[0]" :key="key" class="text-sm">
+                            <span class="text-zinc-500">{{ formatMetadataKey(key) }}:</span>
+                            <span class="text-zinc-300 ml-1">{{ value }}</span>
+                          </div>
+                        </div>
+                        <p v-else class="text-zinc-500 italic">No metadata available</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </Transition>
+      </Teleport>
       
       <!-- Settings panel -->
       <Teleport to="body">
@@ -172,7 +280,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import axios from 'axios';
-import { Settings, Send, Bot, User } from 'lucide-vue-next';
+import { Settings, Send, Bot, User, FolderOpen, FileText, Image, File, Info, X } from 'lucide-vue-next';
 
 const messages = ref([
   {
@@ -184,6 +292,8 @@ const messages = ref([
 ]);
 const inputValue = ref("");
 const isSettingsOpen = ref(false);
+const isFileExplorerOpen = ref(false);
+const isFileDetailsOpen = ref(false);
 const temperature = ref(0.7);
 const inputFocused = ref(false);
 const typingMessageId = ref(null);
@@ -191,6 +301,13 @@ const models = ref([]);
 const selectedModel = ref("");
 const host = ref('http://127.0.0.1:5000');
 const inputArea = ref(null);
+
+// File browser state
+const files = ref([]);
+const loading = ref(false);
+const selectedFile = ref("");
+const fileDetails = ref(null);
+const fileDetailsLoading = ref(false);
 
 // Fetch available models
 const fetchModels = () => {
@@ -201,6 +318,40 @@ const fetchModels = () => {
       if (models.value.length > 0) selectedModel.value = models.value[0];
     })
     .catch(err => console.error('Error fetching models:', err));
+};
+
+// Fetch files from database
+const fetchFiles = () => {
+  loading.value = true;
+  axios.get(`${host.value}/api/path_descs`)
+    .then(response => {
+      files.value = response.data;
+    })
+    .catch(err => {
+      console.error('Error fetching files:', err);
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+};
+
+// Show file details
+const showFileDetails = (file) => {
+  selectedFile.value = file;
+  fileDetailsLoading.value = true;
+  fileDetails.value = null;
+  isFileDetailsOpen.value = true;
+  
+  axios.post(`${host.value}/api/file_details`, { path: file })
+    .then(response => {
+      fileDetails.value = response.data;
+    })
+    .catch(err => {
+      console.error('Error fetching file details:', err);
+    })
+    .finally(() => {
+      fileDetailsLoading.value = false;
+    });
 };
 
 // Reset chat to initial state
@@ -232,7 +383,40 @@ const autoResize = (e) => {
   el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
 };
 
-onMounted(fetchModels);
+// Get file extension
+const getFileExt = (path) => {
+  return path.split('.').pop().toLowerCase();
+};
+
+// Check if file is an image
+const isImageFile = (path) => {
+  const ext = getFileExt(path);
+  return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+};
+
+// Get file name from path
+const getFileName = (path) => {
+  if (!path) return '';
+  const parts = path.split('\\');
+  return parts[parts.length - 1];
+};
+
+// Format metadata key for display
+const formatMetadataKey = (key) => {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase());
+};
+
+onMounted(() => {
+  fetchModels();
+});
+
+// Fetch files when the file explorer is opened
+const openFileExplorer = () => {
+  isFileExplorerOpen.value = true;
+  fetchFiles();
+};
 
 // Send user message and get assistant response
 const handleSendMessage = async () => {
@@ -323,4 +507,6 @@ const handleSendMessage = async () => {
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 .slide-enter-active, .slide-leave-active { transition: transform 0.3s ease; }
 .slide-enter-from, .slide-leave-to { transform: translateX(100%); }
+.zoom-enter-active, .zoom-leave-active { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.zoom-enter-from, .zoom-leave-to { transform: scale(0.95); opacity: 0; }
 </style>
