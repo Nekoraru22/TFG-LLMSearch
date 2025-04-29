@@ -1,12 +1,18 @@
+import os
+
 from controllers.watchdog_controller import WatchdogsController
 from controllers.sqlite_controller import DatabaseController
 from controllers.llm_studio_controller import LMStudioController
 from controllers.prefect_controller import proccess_query
 
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory, send_file
 from flask_cors import CORS
 
-from controllers.chroma_controller import ChromaClient
+from controllers.chroma_controller import ChromaClient, create_graphics
+
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(
     __name__,
@@ -16,10 +22,11 @@ app = Flask(
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 
 # Load ChromaDB client
-chroma_db = ChromaClient("./data/chroma_db")
+chroma_db = ChromaClient(str(os.environ.get("CHROMA_DB_PATH")))
 
 # Create or retrieve the ChromaDB collection
-chroma_db.create_chroma_collection(collection_name="llm_search_collection")
+chroma_db.create_chroma_collection(collection_name=str(os.environ.get("CHROMA_COLLECTION_NAME")))
+
 
 @app.route("/")
 def web_page():
@@ -55,7 +62,6 @@ def get_status():
         "encountered_errors": encountered_errors
     })
 
-
 @app.route("/api/models", methods=["GET"])
 def get_models():
     return jsonify(LMStudioController.get_models())
@@ -72,13 +78,31 @@ def query():
             return jsonify({"result": str(result)})
     return jsonify({"message": "Invalid JSON body"}), 400
 
-
 @app.route("/api/path_descs", methods=["GET"])
 def get_db_descs():
     return chroma_db.get_all_paths()
 
+@app.route('/api/file_content', methods=['GET'])
+def file_content():
+    path = request.args.get('path')
+    if not path:
+        return jsonify({"error": "No path provided"}), 400
+    
+    # Security check to prevent directory traversal
+    if '..' in path:
+        return jsonify({"error": "Invalid path"}), 400
+    
+    try:
+        # Check if file exists
+        if not os.path.exists(path):
+            return jsonify({"error": "File not found"}), 404
+            
+        # For images, return the file contents
+        return send_file(path)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-@app.route("/api/path_descs", methods=["POST"])
+@app.route("/api/file_details", methods=["POST"])
 def get_db_desc_by_path():
     if request.json is not None:
         result = chroma_db.get_desc_with_path(request.json["path"])
@@ -89,10 +113,11 @@ def get_db_desc_by_path():
     return jsonify({"message": "Invalid JSON body"}), 400
     
 
-
 if __name__ == "__main__":
+    # create_graphics("two characters with cat ears and tail", True)
+    # exit(0)
     # Initialize logging
-    watcher = WatchdogsController("./filesystem")
+    watcher = WatchdogsController(str(os.environ.get("TRACKED_FOLDER")))
     watcher.start()
 
     # Initialize Database Controller

@@ -1,11 +1,13 @@
-from sentence_transformers import SentenceTransformer
-from sklearn.decomposition import PCA
-from utils import get_file_hash
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import chromadb
+import os
+
+from sentence_transformers import SentenceTransformer
+from sklearn.decomposition import PCA
+from utils import get_file_hash
+
 
 class ChromaClient:
     """
@@ -57,7 +59,7 @@ class ChromaClient:
             list: List of vector embeddings
         """
         modelo = SentenceTransformer(model_name_or_path='all-MiniLM-L6-v2')
-        embeddings = modelo.encode(str(texts))
+        embeddings = modelo.encode(texts)
         return embeddings
 
 
@@ -283,31 +285,34 @@ class ChromaClient:
 
     def get_desc_with_path(self, path: str) -> dict:
         """
-        Retrieves a dict with the file path, its description, and metadata
-        from the Chroma collection.
+        Recupera un dict con la ruta (path), su descripción y metadatos
+        desde la colección de ChromaDB.
 
         Args:
-            path: Path of the file to retrieve.
+            path: Ruta del fichero a recuperar (debe existir en metadatos).
 
         Returns:
-            A dict with keys "path", "description" and "metadata".
+            Un dict con keys "path", "description" y "metadata".
         """
-        # Query by metadata field "path"
         if self.collection is None:
             raise ValueError("Chroma collection not initialized. Please create a collection first.")
         
+        # Filter documents by path
         result = self.collection.get(
-            where={"path": path}
+            where={"path": path},
+            limit=1
         )
 
         if not result["ids"]:
             raise ValueError(f"No entry found in ChromaDB for path: {path}")
 
-        # Solo tomamos el primero (debería ser único si "path" es clave)
+        # Return the first document and its metadata
+        doc = result["documents"]
+        meta = result["metadatas"]
+
         return {
-            "path": path,
-            "description": result["documents"],
-            "metadata": result["metadatas"]
+            "description": doc,
+            "metadata": meta
         }
 
 
@@ -328,10 +333,94 @@ class ChromaClient:
         paths = [metadata["path"] for metadata in results["metadatas"]] if results["metadatas"] else []
         
         return paths
+    
+
+    def get_all_document_names(self) -> list:
+        """
+        Retrieves all document names stored in the Chroma collection.
+
+        Returns:
+            A list of document names.
+        """
+        if self.collection is None:
+            raise ValueError("Chroma collection not initialized. Please create a collection first.")
+        
+        # Get all documents in the collection
+        results = self.collection.get()
+        
+        # Extract document names from the metadata
+        document_names = [metadata for metadata in results["metadatas"]] if results["metadatas"] else []
+        
+        return document_names
+
+
+def create_graphics(query: str, debug: bool = False) -> None: 
+    chroma = ChromaClient(persist_directory=str(os.environ.get("CHROMA_DB_PATH"))) 
+    chroma.create_chroma_collection(collection_name=str(os.environ.get("CHROMA_COLLECTION_NAME"))) 
+ 
+    # Perform a search 
+    resultados = chroma.search_similar(query, n_results=3) 
+     
+    if debug:
+        print("\nSearch results for:", query)
+        if resultados['documents'] is not None and resultados["distances"] is not None:
+            for i, doc in enumerate(resultados['documents'][0]):
+                metadata = resultados['metadatas'][0][i] if 'metadatas' in resultados and resultados['metadatas'] is not None else {}
+                print(f"{i+1}. {doc} (Distance: {resultados['distances'][0][i]:.4f})")
+                print(f"Metadata: {metadata}")
+        else:
+            print("No similar documents were found.")
+     
+    # Visualize embeddings in 3D
+    # Usar directamente la colección almacenada en el atributo collection de ChromaClient
+    collection = chroma.collection
+    if collection is None:
+        raise ValueError("Chroma collection not initialized. Please create a collection first.")
+    
+    # Obtener documentos de la colección
+    collection_data = collection.get()
+    documents = collection_data['documents']
+    
+    if not documents:
+        raise ValueError("No documents found in the collection.")
+    
+    # Crear embeddings para todos los documentos y la consulta usando el mismo modelo
+    print(f"Creating embeddings for {len(documents)} documents and the query...")
+    modelo = SentenceTransformer(model_name_or_path='all-MiniLM-L6-v2')
+    document_embeddings = modelo.encode(documents)
+    query_embedding = modelo.encode([query])
+    
+    # Verificar dimensiones
+    print(f"Document embeddings shape: {document_embeddings.shape}")
+    print(f"Query embedding shape: {query_embedding.shape}")
+    
+    # Crear etiquetas para los documentos
+    labels = [f"Doc {i}: {doc[:20]}..." for i, doc in enumerate(documents)]
+    
+    # Combinar embeddings de documentos con el embedding de la consulta
+    all_embeddings = np.vstack([document_embeddings, query_embedding])
+    all_labels = labels + [f"Query: {query}"]
+    
+    # Visualizar embeddings en 3D con el punto de consulta resaltado
+    fig = chroma.visualize_embeddings_3d(
+        embeddings=all_embeddings,
+        labels=all_labels,
+        title="3D Embeddings Visualization with Query",
+        highlight_index=document_embeddings.shape[0]
+    )
+    
+    # Visualizar matriz de distancias
+    fig_matriz, df_dist = chroma.visualize_matriz_distances(document_embeddings, labels)
+    
+    plt.show()
+    
+    if debug:
+        print("\nDistance Matrix:")
+        print(df_dist)
 
 
 def prove() -> None:
-    chroma = ChromaClient(persist_directory="./data/chroma_db")
+    chroma = ChromaClient(persist_directory="./data/chroma_prove_db")
 
     # Create some example documents
     documentos = [
@@ -352,9 +441,7 @@ def prove() -> None:
     chroma.create_chroma_collection("example_embeddings")
     
     # Add documents with custom embeddings
-    metadatos = [{"type": "definition", "source": "example"} for _ in range(len(documentos))]
-    ids = [f"doc_{i}" for i in range(len(documentos))]
-    chroma.add_or_update_documents(documentos, embeddings, metadatos, ids)
+    chroma.add_or_update_documents(documentos, embeddings)
     
     # Perform a search
     query = "What are embeddings?"

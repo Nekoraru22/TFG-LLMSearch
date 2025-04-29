@@ -14,3 +14,5 @@ https://docs.prefect.io/v3/manage/self-host
 pip install -e .
 LLMSearch --query "mapa del mundo"
 ```
+
+explicar los .env y el .venv

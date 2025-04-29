@@ -37,7 +37,7 @@
                   </button>
                 </div>
                 
-                <div class="flex-1 overflow-y-auto p-2">
+                <div class="flex-1 overflow-y-auto p-2 better-scroll-bar">
                   <div v-if="loading" class="flex justify-center items-center h-40">
                     <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500"></div>
                   </div>
@@ -69,7 +69,7 @@
         <Transition name="fade">
           <div v-if="isFileDetailsOpen" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" @click.self="isFileDetailsOpen = false">
             <Transition name="zoom">
-              <div v-if="isFileDetailsOpen" class="w-4/5 max-w-2xl bg-zinc-900 border border-zinc-800 rounded-xl text-white overflow-hidden shadow-2xl flex flex-col">
+              <div v-if="isFileDetailsOpen" class="w-4/5 max-w-2xl max-h-[80vh] bg-zinc-900 border border-zinc-800 rounded-xl text-white overflow-hidden shadow-2xl flex flex-col">
                 <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center">
@@ -82,12 +82,23 @@
                   </button>
                 </div>
                 
-                <div class="flex-1 overflow-y-auto">
+                <div class="flex-1 overflow-y-auto better-scroll-bar">
                   <div v-if="fileDetailsLoading" class="flex justify-center items-center h-40">
                     <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500"></div>
                   </div>
                   
                   <div v-else class="p-4 space-y-4">
+                    <!-- Image Preview for image files -->
+                    <div v-if="isImageFile(selectedFile)" class="flex justify-center mb-4">
+                      <div class="bg-zinc-950 rounded-lg p-2 border border-zinc-800 w-full">
+                        <img 
+                          :src="`${host}/api/file_content?path=${encodeURIComponent(selectedFile)}`"
+                          :alt="getFileName(selectedFile)"
+                          class="max-w-full max-h-[300px] object-contain mx-auto rounded"
+                        />
+                      </div>
+                    </div>
+                    
                     <!-- File Description -->
                     <div class="space-y-2">
                       <h3 class="text-md font-medium text-violet-400">Description</h3>
@@ -101,13 +112,16 @@
                     <div class="space-y-2">
                       <h3 class="text-md font-medium text-violet-400">Metadata</h3>
                       <div class="bg-zinc-950 rounded-lg p-3 border border-zinc-800">
-                        <div v-if="fileDetails?.metadata?.length" class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <div v-for="(value, key) in fileDetails.metadata[0]" :key="key" class="text-sm">
-                            <span class="text-zinc-500">{{ formatMetadataKey(key) }}:</span>
-                            <span class="text-zinc-300 ml-1">{{ value }}</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <div v-for="(value, key) in fileDetails.metadata[0]" :key="key" class="text-sm flex items-center">
+                            <span class="text-zinc-500 inline-block max-w-xs">
+                              {{ formatMetadataKey(key) }}:
+                            </span>
+                            <span class="text-zinc-300 inline-block truncate max-w-md ml-1" :title="value">
+                              {{ value }}
+                            </span>
                           </div>
                         </div>
-                        <p v-else class="text-zinc-500 italic">No metadata available</p>
                       </div>
                     </div>
                   </div>
@@ -257,8 +271,8 @@
               @focus="inputFocused = true"
               @blur="inputFocused = false"
               placeholder="Describe your file here..."
-              class="input-area flex-1 border-0 bg-transparent focus:outline-none text-white placeholder:text-zinc-400 text-base py-6 pl-6 pr-2 h-auto 
-                resize-none rounded-xl transition-all duration-300 focus:ring-0 focus:border-0 focus:shadow-none"
+              class="flex-1 border-0 bg-transparent focus:outline-none text-white placeholder:text-zinc-400 text-base py-6 pl-6 pr-2 h-auto 
+                resize-none rounded-xl transition-all duration-300 focus:ring-0 focus:border-0 focus:shadow-none better-scroll-bar"
               rows="1"
               style="max-height: 200px; overflow-y: auto; resize: none;"
             ></textarea>
@@ -299,7 +313,9 @@ const inputFocused = ref(false);
 const typingMessageId = ref(null);
 const models = ref([]);
 const selectedModel = ref("");
-const host = ref('http://127.0.0.1:5000');
+const ipAddress = import.meta.env.VITE_FLASK_IP || 'http://127.0.0.1'
+const port = import.meta.env.VITE_FLASK_PORT || '5000'
+const host = ref(`${ipAddress}:${port}`);
 const inputArea = ref(null);
 
 // File browser state
@@ -385,11 +401,13 @@ const autoResize = (e) => {
 
 // Get file extension
 const getFileExt = (path) => {
+  if (!path) return '';
   return path.split('.').pop().toLowerCase();
 };
 
 // Check if file is an image
 const isImageFile = (path) => {
+  if (!path) return false;
   const ext = getFileExt(path);
   return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
 };
@@ -476,14 +494,14 @@ const handleSendMessage = async () => {
   animation: typing 1s infinite ease-in-out;
 }
 
-.input-area::-webkit-scrollbar {
+.better-scroll-bar::-webkit-scrollbar {
   width: 6px;
 }
-.input-area::-webkit-scrollbar-track {
+.better-scroll-bar::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0);
   border-radius: 3px;
 }
-.input-area::-webkit-scrollbar-thumb {
+.better-scroll-bar::-webkit-scrollbar-thumb {
   background-color: rgba(255,255,255,0.3);
   border-radius: 3px;
   border: 1px solid transparent;
@@ -491,7 +509,7 @@ const handleSendMessage = async () => {
 }
 
 /* Firefox */
-.input-area {
+.better-scroll-bar {
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.3) rgba(255,255,255,0.1);
 }
