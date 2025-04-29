@@ -1,11 +1,13 @@
 import lmstudio as lms
+import os
 
-models: list[str] = [
-    "jonahhenry/mistral-7b-instruct-v0.2.Q4_K_M-GGUF",
-    "gemma-3-12b-it",
-]
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
 
-class LLMStudioController:
+models: list[str] = os.environ.get("LM_STUDIO_MODELS", "").split(" ")
+
+class LMStudioController:
     """
     A controller for interacting with the LLM Studio API.
     """
@@ -17,7 +19,7 @@ class LLMStudioController:
         self.client = lms.get_default_client(f"{self.host}:{self.port}")
 
         # Load initial prompt
-        with open("data/initial_prompt.md", "r") as file:
+        with open(str(os.environ.get("LM_STUDIO_INITIAL_PROMPT")), "r") as file:
             self.initial_prompt = file.read()
 
     

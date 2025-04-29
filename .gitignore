@@ -5,3 +5,4 @@ __pycache__
 filesystem/*
 !data/initial_prompt.md
 *.egg-info
+.env

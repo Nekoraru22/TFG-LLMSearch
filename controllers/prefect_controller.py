@@ -1,12 +1,12 @@
-import os
 import uuid
 import time
 import json
+import os
 
 from PIL import Image, ExifTags
 from PyPDF2 import PdfReader
 
-from controllers.llm_studio_controller import LLMStudioController
+from controllers.llm_studio_controller import LMStudioController
 from controllers.chroma_controller import ChromaClient
 
 from chromadb import QueryResult
@@ -15,14 +15,22 @@ from lmstudio import PredictionResult
 
 from utils import get_mime_type, IMAGE_PREFIX, TEXT_PREFIX, PDF_MIME, get_file_hash
 
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 # Load LLM Studio model
-llm = LLMStudioController("192.168.1.137", 25565, "gemma-3-12b-it")
+llm = LMStudioController(
+    str(os.environ.get("LM_STUDIO_IP")),
+    int(os.environ.get("LM_STUDIO_PORT") or 0),
+    str(os.environ.get("LM_STUDIO_MULTIMODAL_MODEL"))
+)
 
 # Load ChromaDB client
-chroma_db = ChromaClient("./data/chroma_db")
+chroma_db = ChromaClient(str(os.environ.get("CHROMA_DB_PATH")))
 
 # Create or retrieve the ChromaDB collection
-chroma_db.create_chroma_collection(collection_name="llm_search_collection")
+chroma_db.create_chroma_collection(collection_name=str(os.environ.get("CHROMA_COLLECTION_NAME")))
 
 
 @flow(log_prints=True, flow_run_name='New file')
@@ -52,7 +60,7 @@ def new_file(file_path: str) -> None:
 
     # 3) Image branch
     if mime.startswith(IMAGE_PREFIX):
-        print(f"Detected image: {mime}")
+        print(f"Detected image: {mime} - {file_path}")
         # Kick off your image tasks
         img_res = analyze_image.submit(file_path)
         img_meta = get_image_metadata.submit(file_path, file_path_hash)
@@ -84,7 +92,7 @@ def new_file(file_path: str) -> None:
 
         # Embed + store
         embeddings = chroma_db.create_embeddings([result])
-        ids        = [f"doc_{uuid.uuid4()}"]
+        ids = [f"doc_{uuid.uuid4()}"]
         metadata = {
             "path": file_path,
             "filename": os.path.basename(file_path),
@@ -352,30 +360,32 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     Process a query using RAG (Retrieval-Augmented Generation)
     """
     llm.model = model
-    print(f"RELEVANT DATA: {relevant_db_data['documents']}")
 
     # Pre‑serialize to avoid f‑string brace issues
     data_json = json.dumps({
         "documents": relevant_db_data["documents"],
         "metadatas": relevant_db_data["metadatas"]
     }, indent=2)
+    print(data_json)
 
     # TODO: Con verbose=True, añadir pequeñas descripciones de cada documento aparte de solamente el path.
     prompt = f"""
-        Original Query: {query}
+    Original Query: {query}
 
-        Relevant data (from ChromaDB):
-        {data_json}
+    Relevant data (from ChromaDB):
+    {data_json}
 
-        Task:
-        - Discard entries irrelevant to the Original Query.
-        - Reorder only if strictly needed to match the query intent.
-        - Extract **only** the file paths (the substring after "Path:").
-        - **Output just** the final numbered list (start at 1), one path per line, with **no** additional text.
+    Task:
+    - Discard entries irrelevant to the Original Query.
+    - Reorder only if strictly needed to match the query intent.
+    - Extract **only** the file paths (the substring after "Path:").
+    - **Output just** the final numbered list (start at 1), one path per line, with **no** additional text.
 
-        Example output:
-        Original Query: official document from the Spanish Ministry
-        1. ./filesystem/Notificacion_1742000847864 - copia.pdf
+    Example output:
+    Original Query: official document from the Spanish Ministry
+    1. ./filesystem/Notificacion_1742000847864 - copia.pdf
+    2. <path_to_another_relevant_document>
+    ...
     """
 
     result = llm.analyze(prompt=prompt, temperature=temperature)

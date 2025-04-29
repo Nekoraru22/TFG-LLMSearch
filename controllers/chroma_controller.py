@@ -281,6 +281,55 @@ class ChromaClient:
         return fig, df_dist
 
 
+    def get_desc_with_path(self, path: str) -> dict:
+        """
+        Retrieves a dict with the file path, its description, and metadata
+        from the Chroma collection.
+
+        Args:
+            path: Path of the file to retrieve.
+
+        Returns:
+            A dict with keys "path", "description" and "metadata".
+        """
+        # Query by metadata field "path"
+        if self.collection is None:
+            raise ValueError("Chroma collection not initialized. Please create a collection first.")
+        
+        result = self.collection.get(
+            where={"path": path}
+        )
+
+        if not result["ids"]:
+            raise ValueError(f"No entry found in ChromaDB for path: {path}")
+
+        # Solo tomamos el primero (debería ser único si "path" es clave)
+        return {
+            "path": path,
+            "description": result["documents"],
+            "metadata": result["metadatas"]
+        }
+
+
+    def get_all_paths(self) -> list:
+        """
+        Retrieves all paths stored in the Chroma collection.
+
+        Returns:
+            A list of paths.
+        """
+        if self.collection is None:
+            raise ValueError("Chroma collection not initialized. Please create a collection first.")
+        
+        # Get all documents in the collection
+        results = self.collection.get()
+        
+        # Extract paths from the metadata
+        paths = [metadata["path"] for metadata in results["metadatas"]] if results["metadatas"] else []
+        
+        return paths
+
+
 def prove() -> None:
     chroma = ChromaClient(persist_directory="./data/chroma_db")
 

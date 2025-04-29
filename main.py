@@ -1,10 +1,12 @@
-from tabnanny import verbose
 from controllers.watchdog_controller import WatchdogsController
 from controllers.sqlite_controller import DatabaseController
+from controllers.llm_studio_controller import LMStudioController
 from controllers.prefect_controller import proccess_query
-from controllers.llm_studio_controller import LLMStudioController
+
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
+
+from controllers.chroma_controller import ChromaClient
 
 app = Flask(
     __name__,
@@ -13,6 +15,11 @@ app = Flask(
 )
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 
+# Load ChromaDB client
+chroma_db = ChromaClient("./data/chroma_db")
+
+# Create or retrieve the ChromaDB collection
+chroma_db.create_chroma_collection(collection_name="llm_search_collection")
 
 @app.route("/")
 def web_page():
@@ -51,7 +58,7 @@ def get_status():
 
 @app.route("/api/models", methods=["GET"])
 def get_models():
-    return jsonify(LLMStudioController.get_models())
+    return jsonify(LMStudioController.get_models())
 
 @app.route("/api/query", methods=["POST"])
 def query():
@@ -64,6 +71,23 @@ def query():
             result = proccess_query(query, model, temperature, verbose)
             return jsonify({"result": str(result)})
     return jsonify({"message": "Invalid JSON body"}), 400
+
+
+@app.route("/api/path_descs", methods=["GET"])
+def get_db_descs():
+    return chroma_db.get_all_paths()
+
+
+@app.route("/api/path_descs", methods=["POST"])
+def get_db_desc_by_path():
+    if request.json is not None:
+        result = chroma_db.get_desc_with_path(request.json["path"])
+        if result:
+            return jsonify(result)
+        else:
+            return jsonify({"message": "No results found"}), 404
+    return jsonify({"message": "Invalid JSON body"}), 400
+    
 
 
 if __name__ == "__main__":
