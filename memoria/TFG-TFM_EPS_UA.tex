@@ -20,19 +20,17 @@
 % Comentar lo que NO se desee añadir y sustituir con la información correcta.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Título y subtítulo
-\newcommand{\titulo}{Título del Trabajo Fin de Grado}
-\newcommand{\subtitulo}{Subtítulo del proyecto}
+\newcommand{\titulo}{LLMSearch: Buscador multimedia basado en lenguaje natural}
+\newcommand{\subtitulo}{Qué pongo aquí???}
 % Datos del autor
-\newcommand{\miNombre}{Nombre Apellido1 Apellido2 (alumno)}
+\newcommand{\miNombre}{Izan Gandía Ruiz}
 % Determinar género para etiquetas Autore/Autora/Autor (nb o en blanco,f,m)
 \newcommand{\miGenero}{m}
-\newcommand{\miEmail}{nombre@alu.ua.es}
+\newcommand{\miEmail}{izan.gandia@ua.es}
 % Datos del tutor/es
 % Si no hay tutorB, comentar tutorB y dptoB para que la etiqueta sea Tutor:
-\newcommand{\miTutor}{Nombre Apellido1 Apellido2 (tutor1)}
-\newcommand{\miTutorB}{Nombre Apellido1 Apellido2 (tutor2)}
-\newcommand{\departamentoTutor}{Departamento del tutor}
-\newcommand{\departamentoTutorB}{Departamento del cotutor}
+\newcommand{\miTutor}{Iván Gadea Saéz}
+\newcommand{\departamentoTutor}{Departamento del tutor???}
 % Datos de la facultad y universidad
 \newcommand{\miFacultad}{Escuela Politécnica Superior}
 \newcommand{\miFacultadCorto}{EPS UA}
@@ -68,13 +66,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!%%%
 																		%
-\def\IDtitulo{4} % INTRODUCE LA ID DE TU TITULACIÓN						%
+\def\IDtitulo{4} % INTRODUCE LA ID DE TU TITULACIÓN									%
 																		%
 %!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Configuración automática según el identificador elegido
-\input{include/configuraciontitulacion} 
+\input{include/configuraciontitulacion}
 
 % Información añadida a las propiedades del archivo PDF.
 \hypersetup{
@@ -98,18 +96,18 @@ pdftitle = {\titulo},
 \frontmatter
 
 % PORTADA
-\input{include/portada/portada_color} % Portada Color
-\input{include/portada/portada_bn} % Portada B/N
+\input{include/portada/portada_color} 	% Portada Color
+\input{include/portada/portada_bn} 	% Portada B/N
 
 %%%%% PREAMBULO
 % Incluye el .tex que contiene el preámbulo, agradecimientos y dedicatorias.
 \input{capitulos/preliminaresconagradecimientos} 
 
 % Incluye después del archivo anterior el indice y lista de figuras, tablas y códigos.
-\tableofcontents	% Índice
+\tableofcontents		% Índice
 \listoffigures		% Índice de figuras
-\listoftables		% Índice de tablas
-\lstlistoflistings	% Índice de códigos
+\listoftables			% Índice de tablas
+\lstlistoflistings		% Índice de códigos
 
 % Inicia la numeración habitual.
 \mainmatter
@@ -122,6 +120,7 @@ pdftitle = {\titulo},
 \input{capitulos/objetivos}		% Plantilla: Se muestran tablas
 \input{capitulos/metodologia}	% Plantilla: Se muestran figuras
 \input{capitulos/desarrollo}		% Plantilla: Se muestran listados
+\input{capitulos/implementacion}	% Plantilla: Se muestran listados
 \input{capitulos/resultados}		% Plantilla: Se muestran gráficas
 \input{capitulos/conclusiones}	% Plantilla: Se muestran matemáticas
 
