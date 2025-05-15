@@ -5,111 +5,268 @@
 % Contacto: info@jmrplens.com / Telegram:@jmrplens
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Marco Teórico (Con ejemplos de listas)}
+\chapter{Estado del Arte}
 \label{marcoteorico}
 
-\section{Listas}
-Hacer una lista es simple en \LaTeX. Para ello has de crear un entorno (así se llama) itemize con
-\begin{lstlisting}[style=Latex-color]
+\section{Orquestador de tareas}
+Herramientas para la automatización y gestión de flujos de trabajo.
+
+\subsection{Prefect}
+Plataforma de orquestación de flujos de trabajo en Python que permite diseñar, ejecutar y monitorizar pipelines de datos y machine learning de forma fiable y escalable.
+
+\subsubsection{Ventajas}
 \begin{itemize}
-...
+    \item \textbf{Facilidad de uso:} Prefect ofrece una sintaxis intuitiva y una configuración sencilla, lo que facilita la definición y gestión de flujos de trabajo complejos.
+    
+    \item \textbf{Flexibilidad:} Permite la orquestación de tareas en entornos locales, en la nube o híbridos, adaptándose a diversas necesidades.
+    
+    \item \textbf{Monitoreo y gestión:} Incluye herramientas integradas para el monitoreo, registro y manejo de errores en tiempo real.
 \end{itemize}
-\end{lstlisting}
-Y dentro de esa estructura, añadir cada elemento de la lista precedido de 
-\begin{lstlisting}[style=Latex-color]
-\item primer ítem de lista
-\item segundo ítem de lista
-...
-\item ultimo ítem de lista
-\end{lstlisting}
 
-Es importante que revises este texto tal como aparece en la plantilla y relaciones el aspecto que tiene el PDF final con cómo está escrito el documento \LaTeX.
-\vspace{1em}
-\noindent\hrule
-\vspace{1em}
-
-Aquí va una lista con subtérminos:
-\begin{lstlisting}[style=Latex-color]
-	\begin{itemize}
-    \item Ingeniería Informática.
-    \item Ingeniería Sonido e Imagen en Telecomunicación.
-    \item Ingeniería Multimedia.
-         \subitem Mención: Creación y ocio digital.
-         \subitem Mención: Gestión de Contenidos.
-	\end{itemize}
-\end{lstlisting}
-
-El resultado es el siguiente:
+\subsubsection{Desventajas}
 \begin{itemize}
-    \item Ingeniería Informática.
-    \item Ingeniería Sonido e Imagen en Telecomunicación.
-    \item Ingeniería Multimedia.
-         \subitem Mención: Creación y ocio digital.
-         \subitem Mención: Gestión de Contenidos.
+    \item \textbf{Madurez:} Aunque ha ganado popularidad, Prefect es relativamente nuevo en comparación con otras herramientas más consolidadas.
+    
+    \item \textbf{Comunidad:} Su comunidad es más pequeña, lo que puede limitar la disponibilidad de recursos y soporte.
 \end{itemize}
-\vspace{1em}
-\noindent\hrule
-\vspace{1em}
-Aquí va una lista con subtérminos pero numerada:
-\begin{lstlisting}[style=Latex-color]
-\begin{enumerate}
-    \item Ingeniería Informática.
-    \item Ingeniería Sonido e Imagen en Telecomunicación.
-    \item Ingeniería Multimedia.
-    \begin{enumerate}
-         \item Mención: Creación y ocio digital.
-         \item Mención: Gestión de Contenidos.
-   	\end{enumerate}
-\end{enumerate}
-\end{lstlisting}
 
-El resultado es el siguiente:
-\begin{enumerate}
-    \item Ingeniería Informática.
-    \item Ingeniería Sonido e Imagen en Telecomunicación.
-    \item Ingeniería Multimedia.
-    \begin{enumerate}
-         \item Mención: Creación y ocio digital.
-         \item Mención: Gestión de Contenidos.
-   	\end{enumerate}
-\end{enumerate}
+\subsection{Kafka}
+Sistema de mensajería distribuido de alto rendimiento.
 
-\section{Listas de definición}
- 
- Puedes realizar una lista de conceptos con su definición del siguiente modo:
- 
-\begin{lstlisting}[style=Latex-color]
-\begin{description} % Inicio de la lista
- 	\item[MAPP XT:] Programa desarrollado por \textit{Meyer Sound} para el diseño y ajuste de sistemas formados por altavoces de su marca.
-  	\begin{description} % Realiza una lista dentro de la lista
-  		\item[Ventajas:]~ 
-  		El programa permite realizar múltiples ajustes tal como se podría realizar en la realidad con un procesador real.
-  	
-  		Permite analizar la fase recibida en cualquier punto y compararla con otras mediciones.
-  	
-  		Dispone de varios tipos de filtros, inversiones de fase, etc.
-  		\item[Inconvenientes:]~ 
-  		No existe una lista global de los altavoces ubicados en el plano, por lo tanto solo se pueden editar seleccionándolos sobre el plano.
-  	
-  		Sólo permite diseñar en 2 dimensiones, principalmente sobre la vista lateral ya que los array de altavoces no permite voltearlos.
-  	\end{description}
-\end{description}
-\end{lstlisting}
+\subsubsection{Ventajas}
+\begin{itemize}
+    \item \textbf{Alto rendimiento:} Kafka es conocido por su capacidad para manejar grandes volúmenes de datos con baja latencia.
+    
+    \item \textbf{Escalabilidad:} Diseñado para escalar horizontalmente, puede manejar cargas de trabajo crecientes de manera eficiente.
+    
+    \item \textbf{Ecosistema robusto:} Cuenta con una amplia gama de herramientas y conectores que facilitan su integración con otros sistemas.
+\end{itemize}
 
- Y \LaTeX~genera lo siguiente:
- 
-\begin{description} % Inicio de la lista
- 	\item[MAPP XT:] Programa desarrollado por \textit{Meyer Sound} para el diseño y ajuste de sistemas formados por altavoces de su marca.
-  	\begin{description} % Realiza una lista dentro de la lista
-  		\item[Ventajas:]~ 
-  		El programa permite realizar múltiples ajustes tal como se podría realizar en la realidad con un procesador real.
-  	
-  		Permite analizar la fase recibida en cualquier punto y compararla con otras mediciones.
-  	
-  		Dispone de varios tipos de filtros, inversiones de fase, etc.
-  		\item[Inconvenientes:]~ 
-  		No existe una lista global de los altavoces ubicados en el plano, por lo tanto solo se pueden editar seleccionándolos sobre el plano.
-  	
-  		Sólo permite diseñar en 2 dimensiones, principalmente sobre la vista lateral ya que los array de altavoces no permite voltearlos.
-  	\end{description}
-\end{description}
+\subsubsection{Desventajas}
+\begin{itemize}
+    \item \textbf{Complejidad:} La configuración y gestión de Kafka pueden ser complejas, especialmente para usuarios sin experiencia previa.
+    
+    \item \textbf{Requisitos de recursos:} Para un rendimiento óptimo, Kafka suele requerir una infraestructura robusta, lo que puede ser excesivo para proyectos más pequeños.
+\end{itemize}
+
+\subsection{Airflow}
+Plataforma para crear, programar y monitorear flujos de trabajo.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+    \item \textbf{Popularidad y comunidad:} Amplia adopción y una comunidad activa que proporciona numerosos recursos y soporte.
+    
+    \item \textbf{Flexibilidad:} Permite la programación y monitoreo de flujos de trabajo complejos.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+    \item \textbf{Curva de aprendizaje:} Puede ser complejo de configurar y requiere conocimientos avanzados para su implementación efectiva.
+\end{itemize}
+
+\clearpage
+\section{Script de detección de cambios en un path y Servidor}
+Herramientas para monitorear cambios en el sistema de archivos.
+
+\subsection{Python}
+Lenguaje de programación versátil con varias bibliotecas para detección de cambios.
+
+\begin{itemize}
+    \item \textbf{Watchdogs:} Biblioteca multiplataforma diseñada específicamente para detectar eventos en el sistema de archivos.
+    
+    \item \textbf{pyinotify:} Biblioteca que proporciona monitoreo de eventos del sistema de archivos en sistemas Linux aprovechando el subsistema inotify. Es eficiente para entornos Linux pero no es multiplataforma.
+    
+    \item \textbf{inotify-simple:} Un wrapper sencillo alrededor de la API inotify de Linux, que ofrece simplicidad y facilidad de uso para tareas básicas de monitoreo de archivos en sistemas Linux.
+    
+    \item \textbf{inotifyx:} Similar a pyinotify, esta biblioteca proporciona acceso al sistema inotify de Linux, permitiendo monitorear eventos del sistema de archivos. Está diseñada para tener una API estable pero también está limitada a plataformas Linux.
+    
+    \item \textbf{Polling Methods:} Para plataformas donde inotify no está disponible, o para requisitos más simples, implementar un mecanismo de sondeo puede ser una alternativa viable. Esto implica verificar periódicamente el sistema de archivos para detectar cambios.
+\end{itemize}
+
+\subsection{Node}
+Entorno de ejecución para JavaScript con opciones para monitoreo de archivos.
+
+\begin{itemize}
+    \item \textbf{chokidar:} Biblioteca eficiente para vigilar cambios en el sistema de archivos.
+\end{itemize}
+
+\subsection{Java}
+Lenguaje de programación con APIs nativas para monitoreo.
+
+\begin{itemize}
+    \item \textbf{WatchService:} API integrada en Java para monitorear cambios en directorios.
+\end{itemize}
+
+\subsection{C++/C/C\#}
+Familia de lenguajes con herramientas para vigilancia de archivos.
+
+\begin{itemize}
+    \item \textbf{FileSystemWatcher:} Clase para monitorear cambios en el sistema de archivos.
+\end{itemize}
+
+\subsection{Go}
+Lenguaje de programación con bibliotecas específicas.
+
+\begin{itemize}
+    \item \textbf{fsnotify:} Biblioteca Go para monitoreo del sistema de archivos.
+\end{itemize}
+
+\subsection{Rust}
+Lenguaje de programación moderno con enfoque en seguridad.
+
+\begin{itemize}
+    \item \textbf{notify:} Biblioteca Rust para vigilar cambios en archivos.
+\end{itemize}
+
+\clearpage
+\section{Base de datos}
+Opciones para almacenamiento de datos.
+
+\subsection{Relacional}
+Bases de datos con estructura definida y relaciones entre tablas.
+
+\subsubsection{SQLite}
+Base de datos relacional ligera contenida en un único archivo.
+
+\paragraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Ligereza y simplicidad:} SQLite es una biblioteca de base de datos integrada que no requiere una configuración de servidor independiente, lo que facilita su implementación y uso.
+    
+    \item \textbf{Portabilidad:} Al almacenar toda la base de datos en un único archivo, es fácil de transferir y gestionar, especialmente útil para aplicaciones móviles o integradas.
+    
+    \item \textbf{Rendimiento en entornos de bajo recurso:} Funciona eficientemente incluso en sistemas con recursos limitados.
+\end{itemize}
+
+\paragraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Concurrencia limitada:} SQLite permite múltiples lecturas simultáneas, pero las escrituras se gestionan de una en una, lo que puede ser un cuello de botella en aplicaciones con alta concurrencia de escritura.
+    
+    \item \textbf{Escalabilidad:} No está diseñada para manejar grandes volúmenes de datos o aplicaciones que requieren escalabilidad horizontal.
+\end{itemize}
+
+\subsubsection{MariaDB}
+Sistema de gestión de bases de datos fork de MySQL.
+
+\paragraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Rendimiento y escalabilidad:} MariaDB ofrece un alto rendimiento y puede manejar una gran cantidad de transacciones, siendo adecuada para aplicaciones empresariales.
+    
+    \item \textbf{Compatibilidad con MySQL:} Como un fork de MySQL, mantiene una alta compatibilidad, facilitando la migración desde MySQL.
+    
+    \item \textbf{Soporte para almacenamiento en columnas:} Incluye el motor ColumnStore, optimizado para cargas de trabajo analíticas.
+\end{itemize}
+
+\paragraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Complejidad en la configuración:} Requiere una configuración y gestión más complejas en comparación con SQLite.
+    
+    \item \textbf{Requisitos de recursos:} Necesita más recursos del sistema, lo que puede ser excesivo para aplicaciones pequeñas o integradas.
+\end{itemize}
+
+\subsection{No relacional}
+Bases de datos con esquemas flexibles no basados en tablas relacionales.
+
+\subsubsection{MongoDB}
+Base de datos NoSQL orientada a documentos.
+
+\paragraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Flexibilidad del esquema:} Al ser una base de datos NoSQL orientada a documentos, permite almacenar datos en un formato flexible similar a JSON, adaptándose fácilmente a cambios en la estructura de los datos.
+    
+    \item \textbf{Escalabilidad horizontal:} Diseñada para escalar horizontalmente mediante sharding, lo que facilita el manejo de grandes volúmenes de datos y altas tasas de tráfico.
+    
+    \item \textbf{Alto rendimiento en operaciones de lectura/escritura:} Optimizada para manejar operaciones simultáneas de lectura y escritura de manera eficiente.
+\end{itemize}
+
+\paragraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Consumo de recursos:} Requiere una cantidad significativa de recursos, especialmente en implementaciones a gran escala.
+    
+    \item \textbf{Falta de soporte para transacciones complejas:} Aunque MongoDB ha mejorado en este aspecto, las transacciones en múltiples documentos pueden no ser tan robustas como en bases de datos relacionales.
+\end{itemize}
+
+\clearpage
+\section{Docker}
+Plataforma de contenedores para desarrollo, envío y ejecución de aplicaciones.
+
+\subsection{Ventajas}
+\begin{itemize}
+    \item \textbf{Portabilidad:} Los contenedores Docker aseguran que el software se ejecute de manera consistente en cualquier entorno.
+    
+    \item \textbf{Aislamiento:} Cada componente del sistema puede ejecutarse en su propio contenedor, evitando conflictos de dependencias.
+    
+    \item \textbf{Facilidad de despliegue:} Simplifica la distribución y actualización de aplicaciones.
+\end{itemize}
+
+\subsection{Desventajas}
+\begin{itemize}
+    \item \textbf{Consumo de recursos:} Aunque ligero, el uso de contenedores añade una capa adicional que consume recursos del sistema.
+    
+    \item \textbf{Complejidad adicional:} Requiere conocimientos sobre Docker y la gestión de contenedores.
+\end{itemize}
+
+\clearpage
+\section{Interfaz}
+Frameworks para el desarrollo de interfaces web.
+
+\subsection{Angular}
+Framework completo para desarrollo de aplicaciones web.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+    \item \textbf{Framework completo:} Angular ofrece una solución integral con herramientas integradas para el desarrollo de aplicaciones web robustas.
+    
+    \item \textbf{Arquitectura estructurada:} Facilita la escalabilidad y el mantenimiento de aplicaciones complejas.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+    \item \textbf{Curva de aprendizaje pronunciada:} Requiere tiempo para dominar conceptos como TypeScript y la inyección de dependencias.
+    
+    \item \textbf{Complejidad innecesaria para proyectos simples:} Puede ser excesivo para aplicaciones con funcionalidades limitadas.
+\end{itemize}
+
+\subsection{React}
+Biblioteca de JavaScript para construcción de interfaces de usuario.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+    \item \textbf{Biblioteca flexible:} React se centra en la construcción de interfaces de usuario, permitiendo la integración con diversas bibliotecas según las necesidades del proyecto.
+    
+    \item \textbf{Amplia comunidad y recursos:} Su popularidad asegura una gran cantidad de recursos y soporte.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+    \item \textbf{Necesidad de configuraciones adicionales:} Para funcionalidades más allá de la UI, es necesario integrar bibliotecas adicionales, lo que puede aumentar la complejidad.
+\end{itemize}
+
+\subsection{Vue}
+Framework progresivo para construir interfaces de usuario.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+    \item \textbf{Simplicidad y facilidad de uso:} Vue es conocido por su curva de aprendizaje suave, lo que permite una adopción rápida.
+    
+    \item \textbf{Flexibilidad:} Adecuado tanto para proyectos pequeños como para aplicaciones más complejas.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+    \item \textbf{Menor adopción en grandes empresas:} Aunque está ganando popularidad, Vue aún no es tan común en entornos corporativos grandes.
+\end{itemize}
+
+\subsection{Astro}
+Framework moderno para sitios web con enfoque en rendimiento.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+    \item \textbf{Optimización para contenido estático:} Astro está diseñado para generar sitios web estáticos rápidos, lo que puede ser beneficioso para aplicaciones con contenido predominantemente estático.
+    
+    \item \textbf{Integración con otros frameworks:} Permite utilizar componentes de React, Vue y otros dentro de sus proyectos.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+    \item \textbf{Menor madurez:} Al ser relativamente nuevo, Astro puede carecer de la amplitud de recursos y comunidad que tienen otros frameworks más establecidos.
+\end{itemize}
