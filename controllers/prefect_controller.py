@@ -6,7 +6,7 @@ import os
 from PIL import Image, ExifTags
 from PyPDF2 import PdfReader
 
-from controllers.llm_studio_controller import LMStudioController
+from controllers.lm_studio_controller import LMStudioController
 from controllers.chroma_controller import ChromaClient
 
 from chromadb import QueryResult

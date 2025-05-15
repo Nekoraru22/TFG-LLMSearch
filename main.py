@@ -2,7 +2,7 @@ import os
 
 from controllers.watchdog_controller import WatchdogsController
 from controllers.sqlite_controller import DatabaseController
-from controllers.llm_studio_controller import LMStudioController
+from controllers.lm_studio_controller import LMStudioController
 from controllers.prefect_controller import proccess_query
 
 from flask import Flask, request, jsonify, render_template, send_from_directory, send_file
@@ -114,8 +114,8 @@ def get_db_desc_by_path():
     
 
 if __name__ == "__main__":
-    # create_graphics("two characters with cat ears and tail", True)
-    # exit(0)
+    create_graphics("two characters with cat ears and tail", True)
+    exit(0)
     # Initialize logging
     watcher = WatchdogsController(str(os.environ.get("TRACKED_FOLDER")))
     watcher.start()
