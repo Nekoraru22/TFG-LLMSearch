@@ -8,9 +8,19 @@
 \chapter{Objetivos}
 \label{objetivos}
 
+\section{Objetivo general}
 El objetivo principal de este \gls{tfg} es diseñar y desarrollar un buscador multimedia inteligente que permita a los usuarios realizar búsquedas avanzadas utilizando lenguaje natural. De esta manera, el usuario podrá localizar documentos de texto, imágenes, vídeos o archivos de audio explorando el contenido semántico intrínseco de los ficheros, trascendiendo las limitaciones de las búsquedas basadas únicamente en metadatos explícitos.
 
 La idea es crear una herramienta que facilite a los usuarios encontrar contenido multimedia de manera eficiente y precisa mediante descripciones detalladas en lenguaje natural. Por ejemplo, se podría buscar una fotografía específica entre miles con una consulta como: “busca una foto en la que salía un elefante levantando la trompa y que la hice en Tailandia hace unos 5 o 6 años”; o encontrar un archivo PDF relevante mediante una búsqueda del tipo: “encuentra los datos para la declaración de la renta de 2016”.
 De esta forma, se pretende obtener un sistema de búsqueda que no solo identifique el archivo específico que se busca, sino que también tenga la capacidad de extraer datos relevantes del contenido del archivo para responder a preguntas específicas formuladas en la consulta, aprovechando las capacidades de los modelos de lenguaje aumentados por recuperación (RAG).
 
-Además se plantean objetivos secundarios que complementan el objetivo principal, como lo son el estudio de diferentes modelos multimodales para obtener los mejores resultados en un tiempo razonable, la búsqueda de una base de datos adecuada para este tipo de problemas y la estructura óptima del sistema para que sea escalable y eficiente. También se busca la creación de una interfaz gráfica intuitiva que permita a los usuarios interactuar fácilmente con el sistema, facilitando la búsqueda y la visualización de los resultados obtenidos.
+\section{Objetivos específicos}
+Adicionalmente, se plantean los siguientes objetivos secundarios que complementan y dan soporte al objetivo principal:
+\subsection{Estudio de modelos multimodales}
+Estudiar diferentes modelos multimodales con el fin de seleccionar aquellos que ofrezcan los mejores resultados en términos de precisión y eficiencia (tiempo de respuesta razonable).
+\subsection{Selección de solución de base de datos}
+Investigar y seleccionar una solución de base de datos adecuada para el almacenamiento y consulta eficiente de metadatos enriquecidos y embeddings vectoriales generados por los modelos de \gls{ia}.
+\subsection{Diseño de arquitectura modular}
+Diseñar una arquitectura de sistema que sea modular, escalable y eficiente, permitiendo la integración de los diferentes componentes y facilitando futuras expansiones o mejoras.
+\subsection{Desarrollo de interfaz gráfica}
+Desarrollar una interfaz gráfica de usuario (GUI) intuitiva y amigable que permita a los usuarios interactuar fácilmente con el sistema, realizar búsquedas, visualizar los resultados obtenidos y gestionar sus archivos.

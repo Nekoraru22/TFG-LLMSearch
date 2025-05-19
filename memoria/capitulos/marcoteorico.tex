@@ -8,267 +8,188 @@
 \chapter{Estado del Arte}
 \label{marcoteorico}
 
-La construcción de un sistema inteligente para la búsqueda y gestión de archivos personales requiere la integración de diversas tecnologías y herramientas consolidadas en el ámbito del desarrollo de software y la inteligencia artificial. Este capítulo tiene como objetivo revisar el estado del arte de los componentes tecnológicos clave que se han considerado o que forman la base para la implementación del presente proyecto. Se analizarán diferentes opciones en áreas fundamentales como la orquestación de tareas, la detección de cambios en el sistema de archivos, las soluciones de bases de datos para el almacenamiento de metadatos y embeddings, la contenerización para el despliegue y, finalmente, los frameworks para el desarrollo de la interfaz de usuario. Esta revisión permitirá contextualizar las decisiones de diseño tomadas y justificar la selección de las herramientas específicas utilizadas en el desarrollo de la solución.
+Antes de adentrarse en los detalles técnicos, es esencial establecer el contexto actual en el dominio de los buscadores multimedia basados en lenguaje natural. Esta revisión permitirá asentar una fundamentación teórica y metodológica sólida, comprender los desafíos y las limitaciones identificadas en investigaciones previas e identificar las brechas en el conocimiento existente, así como las oportunidades para realizar contribuciones significativas en LLMSearch.
 
-\section{Orquestador de tareas}
-Herramientas para la automatización y gestión de flujos de trabajo.
+\section{Modelos de Lenguaje Natural (LLMs) para Búsqueda}
 
-\subsection{Prefect}
-Plataforma de orquestación de flujos de trabajo en Python que permite diseñar, ejecutar y monitorizar pipelines de datos y machine learning de forma fiable y escalable.
+Los \textbf{modelos de lenguaje de gran tamaño (LLMs)} han revolucionado el procesamiento del lenguaje natural en años recientes. Modelos como \emph{GPT-3} y \emph{GPT-4} (base de \textbf{ChatGPT}) demuestran que, con miles de millones de parámetros entrenados en enormes corpus de texto, es posible comprender y generar lenguaje con notable fluidez y contexto. Estos modelos capturan representaciones semánticas ricas, lo que habilita nuevas formas de \textbf{búsqueda semántica} y recuperación de información.
 
-\subsubsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Facilidad de uso:} Prefect ofrece una sintaxis intuitiva y una configuración sencilla, lo que facilita la definición y gestión de flujos de trabajo complejos.
-    
-    \item \textbf{Flexibilidad:} Permite la orquestación de tareas en entornos locales, en la nube o híbridos, adaptándose a diversas necesidades.
-    
-    \item \textbf{Monitoreo y gestión:} Incluye herramientas integradas para el monitoreo, registro y manejo de errores en tiempo real.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Madurez:} Aunque ha ganado popularidad, Prefect es relativamente nuevo en comparación con otras herramientas más consolidadas.
-    
-    \item \textbf{Comunidad:} Su comunidad es más pequeña, lo que puede limitar la disponibilidad de recursos y soporte.
-\end{itemize}
-
-\subsection{Kafka}
-Sistema de mensajería distribuido de alto rendimiento.
-
-\subsubsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Alto rendimiento:} Kafka es conocido por su capacidad para manejar grandes volúmenes de datos con baja latencia.
-    
-    \item \textbf{Escalabilidad:} Diseñado para escalar horizontalmente, puede manejar cargas de trabajo crecientes de manera eficiente.
-    
-    \item \textbf{Ecosistema robusto:} Cuenta con una amplia gama de herramientas y conectores que facilitan su integración con otros sistemas.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Complejidad:} La configuración y gestión de Kafka pueden ser complejas, especialmente para usuarios sin experiencia previa.
-    
-    \item \textbf{Requisitos de recursos:} Para un rendimiento óptimo, Kafka suele requerir una infraestructura robusta, lo que puede ser excesivo para proyectos más pequeños.
-\end{itemize}
-
-\subsection{Airflow}
-Plataforma para crear, programar y monitorear flujos de trabajo.
-
-\subsubsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Popularidad y comunidad:} Amplia adopción y una comunidad activa que proporciona numerosos recursos y soporte.
-    
-    \item \textbf{Flexibilidad:} Permite la programación y monitoreo de flujos de trabajo complejos.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Curva de aprendizaje:} Puede ser complejo de configurar y requiere conocimientos avanzados para su implementación efectiva.
-\end{itemize}
-
-\clearpage
-\section{Script de detección de cambios en un path y Servidor}
-Herramientas para monitorear cambios en el sistema de archivos.
-
-\subsection{Python}
-Lenguaje de programación versátil con varias bibliotecas para detección de cambios.
+\textbf{Características clave:}
 
 \begin{itemize}
-    \item \textbf{Watchdogs:} Biblioteca multiplataforma diseñada específicamente para detectar eventos en el sistema de archivos.
-    
-    \item \textbf{pyinotify:} Biblioteca que proporciona monitoreo de eventos del sistema de archivos en sistemas Linux aprovechando el subsistema inotify. Es eficiente para entornos Linux pero no es multiplataforma.
-    
-    \item \textbf{inotify-simple:} Un wrapper sencillo alrededor de la API inotify de Linux, que ofrece simplicidad y facilidad de uso para tareas básicas de monitoreo de archivos en sistemas Linux.
-    
-    \item \textbf{inotifyx:} Similar a pyinotify, esta biblioteca proporciona acceso al sistema inotify de Linux, permitiendo monitorear eventos del sistema de archivos. Está diseñada para tener una API estable pero también está limitada a plataformas Linux.
-    
-    \item \textbf{Polling Methods:} Para plataformas donde inotify no está disponible, o para requisitos más simples, implementar un mecanismo de sondeo puede ser una alternativa viable. Esto implica verificar periódicamente el sistema de archivos para detectar cambios.
+  \item \textbf{Búsqueda por significado}: En lugar de limitarse a coincidencias de palabras clave, un LLM puede interpretar la intención de una consulta en lenguaje natural y relacionarla con documentos relevantes aunque no compartan palabras literalmente.
+  
+  \item \textbf{Embeddings semánticos}: Técnicas como \emph{embeddings} de oraciones (usando modelos tipo BERT o Sentence Transformers) convierten documentos y consultas a vectores en un espacio vectorial común, donde la similitud de coseno permite recuperar los contenidos más cercanos en significado.
+  
+  \item \textbf{Retrieval-Augmented Generation (RAG)}: Los LLMs pueden integrarse en pipelines donde primero se recuperan documentos candidatos y luego el modelo genera una respuesta o resumen usando esos textos.
+  
+  \item \textbf{Interfaz conversacional}: Modelos tipo ChatGPT permiten refinar iterativamente las consultas de búsqueda mediante diálogo, mejorando la precisión de resultados en consultas ambiguas.
 \end{itemize}
 
-\subsection{Node}
-Entorno de ejecución para JavaScript con opciones para monitoreo de archivos.
+Los avances más recientes se centran en mejorar la \textbf{eficiencia y apertura} de estos modelos. Mientras GPT-4 (de OpenAI) es de uso cerrado y con un tamaño muy grande no divulgado (>100B parámetros), han emergido modelos de código abierto como \emph{LLaMA} (Meta) y sus variantes, que con 7--70B parámetros logran desempeños competitivos.
+
+\section{Modelos Visión-Lenguaje para Imágenes}
+
+En un buscador multimedia, es esencial manejar consultas sobre contenido visual (imágenes) usando lenguaje natural. Aquí destacan los \textbf{modelos visiolingüísticos} o \textbf{modelos de visión-lenguaje (VLMs)}, que conectan representaciones de imágenes con representaciones textuales en un espacio común.
+
+\subsection{CLIP y Embeddings Multimodales}
+
+Un hito fue el modelo \textbf{CLIP} de OpenAI, que entrena conjuntamente un codificador de texto (transformer) y un codificador visual (Red Neuronal Convolucional o Visión Transformer) para proyectar ambos tipos de entrada en \textbf{vectores de embedding} de la misma dimensión. Mediante aprendizaje contrastivo en 400 millones de pares imagen--texto, CLIP logró que textos e imágenes con contenido semántico equivalente quedaran cercanos en el espacio vectorial.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth]{archivos/clip_space.png}
+  \caption{Ejemplo conceptual de un espacio vectorial multimodal entrenado por CLIP, donde imágenes y descripciones semánticas correspondientes se representan mediante vectores cercanos.}
+  \label{fig:clip_space}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth]{archivos/clip_architecture.png}
+  \caption{Arquitectura del modelo CLIP: encoder de texto y encoder de imagen que proyectan al mismo espacio de embedding.}
+  \label{fig:clip_architecture}
+\end{figure}
+
+\subsection{Modelos Generativos de Descripción de Imágenes}
+
+Otra línea de desarrollo son los \textbf{modelos generativos de descripción de imágenes}. Estos sistemas realizan \emph{image captioning}, es decir, generan en lenguaje natural una descripción para una imagen dada.
+
+Modelos recientes como \textbf{BLIP-2} combinan:
+\begin{itemize}
+  \item Un encoder visual pre-entrenado (e.g. CLIP ViT)
+  \item Un modelo de lenguaje grande congelado
+  \item Un transformador ligero intermedio (Q-Former)
+\end{itemize}
+
+Esta arquitectura puentea la brecha visión-lenguaje eficientemente: el encoder de imagen extrae características visuales y el LLM genera la descripción textual.
+
+\subsection{VQA y Diálogo Multimodal}
+
+Junto con BLIP-2, han surgido numerosos modelos abiertos que permiten \textbf{Pregunta-Respuesta Visual (VQA)} y diálogo multimodal:
 
 \begin{itemize}
-    \item \textbf{chokidar:} Biblioteca eficiente para vigilar cambios en el sistema de archivos.
+  \item \textbf{LLaVA} (Large Language and Vision Assistant): Usa GPT-4 para generar datos sintéticos de entrenamiento y afina un modelo basado en \emph{Vicuna} (derivado de LLaMA) acoplado a un encoder visual.
+  
+  \item \textbf{Moondream}: Un VLM open-source de apenas 2 billones de parámetros (2B) que puede correr en tiempo real incluso en CPU o dispositivos móviles. Demuestra capacidades notables en:
+  \begin{itemize}
+    \item Generación de descripciones detalladas
+    \item Respuesta a preguntas visuales
+    \item Detección de objetos en modalidad cero-shot
+    \item OCR básico (leer texto en imágenes)
+  \end{itemize}
+  
+  \item \textbf{JoyCaption}: Un modelo de captioning de imágenes libre y sin censura, pensado originalmente para generar descripciones ricas que ayuden a entrenar modelos de difusión.
+  
+  \item \textbf{GPT-4 con visión} (GPT-4V): Demuestra capacidades impresionantes al responder con acierto a entradas que combinan imagen + texto, aunque su naturaleza propietaria limita su uso en entornos académicos.
 \end{itemize}
 
-\subsection{Java}
-Lenguaje de programación con APIs nativas para monitoreo.
+\textbf{En síntesis}, el estado del arte en imagen+lenguaje ofrece dos enfoques complementarios para búsqueda multimedia:
+\begin{enumerate}
+  \item \emph{Embeddings} multimodales tipo CLIP para realizar \textbf{búsqueda directa por similitud} entre consultas textuales y contenido visual
+  \item \emph{Modelos generativos visiolingüísticos} para \textbf{describir o entender imágenes en texto}, permitiendo indexar y razonar sobre imágenes mediante lenguaje natural
+\end{enumerate}
+
+\section{Modelos Multimodales para Vídeo}
+
+Extender la búsqueda basada en lenguaje natural al dominio de \textbf{vídeo} conlleva retos adicionales, pues los vídeos combinan secuencias de imágenes con audio (y a veces texto incrustado).
+
+\subsection{Técnicas de Procesamiento de Video}
+
+\begin{enumerate}
+  \item \textbf{Análisis por frames}: 
+  \begin{itemize}
+    \item Extraer fotogramas representativos del video
+    \item Aplicar modelos de visión-lenguaje a cada frame
+    \item Convertir el problema de vídeo a un conjunto de imágenes con marcas de tiempo
+  \end{itemize}
+
+  \item \textbf{Procesamiento de audio}:
+  \begin{itemize}
+    \item Usar modelos de \textbf{Reconocimiento Automático de Voz (ASR)} como \emph{Whisper}
+    \item Transcribir con alta calidad el diálogo o narración presente en videos
+    \item Indexar cada video por su transcripción textual completa
+  \end{itemize}
+
+  \item \textbf{Modelos video-texto end-to-end}:
+  \begin{itemize}
+    \item \emph{VideoCLIP}: Extiende la idea de CLIP al dominio temporal
+    \item Transformers específicos para vídeo que realizan \emph{video captioning}
+  \end{itemize}
+\end{enumerate}
+
+\subsection{Arquitecturas para Búsqueda en Video}
+
+Una arquitectura emergente es combinar los enfoques anteriores en un pipeline RAG multimodal:
+\begin{itemize}
+  \item Indexar por un lado los \emph{frames} visuales mediante embeddings
+  \item Indexar por otro lado las transcripciones de voz como texto
+  \item Ante una consulta, recuperar fragmentos candidatos por similitud visual o textual
+  \item Usar un modelo de lenguaje para sintetizar ambas fuentes y determinar la respuesta
+\end{itemize}
+
+\subsection{Modelos Unificados Multimodales}
 
 \begin{itemize}
-    \item \textbf{WatchService:} API integrada en Java para monitorear cambios en directorios.
+  \item \textbf{MiniGPT-4}: Acepta secuencias de imágenes como entrada (simulando un video corto)
+  \item \textbf{MiniCPM-V}: Soporta entradas de video, generando una descripción general
+  \item \textbf{Gemini} (Google): Integra visión, video y sonido en un mismo LLM
+  \item \textbf{ImageBind} (Meta): Aprende una representación común para imágenes, texto, audio y otros sensores
 \end{itemize}
 
-\subsection{C++/C/C\#}
-Familia de lenguajes con herramientas para vigilancia de archivos.
+\section{Análisis de Audio y Búsqueda mediante Sonido}
+
+Para completar un buscador verdaderamente multimedia, se debe considerar contenido \textbf{audio} (fuera de videos, es decir, archivos de sonido o música).
+
+\subsection{Procesamiento de Habla}
 
 \begin{itemize}
-    \item \textbf{FileSystemWatcher:} Clase para monitorear cambios en el sistema de archivos.
+  \item Si el audio es habla (podcasts, grabaciones, conferencias), aplicar \textbf{ASR} con modelos como Whisper
+  \item Obtener una transcripción textual que se convierte en texto indexable
+  \item Permitir búsquedas por palabras clave o semántica usando LLMs o embeddings
 \end{itemize}
 
-\subsection{Go}
-Lenguaje de programación con bibliotecas específicas.
+\subsection{Audio No Verbal}
+
+Para audio que no es voz (sonidos ambientales, música, efectos sonoros):
+\begin{itemize}
+  \item \textbf{CLAP (Contrastive Language-Audio Pretraining)}: Entrena un encoder de audio y uno de texto conjuntamente
+  \item Permite buscar efectos de sonido a partir de descripciones textuales
+  \item Facilita la clasificación cero-shot de audio
+\end{itemize}
+
+\subsection{Modelos Generadores de Descripciones Auditivas}
 
 \begin{itemize}
-    \item \textbf{fsnotify:} Biblioteca Go para monitoreo del sistema de archivos.
+  \item \textbf{AudioCaption} (Microsoft): Genera frases descriptivas de clips de audio
+  \item Permite describir cada audio en texto y luego indexar esas descripciones
+  \item Facilita un acceso más semántico a archivos de sonido
 \end{itemize}
 
-\subsection{Rust}
-Lenguaje de programación moderno con enfoque en seguridad.
+\section{Comparativa de Modelos Representativos}
 
+\begin{table}[h]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{llll}
+      & Modalidades                         & Tamaño     & Características principales                                                              \\ \hline
+      ChatGPT (GPT-4)  & Texto (y visión en GPT-4V)         & >100 B?    & LLM propietario de OpenAI, rendimiento puntero en comprensión y generación de lenguaje. \\
+      MiniCPM-V 2.5    & Texto, Imágenes, Vídeo, Audio      & ∼8 B       & Open-source, eficiente para despliegue en dispositivos; consultas multimodales.         \\
+      Moondream 2      & Imágenes–Texto                     & 2 B        & VLM ultraligero con VQA, captioning, detección y OCR en CPU en tiempo real.           \\
+      Whisper          & Audio–Texto                        & ∼1.6 B     & ASR multilingüe de código abierto, muy robusto ante acentos y ruido.                   \\ \hline
+    \end{tabular}%
+  }
+  \caption{Comparativa de modelos representativos en lenguaje y multimodalidad.}
+  \label{tab:comparativa_modelos}
+\end{table}
+
+En la tabla se observa la distinción entre modelos propietarios (e.g. ChatGPT) y una diversidad de iniciativas abiertas. Para \textbf{LLMSearch}, los módulos open-source (MiniCPM-V, Moondream, Whisper, CLAP, etc.) pueden combinarse para construir un sistema completo:
 \begin{itemize}
-    \item \textbf{notify:} Biblioteca Rust para vigilar cambios en archivos.
+  \item Transcripción de audio con Whisper
+  \item Indexado de sonidos con CLAP
+  \item Descripción de imágenes con Moondream o BLIP-2
+  \item Orquestación conversacional con un LLM general (Vicuna/LLaMA)
 \end{itemize}
 
-\clearpage
-\section{Base de datos}
-Opciones para almacenamiento de datos.
+\section{Conclusión}
 
-\subsection{Relacional}
-Bases de datos con estructura definida y relaciones entre tablas.
-
-\subsubsection{SQLite}
-Base de datos relacional ligera contenida en un único archivo.
-
-\paragraph{Ventajas}
-\begin{itemize}
-    \item \textbf{Ligereza y simplicidad:} SQLite es una biblioteca de base de datos integrada que no requiere una configuración de servidor independiente, lo que facilita su implementación y uso.
-    
-    \item \textbf{Portabilidad:} Al almacenar toda la base de datos en un único archivo, es fácil de transferir y gestionar, especialmente útil para aplicaciones móviles o integradas.
-    
-    \item \textbf{Rendimiento en entornos de bajo recurso:} Funciona eficientemente incluso en sistemas con recursos limitados.
-\end{itemize}
-
-\paragraph{Desventajas}
-\begin{itemize}
-    \item \textbf{Concurrencia limitada:} SQLite permite múltiples lecturas simultáneas, pero las escrituras se gestionan de una en una, lo que puede ser un cuello de botella en aplicaciones con alta concurrencia de escritura.
-    
-    \item \textbf{Escalabilidad:} No está diseñada para manejar grandes volúmenes de datos o aplicaciones que requieren escalabilidad horizontal.
-\end{itemize}
-
-\subsubsection{MariaDB}
-Sistema de gestión de bases de datos fork de MySQL.
-
-\paragraph{Ventajas}
-\begin{itemize}
-    \item \textbf{Rendimiento y escalabilidad:} MariaDB ofrece un alto rendimiento y puede manejar una gran cantidad de transacciones, siendo adecuada para aplicaciones empresariales.
-    
-    \item \textbf{Compatibilidad con MySQL:} Como un fork de MySQL, mantiene una alta compatibilidad, facilitando la migración desde MySQL.
-    
-    \item \textbf{Soporte para almacenamiento en columnas:} Incluye el motor ColumnStore, optimizado para cargas de trabajo analíticas.
-\end{itemize}
-
-\paragraph{Desventajas}
-\begin{itemize}
-    \item \textbf{Complejidad en la configuración:} Requiere una configuración y gestión más complejas en comparación con SQLite.
-    
-    \item \textbf{Requisitos de recursos:} Necesita más recursos del sistema, lo que puede ser excesivo para aplicaciones pequeñas o integradas.
-\end{itemize}
-
-\subsection{No relacional}
-Bases de datos con esquemas flexibles no basados en tablas relacionales.
-
-\subsubsection{MongoDB}
-Base de datos NoSQL orientada a documentos.
-
-\paragraph{Ventajas}
-\begin{itemize}
-    \item \textbf{Flexibilidad del esquema:} Al ser una base de datos NoSQL orientada a documentos, permite almacenar datos en un formato flexible similar a JSON, adaptándose fácilmente a cambios en la estructura de los datos.
-    
-    \item \textbf{Escalabilidad horizontal:} Diseñada para escalar horizontalmente mediante sharding, lo que facilita el manejo de grandes volúmenes de datos y altas tasas de tráfico.
-    
-    \item \textbf{Alto rendimiento en operaciones de lectura/escritura:} Optimizada para manejar operaciones simultáneas de lectura y escritura de manera eficiente.
-\end{itemize}
-
-\paragraph{Desventajas}
-\begin{itemize}
-    \item \textbf{Consumo de recursos:} Requiere una cantidad significativa de recursos, especialmente en implementaciones a gran escala.
-    
-    \item \textbf{Falta de soporte para transacciones complejas:} Aunque MongoDB ha mejorado en este aspecto, las transacciones en múltiples documentos pueden no ser tan robustas como en bases de datos relacionales.
-\end{itemize}
-
-\clearpage
-\section{Docker}
-Plataforma de contenedores para desarrollo, envío y ejecución de aplicaciones.
-
-\subsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Portabilidad:} Los contenedores Docker aseguran que el software se ejecute de manera consistente en cualquier entorno.
-    
-    \item \textbf{Aislamiento:} Cada componente del sistema puede ejecutarse en su propio contenedor, evitando conflictos de dependencias.
-    
-    \item \textbf{Facilidad de despliegue:} Simplifica la distribución y actualización de aplicaciones.
-\end{itemize}
-
-\subsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Consumo de recursos:} Aunque ligero, el uso de contenedores añade una capa adicional que consume recursos del sistema.
-    
-    \item \textbf{Complejidad adicional:} Requiere conocimientos sobre Docker y la gestión de contenedores.
-\end{itemize}
-
-\clearpage
-\section{Interfaz}
-Frameworks para el desarrollo de interfaces web.
-
-\subsection{Angular}
-Framework completo para desarrollo de aplicaciones web.
-
-\subsubsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Framework completo:} Angular ofrece una solución integral con herramientas integradas para el desarrollo de aplicaciones web robustas.
-    
-    \item \textbf{Arquitectura estructurada:} Facilita la escalabilidad y el mantenimiento de aplicaciones complejas.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Curva de aprendizaje pronunciada:} Requiere tiempo para dominar conceptos como TypeScript y la inyección de dependencias.
-    
-    \item \textbf{Complejidad innecesaria para proyectos simples:} Puede ser excesivo para aplicaciones con funcionalidades limitadas.
-\end{itemize}
-
-\subsection{React}
-Biblioteca de JavaScript para construcción de interfaces de usuario.
-
-\subsubsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Biblioteca flexible:} React se centra en la construcción de interfaces de usuario, permitiendo la integración con diversas bibliotecas según las necesidades del proyecto.
-    
-    \item \textbf{Amplia comunidad y recursos:} Su popularidad asegura una gran cantidad de recursos y soporte.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Necesidad de configuraciones adicionales:} Para funcionalidades más allá de la UI, es necesario integrar bibliotecas adicionales, lo que puede aumentar la complejidad.
-\end{itemize}
-
-\subsection{Vue}
-Framework progresivo para construir interfaces de usuario.
-
-\subsubsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Simplicidad y facilidad de uso:} Vue es conocido por su curva de aprendizaje suave, lo que permite una adopción rápida.
-    
-    \item \textbf{Flexibilidad:} Adecuado tanto para proyectos pequeños como para aplicaciones más complejas.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Menor adopción en grandes empresas:} Aunque está ganando popularidad, Vue aún no es tan común en entornos corporativos grandes.
-\end{itemize}
-
-\subsection{Astro}
-Framework moderno para sitios web con enfoque en rendimiento.
-
-\subsubsection{Ventajas}
-\begin{itemize}
-    \item \textbf{Optimización para contenido estático:} Astro está diseñado para generar sitios web estáticos rápidos, lo que puede ser beneficioso para aplicaciones con contenido predominantemente estático.
-    
-    \item \textbf{Integración con otros frameworks:} Permite utilizar componentes de React, Vue y otros dentro de sus proyectos.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-    \item \textbf{Menor madurez:} Al ser relativamente nuevo, Astro puede carecer de la amplitud de recursos y comunidad que tienen otros frameworks más establecidos.
-\end{itemize}
+El estado del arte ofrece los bloques fundamentales para un buscador multimedia por lenguaje natural. Este TFG integrará y adaptará estas tecnologías de vanguardia en una única plataforma unificada (\emph{LLMSearch}), evaluando su rendimiento y proponiendo mejoras para lograr búsquedas multimodales más precisas y naturales.
