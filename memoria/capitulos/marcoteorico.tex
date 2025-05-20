@@ -39,157 +39,82 @@ Un hito fue el modelo \textbf{CLIP} de OpenAI, que entrena conjuntamente un codi
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.7\textwidth]{archivos/clip_space.png}
-  \caption{Ejemplo conceptual de un espacio vectorial multimodal entrenado por CLIP, donde imágenes y descripciones semánticas correspondientes se representan mediante vectores cercanos.}
+  \caption[Espacio vectorial multimodal de CLIP]{Ejemplo conceptual de un espacio vectorial multimodal entrenado por CLIP, donde imágenes y descripciones semánticas correspondientes se representan mediante vectores cercanos.}
   \label{fig:clip_space}
 \end{figure}
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.7\textwidth]{archivos/clip_architecture.png}
-  \caption{Arquitectura del modelo CLIP: encoder de texto y encoder de imagen que proyectan al mismo espacio de embedding.}
+  \caption[Arquitectura de CLIP]{Arquitectura del modelo CLIP: encoder de texto y encoder de imagen que proyectan al mismo espacio de embedding.}
   \label{fig:clip_architecture}
 \end{figure}
 
 \subsection{Modelos Generativos de Descripción de Imágenes}
 
-Otra línea de desarrollo son los \textbf{modelos generativos de descripción de imágenes}. Estos sistemas realizan \emph{image captioning}, es decir, generan en lenguaje natural una descripción para una imagen dada.
-
-Modelos recientes como \textbf{BLIP-2} combinan:
-\begin{itemize}
-  \item Un encoder visual pre-entrenado (e.g. CLIP ViT)
-  \item Un modelo de lenguaje grande congelado
-  \item Un transformador ligero intermedio (Q-Former)
-\end{itemize}
-
-Esta arquitectura puentea la brecha visión-lenguaje eficientemente: el encoder de imagen extrae características visuales y el LLM genera la descripción textual.
+Otra línea de desarrollo significativa se centra en los \textbf{modelos generativos de descripción de imágenes}. Estos sistemas realizan la tarea conocida como \emph{image captioning}, que consiste en generar una descripción en lenguaje natural para una imagen dada. Modelos recientes como \textbf{BLIP-2} ejemplifican esta aproximación, combinando un encoder visual pre-entrenado (por ejemplo, CLIP ViT), un modelo de lenguaje grande congelado y un transformador ligero intermedio denominado Q-Former. Esta arquitectura logra puentear eficientemente la brecha entre visión y lenguaje: el encoder de imagen extrae las características visuales relevantes, mientras que el LLM se encarga de generar la descripción textual coherente.
 
 \subsection{VQA y Diálogo Multimodal}
 
-Junto con BLIP-2, han surgido numerosos modelos abiertos que permiten \textbf{Pregunta-Respuesta Visual (VQA)} y diálogo multimodal:
+Junto al desarrollo de modelos como BLIP-2, han aparecido numerosos modelos abiertos que permiten la \textbf{Pregunta-Respuesta Visual (VQA)} y el diálogo multimodal. Entre ellos destaca \textbf{LLaVA} (Large Language and Vision Assistant), que utiliza GPT-4 para generar datos sintéticos de entrenamiento y posteriormente afina un modelo basado en \emph{Vicuna} (un derivado de LLaMA) acoplado a un encoder visual. Otro modelo relevante es \textbf{Moondream}, un VLM (Visual Language Model) open-source de tan solo 2 mil millones de parámetros (2B), capaz de operar en tiempo real incluso en CPUs o dispositivos móviles. Moondream ha demostrado capacidades notables en la generación de descripciones detalladas, la respuesta a preguntas visuales, la detección de objetos en modalidad cero-shot y el OCR básico para leer texto en imágenes. En esta misma línea, \textbf{JoyCaption} se presenta como un modelo de captioning de imágenes libre y sin censura, concebido originalmente para generar descripciones ricas que ayuden a entrenar modelos de difusión. Finalmente, aunque de naturaleza propietaria, \textbf{GPT-4 con visión} (GPT-4V) ha demostrado capacidades impresionantes al responder con acierto a entradas que combinan imagen y texto, si bien su acceso limitado restringe su uso en entornos académicos.
 
-\begin{itemize}
-  \item \textbf{LLaVA} (Large Language and Vision Assistant): Usa GPT-4 para generar datos sintéticos de entrenamiento y afina un modelo basado en \emph{Vicuna} (derivado de LLaMA) acoplado a un encoder visual.
-  
-  \item \textbf{Moondream}: Un VLM open-source de apenas 2 billones de parámetros (2B) que puede correr en tiempo real incluso en CPU o dispositivos móviles. Demuestra capacidades notables en:
-  \begin{itemize}
-    \item Generación de descripciones detalladas
-    \item Respuesta a preguntas visuales
-    \item Detección de objetos en modalidad cero-shot
-    \item OCR básico (leer texto en imágenes)
-  \end{itemize}
-  
-  \item \textbf{JoyCaption}: Un modelo de captioning de imágenes libre y sin censura, pensado originalmente para generar descripciones ricas que ayuden a entrenar modelos de difusión.
-  
-  \item \textbf{GPT-4 con visión} (GPT-4V): Demuestra capacidades impresionantes al responder con acierto a entradas que combinan imagen + texto, aunque su naturaleza propietaria limita su uso en entornos académicos.
-\end{itemize}
-
-\textbf{En síntesis}, el estado del arte en imagen+lenguaje ofrece dos enfoques complementarios para búsqueda multimedia:
-\begin{enumerate}
-  \item \emph{Embeddings} multimodales tipo CLIP para realizar \textbf{búsqueda directa por similitud} entre consultas textuales y contenido visual
-  \item \emph{Modelos generativos visiolingüísticos} para \textbf{describir o entender imágenes en texto}, permitiendo indexar y razonar sobre imágenes mediante lenguaje natural
-\end{enumerate}
+\textbf{En síntesis}, el estado del arte en la convergencia de imagen y lenguaje ofrece dos enfoques complementarios para la búsqueda multimedia. Por un lado, los \emph{embeddings} multimodales tipo CLIP permiten realizar una \textbf{búsqueda directa por similitud} entre consultas textuales y contenido visual. Por otro lado, los \emph{modelos generativos visiolingüísticos} facilitan la \textbf{describir o entender imágenes en texto}, permitiendo indexar y razonar sobre imágenes mediante lenguaje natural.
 
 \section{Modelos Multimodales para Vídeo}
 
-Extender la búsqueda basada en lenguaje natural al dominio de \textbf{vídeo} conlleva retos adicionales, pues los vídeos combinan secuencias de imágenes con audio (y a veces texto incrustado).
+Extender la búsqueda basada en lenguaje natural al dominio del \textbf{vídeo} conlleva retos adicionales, pues los vídeos combinan secuencias de imágenes con audio y, en ocasiones, texto incrustado.
 
 \subsection{Técnicas de Procesamiento de Video}
 
-\begin{enumerate}
-  \item \textbf{Análisis por frames}: 
-  \begin{itemize}
-    \item Extraer fotogramas representativos del video
-    \item Aplicar modelos de visión-lenguaje a cada frame
-    \item Convertir el problema de vídeo a un conjunto de imágenes con marcas de tiempo
-  \end{itemize}
-
-  \item \textbf{Procesamiento de audio}:
-  \begin{itemize}
-    \item Usar modelos de \textbf{Reconocimiento Automático de Voz (ASR)} como \emph{Whisper}
-    \item Transcribir con alta calidad el diálogo o narración presente en videos
-    \item Indexar cada video por su transcripción textual completa
-  \end{itemize}
-
-  \item \textbf{Modelos video-texto end-to-end}:
-  \begin{itemize}
-    \item \emph{VideoCLIP}: Extiende la idea de CLIP al dominio temporal
-    \item Transformers específicos para vídeo que realizan \emph{video captioning}
-  \end{itemize}
-\end{enumerate}
+Para abordar la complejidad del vídeo, se emplean diversas técnicas. Una fundamental es el \textbf{análisis por frames}, que implica extraer fotogramas representativos del vídeo. A estos se les aplican modelos de visión-lenguaje, convirtiendo el problema de vídeo en el manejo de un conjunto de imágenes con marcas de tiempo. Paralelamente, el \textbf{procesamiento de audio} es crucial. Mediante modelos de \textbf{Reconocimiento Automático de Voz (ASR)} como \emph{Whisper}, es posible transcribir con alta calidad el diálogo o narración presente en los vídeos, permitiendo indexar cada vídeo por su transcripción textual completa. Además, se están desarrollando \textbf{modelos vídeo-texto end-to-end}, como \emph{VideoCLIP}, que extienden la idea de CLIP al dominio temporal, o transformadores específicos para vídeo que realizan \emph{video captioning}.
 
 \subsection{Arquitecturas para Búsqueda en Video}
 
-Una arquitectura emergente es combinar los enfoques anteriores en un pipeline RAG multimodal:
-\begin{itemize}
-  \item Indexar por un lado los \emph{frames} visuales mediante embeddings
-  \item Indexar por otro lado las transcripciones de voz como texto
-  \item Ante una consulta, recuperar fragmentos candidatos por similitud visual o textual
-  \item Usar un modelo de lenguaje para sintetizar ambas fuentes y determinar la respuesta
-\end{itemize}
+Una arquitectura emergente para la búsqueda en vídeo combina los enfoques anteriores en un pipeline RAG (Retrieval Augmented Generation) multimodal. Este sistema indexa, por un lado, los \emph{frames} visuales mediante embeddings y, por otro, las transcripciones de voz como texto. Ante una consulta, recupera fragmentos candidatos por similitud visual o textual, y posteriormente utiliza un modelo de lenguaje para sintetizar ambas fuentes de información y determinar la respuesta más adecuada.
 
 \subsection{Modelos Unificados Multimodales}
 
-\begin{itemize}
-  \item \textbf{MiniGPT-4}: Acepta secuencias de imágenes como entrada (simulando un video corto)
-  \item \textbf{MiniCPM-V}: Soporta entradas de video, generando una descripción general
-  \item \textbf{Gemini} (Google): Integra visión, video y sonido en un mismo LLM
-  \item \textbf{ImageBind} (Meta): Aprende una representación común para imágenes, texto, audio y otros sensores
-\end{itemize}
+Recientemente, han surgido modelos unificados que procesan múltiples modalidades de forma integrada. \textbf{MiniGPT-4}, por ejemplo, puede aceptar secuencias de imágenes como entrada, simulando un vídeo corto. \textbf{MiniCPM-V} soporta entradas de vídeo directamente, generando una descripción general del contenido. Google con \textbf{Gemini} ha avanzado en la integración de visión, vídeo y sonido en un mismo LLM, y Meta con \textbf{ImageBind} ha propuesto aprender una representación común para imágenes, texto, audio y otros sensores, abriendo nuevas vías para la comprensión multimodal holística.
 
 \section{Análisis de Audio y Búsqueda mediante Sonido}
 
-Para completar un buscador verdaderamente multimedia, se debe considerar contenido \textbf{audio} (fuera de videos, es decir, archivos de sonido o música).
+Para completar un buscador verdaderamente multimedia, es imprescindible considerar el contenido de \textbf{audio} independiente de los vídeos, como archivos de sonido o música.
 
 \subsection{Procesamiento de Habla}
 
-\begin{itemize}
-  \item Si el audio es habla (podcasts, grabaciones, conferencias), aplicar \textbf{ASR} con modelos como Whisper
-  \item Obtener una transcripción textual que se convierte en texto indexable
-  \item Permitir búsquedas por palabras clave o semántica usando LLMs o embeddings
-\end{itemize}
+En el caso de que el audio contenga habla, como en podcasts, grabaciones o conferencias, se aplican técnicas de \textbf{ASR} con modelos robustos como Whisper. Esto permite obtener una transcripción textual que se convierte en contenido indexable, facilitando búsquedas por palabras clave o semántica mediante el uso de LLMs o embeddings textuales.
 
 \subsection{Audio No Verbal}
 
-Para audio que no es voz (sonidos ambientales, música, efectos sonoros):
-\begin{itemize}
-  \item \textbf{CLAP (Contrastive Language-Audio Pretraining)}: Entrena un encoder de audio y uno de texto conjuntamente
-  \item Permite buscar efectos de sonido a partir de descripciones textuales
-  \item Facilita la clasificación cero-shot de audio
-\end{itemize}
+Para el audio que no es voz, como sonidos ambientales, música o efectos sonoros, existen modelos como \textbf{CLAP (Contrastive Language-Audio Pretraining)}. Este entrena conjuntamente un codificador de audio y uno de texto, lo que permite buscar efectos de sonido a partir de descripciones textuales (``sonido de lluvia'', ``pasos en la grava'') y facilita la clasificación cero-shot de audio.
 
 \subsection{Modelos Generadores de Descripciones Auditivas}
 
-\begin{itemize}
-  \item \textbf{AudioCaption} (Microsoft): Genera frases descriptivas de clips de audio
-  \item Permite describir cada audio en texto y luego indexar esas descripciones
-  \item Facilita un acceso más semántico a archivos de sonido
-\end{itemize}
+Complementariamente, modelos como \textbf{AudioCaption} de Microsoft pueden generar frases descriptivas de clips de audio. Esta capacidad permite describir cada archivo de sonido en formato textual, indexar dichas descripciones y, en consecuencia, facilitar un acceso más semántico al contenido auditivo, más allá de simples metadatos.
 
 \section{Comparativa de Modelos Representativos}
+\label{sec:comparativa}
 
-\begin{table}[h]
+La tabla \ref{tab:comparativa_modelos} resume algunos modelos representativos, destacando la distinción entre modelos propietarios como ChatGPT y una creciente diversidad de iniciativas abiertas. Para el desarrollo de un sistema como \textbf{LLMSearch}, los módulos open-source son particularmente relevantes. Es factible combinar herramientas como MiniCPM-V, Moondream, Whisper y CLAP para construir un sistema completo: Whisper se encargaría de la transcripción de audio; CLAP, del indexado de sonidos no verbales; Moondream o BLIP-2, de la descripción de imágenes; y un LLM generalista como Vicuna o LLaMA podría orquestar la interacción conversacional y la fusión de información.
+
+\begin{table}[h!]
   \centering
+  \captionsetup{justification=centering} % Centrar el texto del caption
   \resizebox{\textwidth}{!}{%
     \begin{tabular}{llll}
-      & Modalidades                         & Tamaño     & Características principales                                                              \\ \hline
-      ChatGPT (GPT-4)  & Texto (y visión en GPT-4V)         & >100 B?    & LLM propietario de OpenAI, rendimiento puntero en comprensión y generación de lenguaje. \\
-      MiniCPM-V 2.5    & Texto, Imágenes, Vídeo, Audio      & ∼8 B       & Open-source, eficiente para despliegue en dispositivos; consultas multimodales.         \\
-      Moondream 2      & Imágenes–Texto                     & 2 B        & VLM ultraligero con VQA, captioning, detección y OCR en CPU en tiempo real.           \\
-      Whisper          & Audio–Texto                        & ∼1.6 B     & ASR multilingüe de código abierto, muy robusto ante acentos y ruido.                   \\ \hline
+      \hline
+      \textbf{Modelo} & \textbf{Modalidades} & \textbf{Tamaño} & \textbf{Características principales} \\ \hline
+      ChatGPT (GPT-4)  & Texto (y visión en GPT-4V) & >100 B? & LLM propietario de OpenAI, rendimiento puntero en comprensión y generación de lenguaje. \\
+      MiniCPM-V 2.5    & Texto, Imágenes, Vídeo, Audio & \textasciitilde8 B & Open-source, eficiente para despliegue en dispositivos; consultas multimodales. \\
+      Moondream 2      & Imágenes–Texto & 2 B & VLM ultraligero con VQA, captioning, detección y OCR en CPU en tiempo real. \\
+      Whisper          & Audio–Texto & \textasciitilde1.6 B & ASR multilingüe de código abierto, muy robusto ante acentos y ruido. \\ \hline
     \end{tabular}%
   }
   \caption{Comparativa de modelos representativos en lenguaje y multimodalidad.}
   \label{tab:comparativa_modelos}
 \end{table}
 
-En la tabla se observa la distinción entre modelos propietarios (e.g. ChatGPT) y una diversidad de iniciativas abiertas. Para \textbf{LLMSearch}, los módulos open-source (MiniCPM-V, Moondream, Whisper, CLAP, etc.) pueden combinarse para construir un sistema completo:
-\begin{itemize}
-  \item Transcripción de audio con Whisper
-  \item Indexado de sonidos con CLAP
-  \item Descripción de imágenes con Moondream o BLIP-2
-  \item Orquestación conversacional con un LLM general (Vicuna/LLaMA)
-\end{itemize}
-
 \section{Conclusión}
+\label{sec:conclusion}
 
-El estado del arte ofrece los bloques fundamentales para un buscador multimedia por lenguaje natural. Este TFG integrará y adaptará estas tecnologías de vanguardia en una única plataforma unificada (\emph{LLMSearch}), evaluando su rendimiento y proponiendo mejoras para lograr búsquedas multimodales más precisas y naturales.
+El estado del arte actual ofrece los bloques fundamentales necesarios para construir un buscador multimedia avanzado que opere mediante lenguaje natural. Este TFG se propone integrar y adaptar estas tecnologías de vanguardia en una única plataforma unificada, denominada \emph{LLMSearch}. El proyecto evaluará el rendimiento de esta integración y buscará proponer mejoras con el objetivo de lograr búsquedas multimodales más precisas, naturales e intuitivas para el usuario.
