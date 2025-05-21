@@ -5,111 +5,257 @@
 % Contacto: info@jmrplens.com / Telegram:@jmrplens
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Análisis, Especificación y diseño}
-\label{analisis}
+\chapter{Desarrollo}
+\label{desarrollo}
 
-\section{Requisitos del sistema}
-En esta sección se detallan los requisitos del sistema, divididos en requisitos funcionales, no funcionales y de configuración. Los requisitos se han estructurado en formato tabular para facilitar su comprensión y seguimiento durante el desarrollo del proyecto.
+La construcción de un sistema inteligente para la búsqueda y gestión de archivos personales requiere la integración de diversas tecnologías y herramientas consolidadas en el ámbito del desarrollo de software y la inteligencia artificial. Este capítulo tiene como objetivo revisar el estado del arte de los componentes tecnológicos clave que se han considerado o que forman la base para la implementación del presente proyecto. Se analizarán diferentes opciones en áreas fundamentales como la orquestación de tareas, la detección de cambios en el sistema de archivos, las soluciones de bases de datos para el almacenamiento de metadatos y embeddings, la contenerización para el despliegue y, finalmente, los frameworks para el desarrollo de la interfaz de usuario. Esta revisión permitirá contextualizar las decisiones de diseño tomadas y justificar la selección de las herramientas específicas utilizadas en el desarrollo de la solución.
 
-\subsection{Requisitos funcionales}
-Los requisitos funcionales describen el comportamiento que debe tener el sistema, las funcionalidades que debe ofrecer y las operaciones que debe realizar.
+\section{Orquestador de tareas}
+La gestión eficiente de flujos de trabajo complejos, especialmente aquellos que involucran procesamiento de datos y tareas de machine learning, es crucial para el sistema propuesto. Un orquestador de tareas permite automatizar, programar y monitorizar estas secuencias de operaciones. A continuación, se presentan las herramientas que se han estudiado en el presente trabajo para seleccionar la más adecuada para la coordinación de las diversas etapas del procesamiento de archivos.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{|p{1cm}|p{4cm}|p{9cm}|}
-\hline
-\textbf{ID} & \textbf{Nombre} & \textbf{Descripción} \\
-\hline
-RF-01 & Detección de ficheros & El sistema debe detectar nuevos ficheros en el directorio observado. \\
-\hline
-RF-02 & Diferenciación de tipos & El sistema debe diferenciar el tipo de archivo a analizar (texto, imagen, vídeo, audio, otros). \\
-\hline
-RF-03 & Ejecución de modelos & El sistema debe ejecutar el modelo correspondiente que extraerá la información del fichero a la base de datos. \\
-\hline
-RF-04 & Almacenamiento & El sistema debe almacenar todos los datos posibles sobre el fichero analizado en una base de datos. \\
-\hline
-RF-05 & Interfaz web & El sistema debe tener una interfaz web super-simple donde el usuario podrá escribir su consulta en lenguaje natural y darle a un botón para realizar la búsqueda. \\
-\hline
-RF-06 & Resultados de búsqueda & El sistema responderá con un conjunto de resultados potencialmente interesantes a partir de la consulta de búsqueda, ordenados de más a menos "interesante". \\
-\hline
-RF-07 & Entrada por línea de comandos & El sistema debe tener una entrada por línea de comandos (ej: \texttt{LLMSearch --query "mapa del mundo en el que hay marcados los mejores parques naturales"}). \\
-\hline
-RF-08 & Presentación de resultados & El resultado será la ruta del fichero junto a una pequeña descripción del mismo (enlaces clicables al fichero y a la carpeta que lo contiene). \\
-\hline
-RF-09 & Inspección de archivos comprimidos & Los ficheros comprimidos deberían poder inspeccionarse por dentro. \\
-\hline
-RF-10 & Tipos de ficheros a procesar & El sistema debe procesar los siguientes tipos de ficheros: \\
-& & - Documentos de texto \\
-& & - Imágenes \\
-& & - Vídeos \\
-& & - Ficheros de sonido \\
-& & - Otros (bases de datos, ejecutables, etc.) \\
-\hline
-\end{tabular}
-\caption{Requisitos funcionales del sistema}
-\label{tab:req_funcionales}
-\end{table}
+\subsection{Prefect}
+Prefect se presenta como una moderna plataforma de orquestación de flujos de trabajo, escrita principalmente en Python. Está diseñada específicamente para permitir a los desarrolladores diseñar, programar, ejecutar y monitorizar pipelines de datos y flujos de machine learning de manera fiable y escalable, con un enfoque en la simplicidad y la experiencia del desarrollador.
 
-\subsection{Requisitos no funcionales}
-Los requisitos no funcionales especifican criterios que pueden usarse para juzgar la operación de un sistema en lugar de sus comportamientos específicos.
+\subsubsection{Ventajas}
+\begin{itemize}
+\item \textbf{Facilidad de uso:} Prefect ofrece una sintaxis intuitiva y una configuración sencilla, lo que facilita la definición y gestión de flujos de trabajo complejos.
+\item \textbf{Flexibilidad:} Permite la orquestación de tareas en entornos locales, en la nube o híbridos, adaptándose a diversas necesidades.
+\item \textbf{Monitoreo y gestión:} Incluye herramientas integradas para el monitoreo, registro y manejo de errores en tiempo real.
+\end{itemize}
 
-\begin{table}[H]
-\centering
-\begin{tabular}{|p{1cm}|p{4cm}|p{9cm}|}
-\hline
-\textbf{ID} & \textbf{Nombre} & \textbf{Descripción} \\
-\hline
-RNF-01 & Configuración web & La web debe tener una pequeña parte de configuración discreta pero accesible en todo momento. \\
-\hline
-RNF-02 & Arquitectura modular & La arquitectura se debe dividir en un "buscador" y un "explorador" y deben ser completamente separadas para poder ser reutilizadas. \\
-\hline
-RNF-03 & Ejecución sin GPU & El sistema debe poder ejecutarse en un ordenador sin GPU (opcional). \\
-\hline
-RNF-04 & Parámetro de consulta & La entrada por línea de comandos aceptará un parámetro \texttt{--query} junto al término de búsqueda. \\
-\hline
-RNF-05 & Resultados en CLI & La entrada por línea de comandos devolverá los resultados de la misma manera que el buscador web con la diferencia de que solo devolverá información adicional si se le añade el parámetro \texttt{--verbose}. \\
-\hline
-RNF-06 & Estado del sistema & La entrada por línea de comandos tendrá un parámetro \texttt{--status} que devolverá el estado del sistema: número de archivos procesados sobre el número total de archivos en observación, cantidad de ficheros de cada tipo, errores encontrados... \\
-\hline
-RNF-07 & Configuración por CLI & Se añadirán los parámetros necesarios para poder configurar el sistema desde línea de comandos. \\
-\hline
-\end{tabular}
-\caption{Requisitos no funcionales del sistema}
-\label{tab:req_no_funcionales}
-\end{table}
+\subsubsection{Desventajas}
+\begin{itemize}
+\item \textbf{Madurez:} Aunque ha ganado popularidad, Prefect es relativamente nuevo en comparación con otras herramientas más consolidadas.
+\item \textbf{Comunidad:} Su comunidad es más pequeña, lo que puede limitar la disponibilidad de recursos y soporte.
+\end{itemize}
 
-\subsection{Requisitos de configuración}
-Los requisitos de configuración especifican las opciones que el usuario debe poder ajustar en el sistema.
+\subsection{Kafka}
+Apache Kafka es un sistema de mensajería distribuido de código abierto, reconocido por su alto rendimiento y capacidad para manejar flujos de datos en tiempo real. Aunque su función principal es la de broker de mensajes, a menudo se utiliza en arquitecturas complejas para desacoplar sistemas y como parte de pipelines de datos más amplios, pudiendo actuar como un componente en la orquestación de eventos.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{|p{1cm}|p{4cm}|p{9cm}|}
-\hline
-\textbf{ID} & \textbf{Nombre} & \textbf{Descripción} \\
-\hline
-RC-01 & Directorio de observación & Directorio donde se están observando nuevos ficheros. \\
-\hline
-RC-02 & Regulación de carga & Regular la carga (limitar la CPU al X\%). \\
-\hline
-RC-03 & Tipo de modelo LLM & Tipo de modelo LLM a utilizar (Local \textit{(LLM Studio)} ó en la nube). \\
-\hline
-RC-04 & Búsqueda por imagen & Posibilidad de poner una foto de una persona y que la busque en los ficheros. \\
-\hline
-\end{tabular}
-\caption{Requisitos de configuración del sistema}
-\label{tab:req_configuracion}
-\end{table}
+\subsubsection{Ventajas}
+\begin{itemize}
+\item \textbf{Alto rendimiento:} Kafka es conocido por su capacidad para manejar grandes volúmenes de datos con baja latencia.
+\item \textbf{Escalabilidad:} Diseñado para escalar horizontalmente, puede manejar cargas de trabajo crecientes de manera eficiente.
+\item \textbf{Ecosistema robusto:} Cuenta con una amplia gama de herramientas y conectores que facilitan su integración con otros sistemas.
+\end{itemize}
 
-\section{Diagrama de arquitectura del sistema}
-A continuación se presenta un diagrama de la arquitectura del sistema que muestra la división entre el "buscador" y el "explorador" según el requisito no funcional RNF-02.
+\subsubsection{Desventajas}
+\begin{itemize}
+\item \textbf{Complejidad:} La configuración y gestión de Kafka pueden ser complejas, especialmente para usuarios sin experiencia previa.
+\item \textbf{Requisitos de recursos:} Para un rendimiento óptimo, Kafka suele requerir una infraestructura robusta, lo que puede ser excesivo para proyectos más pequeños.
+\end{itemize}
 
-% Aquí se podría incluir un diagrama creado con TikZ o importado como imagen
+\subsection{Airflow}
+Apache Airflow es una plataforma de código abierto ampliamente adoptada para la creación, programación y monitorización programática de flujos de trabajo. Originalmente desarrollada por Airbnb, permite definir flujos de trabajo como Grafos Acíclicos Dirigidos (DAGs) de tareas, utilizando Python para su definición.
 
-\section{Casos de uso}
-Los casos de uso describen las interacciones típicas entre los usuarios y el sistema, mostrando cómo se utilizarían las funcionalidades principales.
+\subsubsection{Ventajas}
+\begin{itemize}
+\item \textbf{Popularidad y comunidad:} Amplia adopción y una comunidad activa que proporciona numerosos recursos y soporte.
+\item \textbf{Flexibilidad:} Permite la programación y monitoreo de flujos de trabajo complejos.
+\end{itemize}
 
-% Aquí se podrían describir algunos casos de uso principales, como:
-% - Búsqueda web de contenido
-% - Uso de la línea de comandos
-% - Configuración del sistema
-% - etc.
+\subsubsection{Desventajas}
+\begin{itemize}
+\item \textbf{Curva de aprendizaje:} Puede ser complejo de configurar y requiere conocimientos avanzados para su implementación efectiva.
+\end{itemize}
+
+\clearpage
+\section{Script de detección de cambios en un path y Servidor}
+Un componente esencial del sistema es la capacidad de detectar automáticamente la creación, modificación o eliminación de archivos dentro de los directorios personales del usuario. Esta funcionalidad es la que desencadena el proceso de análisis y catalogación. En esta sección se revisan diferentes lenguajes y bibliotecas que ofrecen mecanismos para el monitoreo del sistema de archivos y que podrían servir de base para implementar un servidor que gestione estas detecciones.
+
+\subsection{Python}
+Python, debido a su versatilidad y extenso ecosistema de bibliotecas, ofrece múltiples opciones para la detección de cambios en el sistema de archivos. Estas soluciones varían en cuanto a su dependencia de la plataforma y su nivel de abstracción.
+\begin{itemize}
+\item \textbf{Watchdogs:} Es una biblioteca multiplataforma escrita en Python, diseñada específicamente para observar eventos del sistema de archivos (como creación, eliminación, modificación de archivos o directorios) de manera eficiente.
+\item \textbf{pyinotify:} Esta biblioteca es un wrapper de Python para la API inotify del kernel de Linux, lo que permite monitorear eventos del sistema de archivos de forma muy eficiente en sistemas Linux, pero no es portable a otras plataformas.
+\item \textbf{inotify-simple:} Se trata de un wrapper más sencillo y ligero alrededor de la API inotify de Linux, que ofrece una interfaz de programación más directa para tareas básicas de monitoreo de archivos en sistemas Linux.
+\item \textbf{inotifyx:} Similar a pyinotify, esta biblioteca proporciona acceso al subsistema inotify de Linux. Está diseñada para ofrecer una API estable, pero su uso también está restringido a plataformas Linux.
+\item \textbf{Polling Methods:} En plataformas donde mecanismos como inotify no están disponibles, o para requisitos más simples, se puede implementar un mecanismo de sondeo (polling). Este método implica verificar periódicamente el estado del sistema de archivos para detectar cambios, aunque puede ser menos eficiente.
+\end{itemize}
+
+\subsection{Node.js}
+Node.js, como entorno de ejecución de JavaScript del lado del servidor, también proporciona herramientas robustas para interactuar con el sistema de archivos, incluyendo el monitoreo de cambios.
+\begin{itemize}
+\item \textbf{chokidar:} Es una biblioteca popular y eficiente para Node.js que normaliza y mejora el comportamiento de fs.watch y fs.watchFile, ofreciendo una solución multiplataforma robusta para vigilar cambios en el sistema de archivos.
+\end{itemize}
+
+\subsection{Java}
+Java, siendo una plataforma madura y ampliamente utilizada, incluye en su biblioteca estándar (NIO.2) mecanismos nativos para el monitoreo de eventos del sistema de archivos.
+\begin{itemize}
+\item \textbf{WatchService:} Es una API integrada en Java (desde Java 7) que permite registrar un directorio (o directorios) con el servicio de vigilancia. Este servicio monitorea los cambios en los objetos registrados y los encola para su procesamiento.
+\end{itemize}
+
+\subsection{C++/C/C\#}
+Los lenguajes de la familia C (C++, C, C\#) ofrecen acceso a APIs de bajo nivel del sistema operativo o bibliotecas específicas de cada plataforma para implementar la vigilancia de archivos, permitiendo un control granular y un alto rendimiento.
+\begin{itemize}
+\item \textbf{FileSystemWatcher:} En el ecosistema .NET (C\#), la clase FileSystemWatcher permite monitorear cambios en el sistema de archivos (archivos y directorios) y reaccionar a ellos. Para C/C++, se suele recurrir a las APIs específicas del sistema operativo como inotify en Linux o ReadDirectoryChangesW en Windows.
+\end{itemize}
+
+\subsection{Go}
+Go, conocido por su eficiencia y concurrencia, cuenta con bibliotecas desarrolladas por la comunidad para el monitoreo del sistema de archivos, aprovechando las capacidades nativas de los sistemas operativos.
+\begin{itemize}
+\item \textbf{fsnotify:} Es una biblioteca popular en Go para el monitoreo del sistema de archivos que proporciona una interfaz común sobre las APIs específicas de cada plataforma (inotify, kqueue, FSEvents, ReadDirectoryChangesW).
+\end{itemize}
+
+\subsection{Rust}
+Rust, un lenguaje de programación moderno enfocado en la seguridad y el rendimiento, también dispone de bibliotecas multiplataforma para la notificación de eventos del sistema de archivos.
+\begin{itemize}
+\item \textbf{notify:} Es una biblioteca de Rust multiplataforma para vigilar cambios en el sistema de archivos, ofreciendo una API unificada sobre diferentes backends específicos del sistema operativo.
+\end{itemize}
+
+\clearpage
+\section{Base de datos}
+El almacenamiento persistente de metadatos, tanto los extraídos directamente de los archivos como los generados por la \gls{ia} (incluyendo embeddings vectoriales), es fundamental. La elección de la base de datos impacta en el rendimiento, la escalabilidad y la facilidad de consulta. Se exploran opciones relacionales y no relacionales, cada una con sus propias fortalezas y debilidades.
+
+\subsection{Relacional}
+Las bases de datos relacionales se caracterizan por su estructura tabular, esquemas predefinidos y el uso de SQL (Structured Query Language) para la manipulación de datos. Son adecuadas para datos con relaciones bien definidas y donde la consistencia transaccional (ACID) es prioritaria.
+
+\subsubsection{SQLite}
+SQLite es un sistema de gestión de bases de datos relacional autocontenido, sin servidor, que no requiere configuración y es transaccional (ACID). Toda la base de datos (definiciones, tablas, índices y los propios datos) se almacena como un único archivo en el disco del host, lo que la hace extremadamente portable y fácil de integrar en aplicaciones.
+
+\paragraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Ligereza y simplicidad:} SQLite es una biblioteca de base de datos integrada que no requiere una configuración de servidor independiente, lo que facilita su implementación y uso.
+    \item \textbf{Portabilidad:} Al almacenar toda la base de datos en un único archivo, es fácil de transferir y gestionar, especialmente útil para aplicaciones móviles o integradas.
+    \item \textbf{Rendimiento en entornos de bajo recurso:} Funciona eficientemente incluso en sistemas con recursos limitados.
+\end{itemize}
+
+\paragraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Concurrencia limitada:} SQLite permite múltiples lecturas simultáneas, pero las escrituras se gestionan de una en una, lo que puede ser un cuello de botella en aplicaciones con alta concurrencia de escritura.
+    \item \textbf{Escalabilidad:} No está diseñada para manejar grandes volúmenes de datos o aplicaciones que requieren escalabilidad horizontal.
+\end{itemize}
+
+\subsubsection{MariaDB}
+MariaDB Server es un popular sistema de gestión de bases de datos relacional de código abierto, creado por los desarrolladores originales de MySQL. Está diseñado para ser un reemplazo directo de MySQL, ofreciendo mayor velocidad, nuevas características y una comunidad más abierta y vibrante.
+
+\paragraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Rendimiento y escalabilidad:} MariaDB ofrece un alto rendimiento y puede manejar una gran cantidad de transacciones, siendo adecuada para aplicaciones empresariales.
+    \item \textbf{Compatibilidad con MySQL:} Como un fork de MySQL, mantiene una alta compatibilidad, facilitando la migración desde MySQL.
+    \item \textbf{Soporte para almacenamiento en columnas:} Incluye el motor ColumnStore, optimizado para cargas de trabajo analíticas.
+\end{itemize}
+
+\paragraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Complejidad en la configuración:} Requiere una configuración y gestión más complejas en comparación con SQLite.
+    \item \textbf{Requisitos de recursos:} Necesita más recursos del sistema, lo que puede ser excesivo para aplicaciones pequeñas o integradas.
+\end{itemize}
+
+\subsection{No relacional}
+Las bases de datos no relacionales, o NoSQL, ofrecen modelos de datos flexibles, escalabilidad horizontal y están optimizadas para tipos específicos de datos o patrones de acceso. Son una alternativa cuando la rigidez de los esquemas relacionales es una limitación o se requiere un alto rendimiento para grandes volúmenes de datos no estructurados o semiestructurados. Dentro de esta categoría, las bases de datos vectoriales han ganado prominencia para aplicaciones de \gls{ia}.
+
+\subsubsection{MongoDB}
+MongoDB es una base de datos NoSQL orientada a documentos, de código abierto y multiplataforma. Almacena los datos en documentos flexibles similares a JSON (en formato BSON), lo que permite que los campos varíen de un documento a otro y que la estructura de los datos cambie con el tiempo, facilitando la evolución de las aplicaciones.
+
+\paragraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Flexibilidad del esquema:} Al ser una base de datos NoSQL orientada a documentos, permite almacenar datos en un formato flexible similar a JSON, adaptándose fácilmente a cambios en la estructura de los datos.
+    \item \textbf{Escalabilidad horizontal:} Diseñada para escalar horizontalmente mediante sharding, lo que facilita el manejo de grandes volúmenes de datos y altas tasas de tráfico.
+    \item \textbf{Alto rendimiento en operaciones de lectura/escritura:} Optimizada para manejar operaciones simultáneas de lectura y escritura de manera eficiente.
+\end{itemize}
+
+\paragraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Consumo de recursos:} Requiere una cantidad significativa de recursos, especialmente en implementaciones a gran escala.
+    \item \textbf{Falta de soporte para transacciones complejas:} Aunque MongoDB ha mejorado en este aspecto con transacciones multi-documento ACID, las transacciones complejas que involucran múltiples colecciones pueden no ser tan robustas o directas como en bases de datos relacionales tradicionales.
+\end{itemize}
+
+\subsubsection{ChromaDB} % <--- NUEVA ADICIÓN
+ChromaDB es una base de datos vectorial de código abierto diseñada específicamente para facilitar el desarrollo de aplicaciones con \gls{ia} que requieren el almacenamiento y la búsqueda de embeddings. Permite a los desarrolladores añadir capacidades de memoria a largo plazo y búsqueda semántica a sus modelos de lenguaje y otras aplicaciones de aprendizaje automático de forma sencilla. Puede operar en memoria para prototipado rápido o utilizar almacenamiento persistente en disco.
+
+\paragraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Especializada en embeddings:} Su diseño está optimizado para almacenar, gestionar y realizar búsquedas de similitud eficientes sobre grandes cantidades de vectores de embeddings.
+    \item \textbf{Facilidad de uso y API intuitiva:} Ofrece una API simple, especialmente para desarrolladores de Python, lo que reduce la curva de aprendizaje y acelera la integración.
+    \item \textbf{Integraciones con ecosistema de \gls{ia}:} Se integra de forma nativa con frameworks populares como LangChain y LlamaIndex, simplificando la construcción de flujos de trabajo de \gls{ia}.
+    \item \textbf{Ligera y embebible:} Puede ejecutarse localmente sin necesidad de un servidor complejo, siendo adecuada para desarrollo, prototipado y aplicaciones más pequeñas.
+    \item \textbf{Código abierto:} Permite su uso sin restricciones de licencia y fomenta la contribución de la comunidad.
+\end{itemize}
+
+\paragraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Madurez y escalabilidad para producción masiva:} Aunque evoluciona rápidamente, puede no tener la misma robustez o características avanzadas de escalabilidad horizontal y gestión de clústeres que soluciones de bases de datos vectoriales más maduras o servicios gestionados en la nube para cargas de trabajo extremadamente grandes.
+    \item \textbf{Funcionalidades de BD tradicional limitadas:} No está diseñada para ser una base de datos de propósito general. Carece de soporte para consultas relacionales complejas, transacciones ACID en el sentido tradicional o esquemas rígidos que ofrecen las bases de datos SQL.
+    \item \textbf{Operaciones y gestión avanzada:} Para despliegues a gran escala, las herramientas de monitorización, backup, y recuperación pueden ser menos sofisticadas en comparación con sistemas de bases de datos más establecidos.
+\end{itemize}
+
+\clearpage
+\section{Docker}
+La contenerización se ha convertido en un estándar para el desarrollo, despliegue y ejecución de aplicaciones, garantizando la consistencia entre diferentes entornos y simplificando la gestión de dependencias. Docker es la plataforma líder en este ámbito.
+Docker es una plataforma de software de código abierto que permite automatizar el despliegue de aplicaciones dentro de contenedores de software ligeros y portátiles. Un contenedor empaqueta una aplicación y todas sus dependencias, bibliotecas y archivos de configuración necesarios para que se ejecute de forma aislada.
+
+\subsection{Ventajas}
+\begin{itemize}
+\item \textbf{Portabilidad:} Los contenedores Docker aseguran que el software se ejecute de manera consistente en cualquier entorno que soporte Docker, desde el portátil del desarrollador hasta servidores de producción en la nube o locales.
+\item \textbf{Aislamiento:} Cada componente del sistema puede ejecutarse en su propio contenedor, con sus propias dependencias, evitando conflictos entre ellas y con el sistema anfitrión.
+\item \textbf{Facilidad de despliegue:} Simplifica significativamente la distribución y actualización de aplicaciones, permitiendo ciclos de desarrollo y despliegue más rápidos y fiables.
+\end{itemize}
+
+\subsection{Desventajas}
+\begin{itemize}
+\item \textbf{Consumo de recursos:} Aunque los contenedores son más ligeros que las máquinas virtuales, el uso de Docker y sus contenedores introduce una capa adicional que consume recursos del sistema (CPU, memoria, disco).
+\item \textbf{Complejidad adicional:} La gestión de contenedores, redes, volúmenes y la orquestación de múltiples contenedores (e.g., con Docker Compose o Kubernetes) requiere conocimientos específicos sobre Docker y sus conceptos asociados.
+\end{itemize}
+
+\clearpage
+\section{Interfaz}
+La interfaz de usuario (UI) es el punto de interacción principal del usuario con el sistema, permitiéndole realizar búsquedas, visualizar resultados y gestionar sus archivos. La elección de un framework de desarrollo para la UI impacta en la experiencia del usuario, la velocidad de desarrollo y la mantenibilidad de la aplicación. Se consideran varios frameworks web modernos.
+
+\subsection{Angular}
+Angular, desarrollado por Google, es un framework de desarrollo de aplicaciones web basado en TypeScript, completo y opinado. Proporciona una plataforma integral para construir aplicaciones web complejas y escalables de una sola página (SPA), ofreciendo herramientas para routing, gestión de estado, y más, directamente desde su núcleo.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+\item \textbf{Framework completo:} Angular ofrece una solución integral con herramientas integradas para el desarrollo de aplicaciones web robustas.
+\item \textbf{Arquitectura estructurada:} Su naturaleza opinada y el uso de TypeScript facilitan la escalabilidad y el mantenimiento de aplicaciones complejas a largo plazo.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+\item \textbf{Curva de aprendizaje pronunciada:} Requiere tiempo para dominar conceptos como TypeScript, RxJS, y la inyección de dependencias, que son fundamentales en Angular.
+\item \textbf{Complejidad innecesaria para proyectos simples:} Su estructura y conjunto de herramientas pueden resultar excesivos para aplicaciones pequeñas o con funcionalidades limitadas.
+\end{itemize}
+
+\subsection{React}
+React, mantenido por Meta (anteriormente Facebook) y una comunidad de desarrolladores individuales y empresas, es una biblioteca de JavaScript de código abierto para construir interfaces de usuario o componentes de UI. Se enfoca principalmente en la capa de vista (el "V" en MVC) y a menudo se utiliza junto con otras bibliotecas para construir aplicaciones completas.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+\item \textbf{Biblioteca flexible:} React se centra en la construcción de interfaces de usuario, permitiendo la integración con una amplia variedad de bibliotecas y herramientas según las necesidades específicas del proyecto (e.g., para routing, gestión de estado).
+\item \textbf{Amplia comunidad y recursos:} Su popularidad asegura una gran cantidad de tutoriales, bibliotecas de terceros, y soporte por parte de una comunidad activa y extensa.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+\item \textbf{Necesidad de configuraciones adicionales:} Para funcionalidades más allá de la UI básica (como enrutamiento o gestión de estado global), es necesario integrar y configurar bibliotecas adicionales, lo que puede aumentar la complejidad inicial del proyecto.
+\end{itemize}
+
+\subsection{Vue}
+Vue.js (comúnmente referido como Vue) es un framework de JavaScript de código abierto, progresivo y accesible, utilizado para construir interfaces de usuario y aplicaciones de una sola página. Se distingue por su facilidad de integración con proyectos existentes y otras bibliotecas, y por su diseño que permite adoptarlo gradualmente.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+\item \textbf{Simplicidad y facilidad de uso:} Vue es conocido por su curva de aprendizaje suave y su documentación clara, lo que permite una adopción rápida por parte de los desarrolladores.
+\item \textbf{Flexibilidad:} Adecuado tanto para proyectos pequeños donde se integra en partes de una página existente, como para el desarrollo de aplicaciones de una sola página más complejas.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+\item \textbf{Menor adopción en grandes empresas:} Aunque está ganando popularidad rápidamente, Vue aún no tiene la misma penetración en entornos corporativos grandes en comparación con Angular o React, lo que podría traducirse en menos ofertas de empleo o recursos específicos para escenarios empresariales muy complejos.
+\end{itemize}
+
+\subsection{Astro}
+Astro es un framework web moderno diseñado para construir sitios web rápidos y centrados en el contenido. Su principal característica es la arquitectura de "islas" (Astro Islands), que permite renderizar componentes de UI en el servidor y enviar menos JavaScript al cliente por defecto, mejorando significativamente el rendimiento de carga y la interactividad inicial.
+
+\subsubsection{Ventajas}
+\begin{itemize}
+\item \textbf{Optimización para contenido estático y rendimiento:} Astro está diseñado para generar sitios web estáticos o renderizados en servidor (SSR) muy rápidos, lo que es beneficioso para aplicaciones donde el rendimiento y el SEO son críticos.
+\item \textbf{Integración con otros frameworks:} Permite utilizar componentes de UI escritos en React, Vue, Svelte, y otros frameworks populares dentro de los proyectos Astro, ofreciendo flexibilidad al desarrollador.
+\end{itemize}
+
+\subsubsection{Desventajas}
+\begin{itemize}
+\item \textbf{Menor madurez para aplicaciones altamente interactivas:} Aunque soporta componentes interactivos, su enfoque principal en el contenido estático y la minimización de JavaScript del lado del cliente puede hacerlo menos ideal para aplicaciones web muy complejas y altamente dinámicas en comparación con SPAs tradicionales.
+\item \textbf{Ecosistema en crecimiento:} Al ser relativamente nuevo, Astro puede carecer de la amplitud de recursos, herramientas y comunidad que tienen otros frameworks más establecidos, aunque está creciendo rápidamente.
+\end{itemize}

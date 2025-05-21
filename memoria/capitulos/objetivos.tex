@@ -8,6 +8,19 @@
 \chapter{Objetivos}
 \label{objetivos}
 
-El objetivo de este proyecto es diseñar y desarrollar un buscador multimedia que permita a los usuarios realizar búsquedas avanzadas utilizando lenguaje natural de manera que, el usuario pueda buscar documentos de texto, imágenes, vídeos o archivos de audio usando el lenguaje natural para explorar el contenido de los ficheros, no solo los metadatos de los archivos.
-La idea es crear una herramienta que permita a los usuarios encontrar contenido multimedia de manera eficiente y precisa utilizando descripciones detalladas en lenguaje natural. Por ejemplo, se podría buscar una fotografía entre miles con una descripción como “busca una foto en la que salía un elefante levantando la trompa y que la hice en Tailandia hace unos 5 o 6 años” o encontrar un archivo PDF con una búsqueda del tipo “encuentra los datos para la declaración de la renta de 2016”.
-De esta forma, se obtendría un buscador que además de encontrar el archivo específico que se busca podría extraer los datos relevantes del archivo para responder a preguntas específicas hechas en la consulta.
+\section{Objetivo general}
+El objetivo principal de este \gls{tfg} es diseñar y desarrollar un buscador multimedia inteligente que permita a los usuarios realizar búsquedas avanzadas utilizando lenguaje natural. De esta manera, el usuario podrá localizar documentos de texto, imágenes, vídeos o archivos de audio explorando el contenido semántico intrínseco de los ficheros, trascendiendo las limitaciones de las búsquedas basadas únicamente en metadatos explícitos.
+
+La idea es crear una herramienta que facilite a los usuarios encontrar contenido multimedia de manera eficiente y precisa mediante descripciones detalladas en lenguaje natural. Por ejemplo, se podría buscar una fotografía específica entre miles con una consulta como: “busca una foto en la que salía un elefante levantando la trompa y que la hice en Tailandia hace unos 5 o 6 años”; o encontrar un archivo PDF relevante mediante una búsqueda del tipo: “encuentra los datos para la declaración de la renta de 2016”.
+De esta forma, se pretende obtener un sistema de búsqueda que no solo identifique el archivo específico que se busca, sino que también tenga la capacidad de extraer datos relevantes del contenido del archivo para responder a preguntas específicas formuladas en la consulta, aprovechando las capacidades de los modelos de lenguaje aumentados por recuperación (RAG).
+
+\section{Objetivos específicos}
+Adicionalmente, se plantean los siguientes objetivos secundarios que complementan y dan soporte al objetivo principal:
+\subsection{Estudiar modelos multimodales}
+Estudiar diferentes modelos multimodales con el fin de seleccionar aquellos que ofrezcan los mejores resultados en términos de precisión y eficiencia (tiempo de respuesta razonable).
+\subsection{Seleccionar una solución de base de datos}
+Investigar y seleccionar una solución de base de datos adecuada para el almacenamiento y consulta eficiente de metadatos enriquecidos y embeddings vectoriales generados por los modelos de \gls{ia}.
+\subsection{Diseñar una arquitectura modular}
+Diseñar una arquitectura de sistema que sea modular, escalable y eficiente, permitiendo la integración de los diferentes componentes y facilitando futuras expansiones o mejoras.
+\subsection{Desarrollar una interfaz gráfica}
+Desarrollar una interfaz gráfica de usuario (GUI) intuitiva y amigable que permita a los usuarios interactuar fácilmente con el sistema, realizar búsquedas, visualizar los resultados obtenidos y gestionar sus archivos.
