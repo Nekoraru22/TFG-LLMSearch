@@ -46,10 +46,10 @@ La Generación Aumentada por Recuperación (\gls{rag}) es una técnica que mejor
 Los sistemas \gls{rag} ofrecen ventajas significativas, como la reducción de alucinaciones, la capacidad de citar fuentes del contexto dado y la facilidad para actualizar la base de conocimiento sin necesidad de reentrenar el \gls{llm} completo. Si bien existen diversas arquitecturas \gls{rag} (ej. generando consultas SQL, incorporando texto directamente al prompt, o utilizando embeddings), el enfoque basado en embeddings suele ofrecer un buen equilibrio entre eficiencia y calidad de los resultados, aunque presenta desafíos como la gestión de la ventana de contexto del \gls{llm}, punto crucial a tener en cuenta si se utilizan sobre dispositivos personales.
 
 \bigskip % Añade un poco de espacio vertical antes de la figura
-\begin{figure}[H] % [H] intenta forzar la posición "aquí", puedes usar [htbp] para más flexibilidad
+\begin{figure}[H] % [H] intenta forzar la posición "aquí"
     \centering % Centra la imagen en la página
     \includegraphics[width=0.8\textwidth]{archivos/RAG_scheme.png} % Ajusta el ancho como necesites
-    \caption{Esquema visual del funcionamiento de un sistema RAG, mostrando el flujo desde la consulta del usuario, pasando por la recuperación de información relevante, hasta la generación de la respuesta final por el LLM.}
+    \caption[Esquema de un sistema RAG]{Esquema visual del funcionamiento de un sistema RAG, mostrando el flujo desde la consulta del usuario, pasando por la recuperación de información relevante, hasta la generación de la respuesta final por el LLM.}
     \label{fig:rag_scheme} % Etiqueta para referenciar la figura en el texto
 \end{figure}
 \bigskip % Añade un poco de espacio vertical después de la figura
