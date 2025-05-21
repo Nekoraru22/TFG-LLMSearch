@@ -178,93 +178,74 @@ Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías
 \section{Casos de uso}
 \label{sec:casos_de_uso}
 
-Los casos de uso describen las interacciones típicas entre los actores (en este caso, principalmente el Usuario) y el sistema LLMSearch, mostrando cómo se utilizarán las funcionalidades principales para alcanzar objetivos específicos. Estos diagramas ayudan a visualizar el alcance funcional del sistema desde la perspectiva del usuario.
-
-A continuación, se presentan dos diagramas de casos de uso: el primero ofrece una visión general de las interacciones principales del usuario, y el segundo detalla tipos específicos de búsqueda y opciones de configuración.
-
 \begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[scale=0.8, transform shape]
-    \begin{UseCaseDiagram}
-      % Actor
-      \actor[x=-5, y=0]{Usuario}
-
-      % Casos de Uso Principales
-      \usecase[x=2, y=2.5]{Buscar Información en Ficheros}{CU1}
-      \usecase[x=2, y=0]{Configurar Parámetros del Sistema}{CU2}
-      \usecase[x=2, y=-2.5]{Consultar Estado del Sistema}{CU3}
-
-      % Conexiones
-      \connect{Usuario}{CU1}
-      \connect{Usuario}{CU2}
-      \connect{Usuario}{CU3}
-      
-      % Notas (opcional, para enlazar con Requisitos si se desea)
-      % \node[note, right of=CU1, node distance=3.5cm] (N1) {Cubre RF-05, RF-06, RF-07, RC-04};
-      % \node[note, right of=CU2, node distance=3.5cm] (N2) {Cubre RNF-01, RNF-07, RC-01, RC-02, RC-03};
-      % \node[note, right of=CU3, node distance=3.5cm] (N3) {Cubre RNF-06};
-    \end{UseCaseDiagram}
-  \end{tikzpicture}
-  \caption{Diagrama de Casos de Uso: Interacciones Principales del Usuario con LLMSearch.}
-  \label{fig:casos_uso_general}
+\centering
+\includegraphics[width=\textwidth]{archivos/casos_de_uso.png}
+\caption[Diagrama de Casos de Uso de LLMSearch]{Diagrama de casos de uso del Sistema LLMSearch.}
+\label{fig:casos_de_uso}
 \end{figure}
 
-El diagrama de la Figura \ref{fig:casos_uso_general} muestra las tres categorías principales de interacción que un usuario puede tener con el sistema: realizar búsquedas de información dentro de los ficheros procesados, configurar diversos aspectos del funcionamiento del sistema y consultar el estado actual del procesamiento de archivos.
+A continuación, se describen los casos de uso identificados para el Sistema LLMSearch, tal como se representan en el diagrama de casos de uso (Figura \ref{fig:casos_de_uso}). Estos definen las interacciones clave entre el actor 'Usuario' y las funcionalidades del sistema.
 
-El siguiente diagrama (Figura \ref{fig:casos_uso_detallados}) profundiza en las acciones específicas que el usuario puede realizar, especialmente en relación con los diferentes métodos de búsqueda y las opciones de configuración detalladas.
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[scale=0.75, transform shape] % Ajustar escala si es necesario
-    \begin{UseCaseDiagram}
-      % Actor
-      \actor[x=-8, y=0]{Usuario}
-
-      % Casos de Uso de Búsqueda
-      \usecase[x=-2, y=5]{Realizar Consulta Textual (Web)}{CU_SearchWeb}
-      \usecase[x=-2, y=2.5]{Realizar Consulta Textual (CLI)}{CU_SearchCLI}
-      \usecase[x=-2, y=0]{Buscar por Similitud de Imagen}{CU_SearchImage}
-      
-      % Caso de Uso Incluido/Extendido para Búsqueda
-      \usecase[x=4, y=3.75, width=4cm]{Presentar Resultados de Búsqueda}{CU_PresentResults}
-      \usecase[x=4, y=1, width=4cm, stereotype=extend]{Mostrar Información Detallada (CLI)}{CU_VerboseCLI}
-
-      % Casos de Uso de Configuración
-      \usecase[x=-2, y=-3]{Ajustar Directorio de Observación}{CU_ConfigDir}
-      \usecase[x=3.5, y=-3, width=3.5cm]{Ajustar Límite de Uso de CPU}{CU_ConfigCPU} % Ajustado para evitar solapamiento
-      \usecase[x=-2, y=-5.5, width=3.5cm]{Seleccionar Implementación de LLM}{CU_ConfigLLM}
-      
-      % Caso de Uso de Monitoreo
-      \usecase[x=3.5, y=-5.5, width=3.5cm]{Verificar Estado del Sistema (CLI)}{CU_StatusCLI}  % Ajustado
-
-      % Conexiones Actor -> Casos de Uso Principales
-      \connect{Usuario}{CU_SearchWeb}
-      \connect{Usuario}{CU_SearchCLI}
-      \connect{Usuario}{CU_SearchImage}
-      \connect{Usuario}{CU_ConfigDir}
-      \connect{Usuario}{CU_ConfigCPU}
-      \connect{Usuario}{CU_ConfigLLM}
-      \connect{Usuario}{CU_StatusCLI}
-
-      % Relaciones entre Casos de Uso
-      \draw[umlinclude] (CU_SearchWeb) -- (CU_PresentResults) node[midway, above, sloped, scale=0.8] {\footnotesize <<include>>};
-      \draw[umlinclude] (CU_SearchCLI) -- (CU_PresentResults) node[midway, above, sloped, scale=0.8] {\footnotesize <<include>>};
-      \draw[umlinclude] (CU_SearchImage) -- (CU_PresentResults) node[midway, below, sloped, scale=0.8] {\footnotesize <<include>>};
-      \draw[umlextend] (CU_VerboseCLI) -- (CU_SearchCLI) node[midway, above, sloped, scale=0.8] {\footnotesize <<extend>>};
-
-    \end{UseCaseDiagram}
-  \end{tikzpicture}
-  \caption{Diagrama de Casos de Uso: Interacciones Específicas de Búsqueda y Configuración.}
-  \label{fig:casos_uso_detallados}
-\end{figure}
-
-La Figura \ref{fig:casos_uso_detallados} ilustra con mayor detalle:
+\subsection{Manipular Ficheros}
 \begin{itemize}
-    \item Las diferentes modalidades de búsqueda que el usuario puede emplear: consultas textuales a través de la interfaz web (RF-05) o la línea de comandos (RF-07), y la búsqueda basada en la similitud de una imagen proporcionada (RC-04).
-    \item El caso de uso "Presentar Resultados de Búsqueda" (RF-08) es incluido por todas las operaciones de búsqueda, indicando que es una parte fundamental de ellas.
-    \item La opción de "Mostrar Información Detallada (CLI)" (RNF-05) extiende la funcionalidad de búsqueda por línea de comandos, activándose opcionalmente (ej. con \texttt{--verbose}).
-    \item Las principales opciones de configuración accesibles al usuario: definir el directorio a observar (RC-01), regular la carga del sistema (RC-02) y seleccionar el tipo de modelo LLM a utilizar (RC-03).
-    \item La capacidad de verificar el estado del sistema a través de la línea de comandos (RNF-06).
+\item \textbf{Actor Principal:} Usuario
+\item \textbf{Descripción:} El usuario interactúa con el sistema para gestionar los ficheros. Esto incluye incluir la adición, modificación y eliminación de ficheros.
 \end{itemize}
 
-Estos diagramas de casos de uso sirven como referencia para el diseño y la implementación de las funcionalidades, asegurando que se cubran las necesidades del usuario tal como se han especificado en los requisitos.
+\subsection{Configurar Parámetros del Sistema}
+\begin{itemize}
+\item \textbf{Actor Principal:} Usuario
+\item \textbf{Descripción:} El usuario ajusta y personaliza los diversos parámetros de configuración del Sistema LLMSearch. Esto puede incluir la definición del directorio de observación, la regulación de la carga del sistema (límites de CPU), la selección del tipo de modelo LLM a utilizar (local o en la nube), y otras opciones que afectan el comportamiento general del sistema.
+\end{itemize}
+
+\subsection{Consultar Estado del Sistema}
+\begin{itemize}
+\item \textbf{Actor Principal:} Usuario
+\item \textbf{Descripción:} El usuario solicita y visualiza información sobre el estado operativo actual del Sistema LLMSearch. Esta información puede comprender estadísticas como el número total de archivos procesados, el desglose de ficheros por tipo, la cantidad de archivos pendientes de análisis, y la notificación de posibles errores ocurridos durante el procesamiento.
+\end{itemize}
+
+\subsection{Realizar Consulta (Web)}
+\begin{itemize}
+\item \textbf{Actor Principal:} Usuario
+\item \textbf{Descripción:} El usuario introduce una consulta de búsqueda en lenguaje natural a través de la interfaz web proporcionada por el Sistema LLMSearch. El objetivo es encontrar ficheros o información relevante almacenada y procesada por el sistema.
+\end{itemize}
+
+\subsection{Realizar Consulta (CLI)}
+\begin{itemize}
+\item \textbf{Actor Principal:} Usuario
+\item \textbf{Descripción:} El usuario introduce una consulta de búsqueda utilizando la interfaz de línea de comandos (CLI) del Sistema LLMSearch. Esta modalidad permite interactuar con el sistema para encontrar ficheros relevantes sin necesidad de una interfaz gráfica.
+\end{itemize}
+
+\subsection{Obtener Resultados de Búsqueda}
+\begin{itemize}
+\item \textbf{Rol:} Caso de uso incluido.
+\item \textbf{Descripción:} El sistema procesa la consulta de búsqueda proporcionada (ya sea desde la interfaz web o la CLI), realiza la búsqueda en su base de datos de información extraída de los ficheros analizados, y devuelve un conjunto de resultados. Estos resultados suelen estar ordenados por relevancia o similitud con la consulta original. Este caso de uso no es iniciado directamente por un actor externo, sino que representa una funcionalidad interna reutilizada.
+\item \textbf{Relaciones:}
+\begin{itemize}
+\item Es incluido por "Realizar Consulta (Web)".
+\item Es incluido por "Realizar Consulta (CLI)".
+\end{itemize}
+\end{itemize}
+
+\subsection{Mostrar Información Detallada (CLI)}
+\begin{itemize}
+\item \textbf{Rol:} Caso de uso de extensión.
+\item \textbf{Descripción:} Proporciona al usuario información adicional y más detallada sobre los resultados de búsqueda específicos cuando estos han sido obtenidos a través de la interfaz de línea de comandos (CLI). Esta funcionalidad es opcional y se activa bajo ciertas condiciones o por la petición explícita del usuario mediante el parámetro adicional \texttt{--verbose} durante la ejecución del caso de uso "Realizar Consulta (CLI)".
+\item \textbf{Relaciones:}
+\begin{itemize}
+\item Extiende el caso de uso "Realizar Consulta (CLI)".
+\end{itemize}
+\end{itemize}
+
+\subsection{Ver Ficheros Analizados}
+\begin{itemize}
+\item \textbf{Actor Principal:} Usuario
+\item \textbf{Descripción:} El usuario accede a una sección dedicada en la interfaz web para explorar los ficheros que han sido procesados y analizados por el Sistema LLMSearch. En esta sección, el sistema presenta una lista de dichos ficheros. Para cada uno, el usuario puede visualizar:
+\begin{itemize}
+\item Su descripción (generada por el sistema o extraída del contenido).
+\item Metadatos relevantes (por ejemplo, tipo de fichero, tamaño, fecha de creación/modificación, etiquetas generadas, etc.).
+\item Una previsualización o reproductor embebido si el fichero es una imagen, vídeo o archivo de audio, permitiendo su visualización o reproducción directa dentro de la interfaz web.
+\end{itemize}
+Esta funcionalidad permite al usuario inspeccionar el corpus de datos indexado, verificar los detalles del análisis de cada fichero y acceder directamente a su contenido visual o auditivo y a sus metadatos asociados sin necesidad de descargar el fichero original o abrir aplicaciones externas.
+\end{itemize}
