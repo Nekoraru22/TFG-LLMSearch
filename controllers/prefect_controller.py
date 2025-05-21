@@ -295,17 +295,18 @@ def analyze_image(image_path: str) -> str:
 @task
 def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
     """
-    Obtiene metadatos de una imagen y los aplana para que cada valor sea un tipo básico.
-    
+    Obtains metadata from an image and flattens it so that each value is a basic type.
+
     Args:
-        image_path: La ruta hacia la imagen.
-        
+        image_path: The path to the image.
+        file_path_hash: The hash of the file path.
+
     Returns:
-        Un diccionario con los metadatos aplanados, listo para almacenarlos sin perder información.
+        A dictionary with the flattened metadata, ready to be stored without losing information.
     """
     metadata = {}
 
-    # Información del sistema de archivos
+    # Information from the file system
     metadata.update({
         "path": image_path,
         "filename": os.path.basename(image_path),
@@ -318,7 +319,7 @@ def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
 
     try:
         with Image.open(image_path) as img:
-            # Información básica de la imagen
+            # Basic image information
             metadata.update({
                 "format": img.format,
                 "mode": img.mode,
@@ -326,7 +327,7 @@ def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
                 "height": img.height
             })
 
-            # Metadatos específicos del formato
+            # Specific metadata for JPEG images
             if img.format == 'JPEG':
                 exif_data = img.getexif()
                 for tag_id, value in exif_data.items():
@@ -344,7 +345,7 @@ def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
     except Exception as e:
         metadata["error"] = str(e)
 
-    # Filtrar metadatos para cumplir con los requisitos de ChromaDB
+    # Filter metadata to comply with ChromaDB requirements
     chroma_metadata = {}
     for key, value in metadata.items():
         if isinstance(value, (str, int, float, bool)):

@@ -5,5 +5,111 @@
 % Contacto: info@jmrplens.com / Telegram:@jmrplens
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Anexo I}
-Aquí vendría el anexo I 
+% \chapter{Anexo I}
+\chapter{Script de Prueba para ChromaDB}
+\label{anx:chroma_script}
+
+A continuación, se presenta el script de Python utilizado para las pruebas de concepto con ChromaDB, detalladas en la Sección \ref{sec:evaluacion}.
+
+\begin{lstlisting}[language=Python, caption={Script de Python para la prueba de concepto con ChromaDB.}, label={lst:chroma_prove_code}]
+import numpy as np
+import matplotlib.pyplot as plt
+from chromadb import Client as ChromaClient # Asumo que así importas tu cliente
+
+# Definición de la clase ChromaClient o funciones si no es una clase estándar
+# Si ChromaClient es una clase que tú has definido, asegúrate que esté disponible
+# o que las funciones que usa (create_embeddings, etc.) estén definidas.
+# Por simplicidad, voy a asumir que tu `ChromaClient` ya tiene esos métodos.
+# Si `ChromaClient` es de la librería `chromadb`, entonces el import es suficiente.
+
+def prove() -> None:
+    # Usar una ruta relativa o absoluta que funcione en tu entorno
+    chroma = ChromaClient(settings={"persist_directory": "./data/chroma_prove_db",
+                                    "chroma_db_impl": "duckdb+parquet"}) # Ejemplo de settings si es necesario
+
+    # Create some example documents
+    documentos = [
+        "Python is a high-level, interpreted programming language",
+        "Embeddings are vector representations of text",
+        "Chroma is a vector database for storing embeddings",
+        "Language models can generate semantic embeddings",
+        "3D visualization helps to understand the distance between embeddings",
+        "Vector databases are useful for semantic searches",
+        "Embeddings capture the semantics of words and phrases",
+        "Python has many libraries for natural language processing"
+    ]
+    
+    # Crear embeddings para los documentos
+    # Esta parte depende de cómo tu ChromaClient o la librería chromadb genera embeddings.
+    # Si usas el modelo por defecto de la librería:
+    # (No necesitas llamar a create_embeddings si la librería lo hace internamente al añadir)
+    # Para este ejemplo, asumiré que tienes un método o que la librería lo maneja.
+    # Si `chroma.create_embeddings` no existe, deberás usar el método correcto
+    # de la librería `chromadb` para obtener los embeddings, ej. un EmbeddingFunction.
+
+    # Crear una colección en ChromaDB (esto también podría crearla si no existe al añadir documentos)
+    collection_name = "example_embeddings"
+    try:
+        collection = chroma.get_collection(name=collection_name)
+    except: # Ajusta la excepción específica si es necesario
+        collection = chroma.create_collection(name=collection_name)
+    
+    # Añadir documentos a la colección.
+    # ChromaDB típicamente requiere IDs para los documentos.
+    ids = [f"doc{i}" for i in range(len(documentos))]
+    
+    # Si ChromaDB genera los embeddings automáticamente al añadir, no necesitas pasarlos explícitamente.
+    # Si SÍ necesitas pasar embeddings pre-calculados, necesitarías una función para ello.
+    # Este ejemplo asume que la librería puede manejar los embeddings directamente o con una
+    # función de embedding configurada al crear la colección/cliente.
+    collection.add(
+        documents=documentos,
+        ids=ids
+    )
+    
+    # Realizar una búsqueda
+    query = "What are embeddings?"
+    resultados = collection.query(
+        query_texts=[query],
+        n_results=3,
+        include=['documents', 'distances'] # Asegúrate de incluir lo que necesitas
+    )
+    
+    print("\nSearch results for:", query)
+    if resultados['documents'] is not None and len(resultados['documents'][0]) > 0:
+        for i, doc in enumerate(resultados['documents'][0]):
+            distance = resultados['distances'][0][i] if resultados['distances'] else 'N/A'
+            print(f"{i+1}. {doc} (Distance: {distance:.4f})")
+    else:
+        print("No similar documents were found.")
+    
+    # Para la visualización 3D y matriz de distancias, necesitarías obtener todos los embeddings
+    # y el embedding de la consulta. La librería `chromadb` puede que no ofrezca estas
+    # visualizaciones directamente como `chroma.visualize_embeddings_3d`.
+    # Estas visualizaciones suelen hacerse con librerías como matplotlib, plotly, scikit-learn (para PCA/t-SNE).
+
+    # Obtener todos los embeddings de la colección (si es necesario para visualización manual)
+    all_docs_data = collection.get(include=['embeddings', 'documents'])
+    stored_embeddings = np.array(all_docs_data['embeddings'])
+    stored_documents_text = all_docs_data['documents']
+    
+    labels = [f"Doc {i}: {doc[:20]}..." for i, doc in enumerate(stored_documents_text)]
+    
+    # Si quieres visualizar la consulta también, necesitas su embedding
+    # Esto depende de cómo se obtienen los embeddings (ej. usando la misma embedding function)
+    # Para el ejemplo, no se incluye la visualización 3D/matriz compleja aquí
+    # ya que requeriría más código para PCA/t-SNE y plotteo con matplotlib/plotly
+    # que no está en tu `prove()` original de forma explícita con la librería `chromadb`.
+    
+    # Si las funciones `visualize_embeddings_3d` y `visualize_matriz_distances`
+    # eran parte de TU clase `ChromaClient` personalizada, tendrías que incluirlas.
+    # Las librerías estándar de ChromaDB no suelen tener estas funciones de visualización directa.
+
+    # plt.show() # Solo si generas figuras con matplotlib
+
+    # print("\nDistance Matrix (conceptual):")
+    # (Calcular y mostrar la matriz de distancias requeriría sklearn.metrics.pairwise_distances por ejemplo)
+
+if __name__ == '__main__':
+    prove()
+\end{lstlisting}

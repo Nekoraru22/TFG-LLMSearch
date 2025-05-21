@@ -8,254 +8,385 @@
 \chapter{Desarrollo}
 \label{desarrollo}
 
-La construcción de un sistema inteligente para la búsqueda y gestión de archivos personales requiere la integración de diversas tecnologías y herramientas consolidadas en el ámbito del desarrollo de software y la inteligencia artificial. Este capítulo tiene como objetivo revisar el estado del arte de los componentes tecnológicos clave que se han considerado o que forman la base para la implementación del presente proyecto. Se analizarán diferentes opciones en áreas fundamentales como la orquestación de tareas, la detección de cambios en el sistema de archivos, las soluciones de bases de datos para el almacenamiento de metadatos y embeddings, la contenerización para el despliegue y, finalmente, los frameworks para el desarrollo de la interfaz de usuario. Esta revisión permitirá contextualizar las decisiones de diseño tomadas y justificar la selección de las herramientas específicas utilizadas en el desarrollo de la solución.
+La construcción de un sistema inteligente para la búsqueda y gestión de archivos personales requiere la integración de diversas tecnologías y herramientas consolidadas en el ámbito del desarrollo de software y la inteligencia artificial. Este capítulo tiene como objetivo, en una primera parte, revisar el estado del arte de los componentes tecnológicos clave que se han considerado para la implementación del presente proyecto. Posteriormente, en una segunda parte, se detallarán las decisiones de diseño finales para cada componente, justificando la elección, describiendo aspectos relevantes de su implementación y los desafíos encontrados durante el desarrollo.
 
-\section{Orquestador de tareas}
-La gestión eficiente de flujos de trabajo complejos, especialmente aquellos que involucran procesamiento de datos y tareas de machine learning, es crucial para el sistema propuesto. Un orquestador de tareas permite automatizar, programar y monitorizar estas secuencias de operaciones. A continuación, se presentan las herramientas que se han estudiado en el presente trabajo para seleccionar la más adecuada para la coordinación de las diversas etapas del procesamiento de archivos.
+\section{Estudio de Tecnologías}
+\label{sec:estudio_tecnologias}
+En esta sección se analizarán diferentes opciones en áreas fundamentales como la orquestación de tareas, la detección de cambios en el sistema de archivos, las soluciones de bases de datos para el almacenamiento de metadatos y embeddings, la contenerización para el despliegue y, finalmente, los frameworks para el desarrollo de la interfaz de usuario.
 
-\subsection{Prefect}
+\subsection{Orquestadores de tareas}
+La gestión eficiente de flujos de trabajo complejos, especialmente aquellos que involucran procesamiento de datos y tareas de machine learning, es crucial para el sistema propuesto. Un orquestador de tareas permite automatizar, programar y monitorizar estas secuencias de operaciones.
+
+\subsubsection{Prefect}
 Prefect se presenta como una moderna plataforma de orquestación de flujos de trabajo, escrita principalmente en Python. Está diseñada específicamente para permitir a los desarrolladores diseñar, programar, ejecutar y monitorizar pipelines de datos y flujos de machine learning de manera fiable y escalable, con un enfoque en la simplicidad y la experiencia del desarrollador.
 
-\subsubsection{Ventajas}
+\paragraph{Ventajas}
 \begin{itemize}
 \item \textbf{Facilidad de uso:} Prefect ofrece una sintaxis intuitiva y una configuración sencilla, lo que facilita la definición y gestión de flujos de trabajo complejos.
 \item \textbf{Flexibilidad:} Permite la orquestación de tareas en entornos locales, en la nube o híbridos, adaptándose a diversas necesidades.
 \item \textbf{Monitoreo y gestión:} Incluye herramientas integradas para el monitoreo, registro y manejo de errores en tiempo real.
 \end{itemize}
 
-\subsubsection{Desventajas}
+\paragraph{Desventajas}
 \begin{itemize}
 \item \textbf{Madurez:} Aunque ha ganado popularidad, Prefect es relativamente nuevo en comparación con otras herramientas más consolidadas.
 \item \textbf{Comunidad:} Su comunidad es más pequeña, lo que puede limitar la disponibilidad de recursos y soporte.
 \end{itemize}
 
-\subsection{Kafka}
+\subsubsection{Kafka}
 Apache Kafka es un sistema de mensajería distribuido de código abierto, reconocido por su alto rendimiento y capacidad para manejar flujos de datos en tiempo real. Aunque su función principal es la de broker de mensajes, a menudo se utiliza en arquitecturas complejas para desacoplar sistemas y como parte de pipelines de datos más amplios, pudiendo actuar como un componente en la orquestación de eventos.
 
-\subsubsection{Ventajas}
+\paragraph{Ventajas}
 \begin{itemize}
 \item \textbf{Alto rendimiento:} Kafka es conocido por su capacidad para manejar grandes volúmenes de datos con baja latencia.
 \item \textbf{Escalabilidad:} Diseñado para escalar horizontalmente, puede manejar cargas de trabajo crecientes de manera eficiente.
 \item \textbf{Ecosistema robusto:} Cuenta con una amplia gama de herramientas y conectores que facilitan su integración con otros sistemas.
 \end{itemize}
 
-\subsubsection{Desventajas}
+\paragraph{Desventajas}
 \begin{itemize}
 \item \textbf{Complejidad:} La configuración y gestión de Kafka pueden ser complejas, especialmente para usuarios sin experiencia previa.
 \item \textbf{Requisitos de recursos:} Para un rendimiento óptimo, Kafka suele requerir una infraestructura robusta, lo que puede ser excesivo para proyectos más pequeños.
 \end{itemize}
 
-\subsection{Airflow}
+\subsubsection{Airflow}
 Apache Airflow es una plataforma de código abierto ampliamente adoptada para la creación, programación y monitorización programática de flujos de trabajo. Originalmente desarrollada por Airbnb, permite definir flujos de trabajo como Grafos Acíclicos Dirigidos (DAGs) de tareas, utilizando Python para su definición.
 
-\subsubsection{Ventajas}
+\paragraph{Ventajas}
 \begin{itemize}
 \item \textbf{Popularidad y comunidad:} Amplia adopción y una comunidad activa que proporciona numerosos recursos y soporte.
 \item \textbf{Flexibilidad:} Permite la programación y monitoreo de flujos de trabajo complejos.
 \end{itemize}
 
-\subsubsection{Desventajas}
+\paragraph{Desventajas}
 \begin{itemize}
 \item \textbf{Curva de aprendizaje:} Puede ser complejo de configurar y requiere conocimientos avanzados para su implementación efectiva.
 \end{itemize}
 
-\clearpage
-\section{Script de detección de cambios en un path y Servidor}
-Un componente esencial del sistema es la capacidad de detectar automáticamente la creación, modificación o eliminación de archivos dentro de los directorios personales del usuario. Esta funcionalidad es la que desencadena el proceso de análisis y catalogación. En esta sección se revisan diferentes lenguajes y bibliotecas que ofrecen mecanismos para el monitoreo del sistema de archivos y que podrían servir de base para implementar un servidor que gestione estas detecciones.
+\subsection{Detección de cambios en el sistema de archivos}
+Un componente esencial del sistema es la capacidad de detectar automáticamente la creación, modificación o eliminación de archivos. Esta funcionalidad desencadena el proceso de análisis.
 
-\subsection{Python}
-Python, debido a su versatilidad y extenso ecosistema de bibliotecas, ofrece múltiples opciones para la detección de cambios en el sistema de archivos. Estas soluciones varían en cuanto a su dependencia de la plataforma y su nivel de abstracción.
+\subsubsection{Python}
+Python, debido a su versatilidad y extenso ecosistema de bibliotecas, ofrece múltiples opciones.
 \begin{itemize}
-\item \textbf{Watchdogs:} Es una biblioteca multiplataforma escrita en Python, diseñada específicamente para observar eventos del sistema de archivos (como creación, eliminación, modificación de archivos o directorios) de manera eficiente.
-\item \textbf{pyinotify:} Esta biblioteca es un wrapper de Python para la API inotify del kernel de Linux, lo que permite monitorear eventos del sistema de archivos de forma muy eficiente en sistemas Linux, pero no es portable a otras plataformas.
-\item \textbf{inotify-simple:} Se trata de un wrapper más sencillo y ligero alrededor de la API inotify de Linux, que ofrece una interfaz de programación más directa para tareas básicas de monitoreo de archivos en sistemas Linux.
-\item \textbf{inotifyx:} Similar a pyinotify, esta biblioteca proporciona acceso al subsistema inotify de Linux. Está diseñada para ofrecer una API estable, pero su uso también está restringido a plataformas Linux.
-\item \textbf{Polling Methods:} En plataformas donde mecanismos como inotify no están disponibles, o para requisitos más simples, se puede implementar un mecanismo de sondeo (polling). Este método implica verificar periódicamente el estado del sistema de archivos para detectar cambios, aunque puede ser menos eficiente.
+\item \textbf{Watchdogs:} Biblioteca multiplataforma para observar eventos del sistema de archivos.
+\item \textbf{pyinotify:} Wrapper de Python para la API inotify de Linux (no portable).
+\item \textbf{inotify-simple:} Wrapper más sencillo para inotify de Linux.
+\item \textbf{inotifyx:} Similar a pyinotify, para inotify de Linux.
+\item \textbf{Polling Methods:} Verificación periódica, menos eficiente.
 \end{itemize}
 
-\subsection{Node.js}
-Node.js, como entorno de ejecución de JavaScript del lado del servidor, también proporciona herramientas robustas para interactuar con el sistema de archivos, incluyendo el monitoreo de cambios.
+\subsubsection{Node.js}
 \begin{itemize}
-\item \textbf{chokidar:} Es una biblioteca popular y eficiente para Node.js que normaliza y mejora el comportamiento de fs.watch y fs.watchFile, ofreciendo una solución multiplataforma robusta para vigilar cambios en el sistema de archivos.
+\item \textbf{chokidar:} Biblioteca popular y eficiente para Node.js, multiplataforma.
 \end{itemize}
 
-\subsection{Java}
-Java, siendo una plataforma madura y ampliamente utilizada, incluye en su biblioteca estándar (NIO.2) mecanismos nativos para el monitoreo de eventos del sistema de archivos.
+\subsubsection{Java}
 \begin{itemize}
-\item \textbf{WatchService:} Es una API integrada en Java (desde Java 7) que permite registrar un directorio (o directorios) con el servicio de vigilancia. Este servicio monitorea los cambios en los objetos registrados y los encola para su procesamiento.
+\item \textbf{WatchService:} API integrada en Java (NIO.2) para monitoreo.
 \end{itemize}
 
-\subsection{C++/C/C\#}
-Los lenguajes de la familia C (C++, C, C\#) ofrecen acceso a APIs de bajo nivel del sistema operativo o bibliotecas específicas de cada plataforma para implementar la vigilancia de archivos, permitiendo un control granular y un alto rendimiento.
+\subsubsection{C++/C/C\#}
 \begin{itemize}
-\item \textbf{FileSystemWatcher:} En el ecosistema .NET (C\#), la clase FileSystemWatcher permite monitorear cambios en el sistema de archivos (archivos y directorios) y reaccionar a ellos. Para C/C++, se suele recurrir a las APIs específicas del sistema operativo como inotify en Linux o ReadDirectoryChangesW en Windows.
+\item \textbf{FileSystemWatcher:} En .NET (C\#). Para C/C++, APIs específicas del SO (inotify en Linux, ReadDirectoryChangesW en Windows).
 \end{itemize}
 
-\subsection{Go}
-Go, conocido por su eficiencia y concurrencia, cuenta con bibliotecas desarrolladas por la comunidad para el monitoreo del sistema de archivos, aprovechando las capacidades nativas de los sistemas operativos.
+\subsubsection{Go}
 \begin{itemize}
-\item \textbf{fsnotify:} Es una biblioteca popular en Go para el monitoreo del sistema de archivos que proporciona una interfaz común sobre las APIs específicas de cada plataforma (inotify, kqueue, FSEvents, ReadDirectoryChangesW).
+\item \textbf{fsnotify:} Biblioteca popular en Go, interfaz común sobre APIs específicas.
 \end{itemize}
 
-\subsection{Rust}
-Rust, un lenguaje de programación moderno enfocado en la seguridad y el rendimiento, también dispone de bibliotecas multiplataforma para la notificación de eventos del sistema de archivos.
+\subsubsection{Rust}
 \begin{itemize}
-\item \textbf{notify:} Es una biblioteca de Rust multiplataforma para vigilar cambios en el sistema de archivos, ofreciendo una API unificada sobre diferentes backends específicos del sistema operativo.
+\item \textbf{notify:} Biblioteca de Rust multiplataforma.
 \end{itemize}
 
-\clearpage
-\section{Base de datos}
-El almacenamiento persistente de metadatos, tanto los extraídos directamente de los archivos como los generados por la \gls{ia} (incluyendo embeddings vectoriales), es fundamental. La elección de la base de datos impacta en el rendimiento, la escalabilidad y la facilidad de consulta. Se exploran opciones relacionales y no relacionales, cada una con sus propias fortalezas y debilidades.
+\subsection{Bases de datos}
+El almacenamiento persistente de metadatos y embeddings es fundamental.
 
-\subsection{Relacional}
-Las bases de datos relacionales se caracterizan por su estructura tabular, esquemas predefinidos y el uso de SQL (Structured Query Language) para la manipulación de datos. Son adecuadas para datos con relaciones bien definidas y donde la consistencia transaccional (ACID) es prioritaria.
+\subsubsection{Relacional}
+Adecuadas para datos estructurados y consistencia ACID.
 
-\subsubsection{SQLite}
-SQLite es un sistema de gestión de bases de datos relacional autocontenido, sin servidor, que no requiere configuración y es transaccional (ACID). Toda la base de datos (definiciones, tablas, índices y los propios datos) se almacena como un único archivo en el disco del host, lo que la hace extremadamente portable y fácil de integrar en aplicaciones.
+\paragraph{SQLite}
+Autocontenida, sin servidor, transaccional. Almacena la base de datos en un único archivo.
+\subparagraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Ligereza y simplicidad.}
+    \item \textbf{Portabilidad.}
+    \item \textbf{Rendimiento en entornos de bajo recurso.}
+\end{itemize}
+\subparagraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Concurrencia limitada en escrituras.}
+    \item \textbf{Escalabilidad limitada.}
+\end{itemize}
 
+\paragraph{MariaDB}
+Fork de MySQL, de código abierto.
+\subparagraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Rendimiento y escalabilidad.}
+    \item \textbf{Compatibilidad con MySQL.}
+    \item \textbf{Soporte para almacenamiento en columnas.}
+\end{itemize}
+\subparagraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Complejidad en la configuración.}
+    \item \textbf{Requisitos de recursos.}
+\end{itemize}
+
+\subsubsection{No relacional (NoSQL)}
+Modelos de datos flexibles, escalabilidad horizontal.
+
+\paragraph{MongoDB}
+Orientada a documentos (BSON).
+\subparagraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Flexibilidad del esquema.}
+    \item \textbf{Escalabilidad horizontal.}
+    \item \textbf{Alto rendimiento en lectura/escritura.}
+\end{itemize}
+\subparagraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Consumo de recursos.}
+    \item \textbf{Soporte limitado para transacciones complejas (tradicionales).}
+\end{itemize}
+
+\paragraph{ChromaDB}
+Base de datos vectorial de código abierto para aplicaciones de \gls{ia}.
+\subparagraph{Ventajas}
+\begin{itemize}
+    \item \textbf{Especializada en embeddings.}
+    \item \textbf{Facilidad de uso y API intuitiva (Python).}
+    \item \textbf{Integraciones con ecosistema de \gls{ia} (LangChain, LlamaIndex).}
+    \item \textbf{Ligera y embebible.}
+    \item \textbf{Código abierto.}
+\end{itemize}
+\subparagraph{Desventajas}
+\begin{itemize}
+    \item \textbf{Madurez y escalabilidad para producción masiva (en comparación).}
+    \item \textbf{Funcionalidades de BD tradicional limitadas.}
+    \item \textbf{Operaciones y gestión avanzada (para gran escala).}
+\end{itemize}
+
+\subsection{Contenerización}
+La contenerización garantiza consistencia entre entornos. Docker es la plataforma líder.
+\subsubsection{Docker}
+Plataforma para automatizar el despliegue de aplicaciones en contenedores.
 \paragraph{Ventajas}
 \begin{itemize}
-    \item \textbf{Ligereza y simplicidad:} SQLite es una biblioteca de base de datos integrada que no requiere una configuración de servidor independiente, lo que facilita su implementación y uso.
-    \item \textbf{Portabilidad:} Al almacenar toda la base de datos en un único archivo, es fácil de transferir y gestionar, especialmente útil para aplicaciones móviles o integradas.
-    \item \textbf{Rendimiento en entornos de bajo recurso:} Funciona eficientemente incluso en sistemas con recursos limitados.
+\item \textbf{Portabilidad.}
+\item \textbf{Aislamiento.}
+\item \textbf{Facilidad de despliegue.}
 \end{itemize}
-
 \paragraph{Desventajas}
 \begin{itemize}
-    \item \textbf{Concurrencia limitada:} SQLite permite múltiples lecturas simultáneas, pero las escrituras se gestionan de una en una, lo que puede ser un cuello de botella en aplicaciones con alta concurrencia de escritura.
-    \item \textbf{Escalabilidad:} No está diseñada para manejar grandes volúmenes de datos o aplicaciones que requieren escalabilidad horizontal.
+\item \textbf{Consumo de recursos (capa adicional).}
+\item \textbf{Complejidad adicional (gestión de contenedores).}
 \end{itemize}
 
-\subsubsection{MariaDB}
-MariaDB Server es un popular sistema de gestión de bases de datos relacional de código abierto, creado por los desarrolladores originales de MySQL. Está diseñado para ser un reemplazo directo de MySQL, ofreciendo mayor velocidad, nuevas características y una comunidad más abierta y vibrante.
+\subsection{Frameworks de Interfaz de Usuario}
+La elección del framework impacta la experiencia del usuario y el desarrollo.
 
+\subsubsection{Angular}
+Framework de Google basado en TypeScript, completo y opinado.
 \paragraph{Ventajas}
 \begin{itemize}
-    \item \textbf{Rendimiento y escalabilidad:} MariaDB ofrece un alto rendimiento y puede manejar una gran cantidad de transacciones, siendo adecuada para aplicaciones empresariales.
-    \item \textbf{Compatibilidad con MySQL:} Como un fork de MySQL, mantiene una alta compatibilidad, facilitando la migración desde MySQL.
-    \item \textbf{Soporte para almacenamiento en columnas:} Incluye el motor ColumnStore, optimizado para cargas de trabajo analíticas.
+\item \textbf{Framework completo.}
+\item \textbf{Arquitectura estructurada.}
 \end{itemize}
-
 \paragraph{Desventajas}
 \begin{itemize}
-    \item \textbf{Complejidad en la configuración:} Requiere una configuración y gestión más complejas en comparación con SQLite.
-    \item \textbf{Requisitos de recursos:} Necesita más recursos del sistema, lo que puede ser excesivo para aplicaciones pequeñas o integradas.
+\item \textbf{Curva de aprendizaje pronunciada.}
+\item \textbf{Complejidad innecesaria para proyectos simples.}
 \end{itemize}
 
-\subsection{No relacional}
-Las bases de datos no relacionales, o NoSQL, ofrecen modelos de datos flexibles, escalabilidad horizontal y están optimizadas para tipos específicos de datos o patrones de acceso. Son una alternativa cuando la rigidez de los esquemas relacionales es una limitación o se requiere un alto rendimiento para grandes volúmenes de datos no estructurados o semiestructurados. Dentro de esta categoría, las bases de datos vectoriales han ganado prominencia para aplicaciones de \gls{ia}.
-
-\subsubsection{MongoDB}
-MongoDB es una base de datos NoSQL orientada a documentos, de código abierto y multiplataforma. Almacena los datos en documentos flexibles similares a JSON (en formato BSON), lo que permite que los campos varíen de un documento a otro y que la estructura de los datos cambie con el tiempo, facilitando la evolución de las aplicaciones.
-
+\subsubsection{React}
+Biblioteca de JavaScript de Meta para construir UIs.
 \paragraph{Ventajas}
 \begin{itemize}
-    \item \textbf{Flexibilidad del esquema:} Al ser una base de datos NoSQL orientada a documentos, permite almacenar datos en un formato flexible similar a JSON, adaptándose fácilmente a cambios en la estructura de los datos.
-    \item \textbf{Escalabilidad horizontal:} Diseñada para escalar horizontalmente mediante sharding, lo que facilita el manejo de grandes volúmenes de datos y altas tasas de tráfico.
-    \item \textbf{Alto rendimiento en operaciones de lectura/escritura:} Optimizada para manejar operaciones simultáneas de lectura y escritura de manera eficiente.
+\item \textbf{Biblioteca flexible.}
+\item \textbf{Amplia comunidad y recursos.}
 \end{itemize}
-
 \paragraph{Desventajas}
 \begin{itemize}
-    \item \textbf{Consumo de recursos:} Requiere una cantidad significativa de recursos, especialmente en implementaciones a gran escala.
-    \item \textbf{Falta de soporte para transacciones complejas:} Aunque MongoDB ha mejorado en este aspecto con transacciones multi-documento ACID, las transacciones complejas que involucran múltiples colecciones pueden no ser tan robustas o directas como en bases de datos relacionales tradicionales.
+\item \textbf{Necesidad de configuraciones adicionales (para routing, estado global).}
 \end{itemize}
 
-\subsubsection{ChromaDB} % <--- NUEVA ADICIÓN
-ChromaDB es una base de datos vectorial de código abierto diseñada específicamente para facilitar el desarrollo de aplicaciones con \gls{ia} que requieren el almacenamiento y la búsqueda de embeddings. Permite a los desarrolladores añadir capacidades de memoria a largo plazo y búsqueda semántica a sus modelos de lenguaje y otras aplicaciones de aprendizaje automático de forma sencilla. Puede operar en memoria para prototipado rápido o utilizar almacenamiento persistente en disco.
-
+\subsubsection{Vue.js}
+Framework de JavaScript progresivo y accesible.
 \paragraph{Ventajas}
 \begin{itemize}
-    \item \textbf{Especializada en embeddings:} Su diseño está optimizado para almacenar, gestionar y realizar búsquedas de similitud eficientes sobre grandes cantidades de vectores de embeddings.
-    \item \textbf{Facilidad de uso y API intuitiva:} Ofrece una API simple, especialmente para desarrolladores de Python, lo que reduce la curva de aprendizaje y acelera la integración.
-    \item \textbf{Integraciones con ecosistema de \gls{ia}:} Se integra de forma nativa con frameworks populares como LangChain y LlamaIndex, simplificando la construcción de flujos de trabajo de \gls{ia}.
-    \item \textbf{Ligera y embebible:} Puede ejecutarse localmente sin necesidad de un servidor complejo, siendo adecuada para desarrollo, prototipado y aplicaciones más pequeñas.
-    \item \textbf{Código abierto:} Permite su uso sin restricciones de licencia y fomenta la contribución de la comunidad.
+\item \textbf{Simplicidad y facilidad de uso.}
+\item \textbf{Flexibilidad.}
 \end{itemize}
-
 \paragraph{Desventajas}
 \begin{itemize}
-    \item \textbf{Madurez y escalabilidad para producción masiva:} Aunque evoluciona rápidamente, puede no tener la misma robustez o características avanzadas de escalabilidad horizontal y gestión de clústeres que soluciones de bases de datos vectoriales más maduras o servicios gestionados en la nube para cargas de trabajo extremadamente grandes.
-    \item \textbf{Funcionalidades de BD tradicional limitadas:} No está diseñada para ser una base de datos de propósito general. Carece de soporte para consultas relacionales complejas, transacciones ACID en el sentido tradicional o esquemas rígidos que ofrecen las bases de datos SQL.
-    \item \textbf{Operaciones y gestión avanzada:} Para despliegues a gran escala, las herramientas de monitorización, backup, y recuperación pueden ser menos sofisticadas en comparación con sistemas de bases de datos más establecidos.
+\item \textbf{Menor adopción en grandes empresas (en comparación).}
+\end{itemize}
+
+\subsubsection{Astro}
+Framework web moderno para sitios rápidos y centrados en contenido (arquitectura de "islas").
+\paragraph{Ventajas}
+\begin{itemize}
+\item \textbf{Optimización para contenido estático y rendimiento.}
+\item \textbf{Integración con otros frameworks.}
+\end{itemize}
+\paragraph{Desventajas}
+\begin{itemize}
+\item \textbf{Menor madurez para aplicaciones altamente interactivas.}
+\item \textbf{Ecosistema en crecimiento.}
 \end{itemize}
 
 \clearpage
-\section{Docker}
-La contenerización se ha convertido en un estándar para el desarrollo, despliegue y ejecución de aplicaciones, garantizando la consistencia entre diferentes entornos y simplificando la gestión de dependencias. Docker es la plataforma líder en este ámbito.
-Docker es una plataforma de software de código abierto que permite automatizar el despliegue de aplicaciones dentro de contenedores de software ligeros y portátiles. Un contenedor empaqueta una aplicación y todas sus dependencias, bibliotecas y archivos de configuración necesarios para que se ejecute de forma aislada.
+\section{Decisiones de Diseño e Implementación}
+\label{sec:decisiones_implementacion}
+Tras el estudio de las tecnologías disponibles, en esta sección se detallan las herramientas finalmente seleccionadas para cada componente del sistema, justificando la elección, describiendo los aspectos más relevantes de su implementación y los problemas o consideraciones que surgieron durante el proceso de desarrollo.
 
-\subsection{Ventajas}
+\subsection{Orquestador de Tareas: Prefect}
+\label{subsec:decision_prefect}
+\paragraph{Decisión y Justificación}
+Para la orquestación de las tareas de procesamiento de archivos, extracción de metadatos, generación de embeddings y su posterior almacenamiento, se ha seleccionado \textbf{Prefect}. La elección se fundamenta en su enfoque moderno, su facilidad de uso al estar escrito en Python (lenguaje principal del proyecto) y su adecuada capacidad para gestionar pipelines de datos y machine learning. Aunque herramientas como Kafka ofrecen un rendimiento superior para flujos de datos masivos y Airflow cuenta con una comunidad más extensa, Prefect proporciona un equilibrio óptimo entre simplicidad, flexibilidad y potencia para las necesidades específicas de este proyecto. Su curva de aprendizaje es más accesible en comparación con Airflow, y su infraestructura requerida es menos exigente que la de Kafka, haciéndolo ideal para un proyecto de esta envergadura.
+
+\paragraph{Implementación}
+Tasks:
+summarize_text: Resume el texto pasado por parámetro
+analyze_image: Analiza con ayuda de un modelo multimodal, en este caso Gemma, el contenido de una imagen
+get_image_metadata: Extrae metadatos de la imagen
+rag_query: Se le proporciona a un LLM una query y los resultados de la búsqueda en ChromaDB, y devuelve una respuesta generada por el LLM, en este caso Mistral.
+rag_query_with_db: Se le proporciona la query y el máximo de coincidencias a ChromaDB y devuelve los resultados de la búsqueda.
+
+Flows:
+new_file: Se activa cuando se detecta un nuevo archivo sobre la carpeta observada. detecta duplicados, detecta el tipo de archivo, extrae metadatos, genera embeddings de un nuevo archivo y almacena los resultados en ChromaDB.
+modified_file: funciona de forma similar a new_file, pero se activa cuando un archivo ya existente es modificado. En este caso, se actualizan los metadatos y los embeddings en ChromaDB en caso de que el hash del contenido haya cambiado.
+deleted_file: Se activa cuando un archivo es eliminado. Se elimina el documento de ChromaDB junto a sus metadatos.
+proccess_query: Se activa cuando el usuario realiza una búsqueda. Se generan los embeddings de la query y se envían a ChromaDB para buscar coincidencias. Los resultados se envían a un LLM para generar una respuesta.
+
+imagen: archivos/prefect.png
+imagen: archivos/prefect_flow.png
+
+\subsection{Detección de Cambios: Python con Watchdogs}
+\label{subsec:decision_watchdogs}
+\paragraph{Decisión y Justificación}
+La detección de cambios en el sistema de archivos se ha implementado utilizando \textbf{Python} en combinación con la biblioteca \textbf{watchdogs}. Esta elección se basa en la naturaleza multiplataforma de \texttt{watchdogs}, lo cual es crucial para una aplicación destinada a la gestión de archivos personales que podría ejecutarse en diversos sistemas operativos. Python, como lenguaje principal del proyecto, facilita la integración de este componente con el resto del sistema, especialmente con el orquestador de tareas Prefect.
+
+\paragraph{Implementación}
+Se ha desarrollado un script de Python que utiliza \texttt{watchdogs} para monitorizar un directorio específico proporcionado por el usuario. El script implementa un manejador de eventos (\texttt{FileSystemEventHandler}) que reacciona a los eventos de creación (\texttt{on\_created}), modificación (\texttt{on\_modified}) y eliminación (\texttt{on\_deleted}) de archivos. Cuando se detecta un evento relevante, el script envía una notificación para iniciar el procesamiento del archivo afectado.
+
+Durante el desarrollo, se encontraron desafíos particulares con la detección de archivos modificados, especialmente en sistemas Windows. Este sistema operativo realiza pequeñas modificaciones en los metadatos de los archivos simplemente al abrirlos o copiarlos, lo que provocaba que la función de detección de modificaciones (\texttt{on\_modified}) se activara constantemente de manera no deseada para un mismo archivo en un corto periodo.
+
+Para mitigar este comportamiento, se almacenan datos clave de cada archivo procesado en una caché local que existirá mientras el programa esté en ejecución y se harán comprobaciones de si el archivo ya ha sido procesado o no. Esto permite evitar la reactivación del flujo de trabajo para archivos que ya han sido procesados recientemente, optimizando así el rendimiento del sistema. Es solamente para evitar de manera sencilla que se active el flujo, pero en caso de activarse se hará una comprobación de archivo duplicado.
+
+destacar que este script de detección de cambios se ejecuta en un hilo separado, lo que permite que el resto del sistema funcione sin interrupciones y que no cuenta directorios, solo archivos de manera recursiva. Esto significa que si se añade un directorio, no se procesará, pero si se añade un archivo dentro de ese directorio, sí se procesará. En la función de delete esto ha sido un problema puesto que como el archivo o directorio ya ha sido eliminado el tratar de verificar si era o no un directorio no tiene sentido porque no existe, por eso mismo directamente no se comprueba.
+
+\subsection{Base de Datos: ChromaDB}
+\label{subsec:decision_chromadb}
+\paragraph{Decisión y Justificación}
+Para el almacenamiento de metadatos y, crucialmente, los embeddings vectoriales generados por los modelos de \gls{ia}, se ha optado por \textbf{ChromaDB}. Inicialmente, se consideró SQLite por su simplicidad para el almacenamiento de metadatos básicos, y de hecho, se desarrolló un controlador para esta base de datos que permanece disponible en caso de ser necesario. Sin embargo, la funcionalidad central del sistema reside en la capacidad de realizar búsquedas semánticas eficientes basadas en embeddings, lo que hizo de una base de datos vectorial la elección más adecuada.
+
+ChromaDB fue seleccionada por su especialización en el manejo de embeddings, su facilidad de uso a través de su API Python y su capacidad para operar de forma ligera y embebible, ideal para el desarrollo y despliegue de este proyecto.
+
+\paragraph{Implementación}
+ChromaDB se utiliza para almacenar dos tipos principales de información por cada archivo procesado: los vectores de embeddings y los metadatos asociados. Se crea una "colección" en ChromaDB para este propósito.
 \begin{itemize}
-\item \textbf{Portabilidad:} Los contenedores Docker aseguran que el software se ejecute de manera consistente en cualquier entorno que soporte Docker, desde el portátil del desarrollador hasta servidores de producción en la nube o locales.
-\item \textbf{Aislamiento:} Cada componente del sistema puede ejecutarse en su propio contenedor, con sus propias dependencias, evitando conflictos entre ellas y con el sistema anfitrión.
-\item \textbf{Facilidad de despliegue:} Simplifica significativamente la distribución y actualización de aplicaciones, permitiendo ciclos de desarrollo y despliegue más rápidos y fiables.
+    \item \textbf{Embeddings:} Son los vectores numéricos que representan el contenido semántico del archivo.
+    \item \textbf{Metadatos:} ChromaDB permite asociar un diccionario de metadatos a cada embedding. En este proyecto, se almacenan principalmente los siguientes metadatos pero cada tipo de archivo puede añadir metadatos diferentes:
+        \begin{itemize}
+            \item \texttt{path}: La ruta original del archivo.
+            \item \texttt{filename}: El nombre del archivo.
+            \item \texttt{size}: Tamaño del archivo en bytes.
+            \item \texttt{creation\_time}: Fecha de creación del archivo.
+            \item \texttt{hash}: Un hash SHA256 del contenido del archivo. Este es crucial para evitar el procesamiento y almacenamiento duplicado de archivos idénticos, incluso si tienen nombres o ubicaciones diferentes. Antes de procesar un nuevo archivo, se calcula su hash y se consulta en ChromaDB si ya existe un embedding con ese mismo \texttt{hash} en sus metadatos.
+            \item Otros metadatos relevantes extraídos.
+        \end{itemize}
+    \item \textbf{IDs:} Cada entrada en ChromaDB tiene un ID único, que en este caso se construye a partir de la ruta del archivo para facilitar su identificación y actualización.
 \end{itemize}
+Las búsquedas se realizan enviando un vector de embedding (generado a partir de la consulta del usuario) a ChromaDB, que devuelve los `k` embeddings más similares junto con sus metadatos asociados.
 
-\subsection{Desventajas}
+El controlador de ChromaDB se encarga de gestionar la conexión a la base de datos, la creación de colecciones y la inserción, actualización y eliminación de embeddings y metadatos y la búsqueda de similares dentro de la base de datos. Se implementan funciones para verificar si un archivo ya ha sido procesado (basándose en su hash) y para actualizar los metadatos y embeddings en caso de modificaciones.
+
+Para utilizar ChromaDB sin necesidad de utilizar SQLite aparte se ha optado por utilizar el apartado de metadatos como si fuese una tabla de SQLite, esto ha sido útil sobre todo para el hash de los archivos ya que de haber utilizado SQLite aparte, se habría tenido que hacer una comprobación de si el hash ya existía en la tabla de SQLite y luego comprobar si existía en ChromaDB, lo que habría duplicado el tiempo de búsqueda. En este caso, al ser una base de datos vectorial, la búsqueda es mucho más rápida y no se nota la diferencia entre buscar en ChromaDB o en SQLite.
+
+\subsection{Contenerización: No implementada (Docker)}
+\label{subsec:decision_docker}
+\paragraph{Decisión y Justificación}
+Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de contenerización como \textbf{Docker}. Se reconocen sus ventajas en reproducibilidad, aislamiento y despliegue.
+
+Sin embargo, y como se mencionó en la fase de análisis, para la etapa actual del proyecto se ha optado por no implementar una solución de contenerización. Esta decisión se fundamenta en:
+\begin{enumerate}
+    \item El orquestador Prefect ofrece un paquete Python sencillo de instalar y usar directamente.
+    \item LMStudio, utilizado para los modelos de \gls{ia}, es un programa de instalación directa.
+    \item La gestión de dependencias de Python se ha manejado eficazmente con entornos virtuales (`venv`).
+\end{enumerate}
+Dado que el objetivo principal era validar la funcionalidad central en un entorno local y los componentes clave no presentaban complejidades de entorno que justificaran la sobrecarga de Docker en esta fase, se consideró más ágil proceder sin él.
+
+\paragraph{Consideraciones Futuras}
+La arquitectura modular del sistema está diseñada para facilitar una futura migración a contenedores. Si el proyecto escalara o requiriera despliegues en entornos más complejos, la adopción de Docker (y Docker Compose) sería un paso lógico y viable. Esto permitiría empaquetar el servidor de Prefect, el agente, la base de datos (si se opta por una versión servida de ChromaDB o similar) y la interfaz de usuario en contenedores separados y orquestados.
+
+\subsection{Interfaz de Usuario: Vue.js}
+\label{subsec:decision_vue}
+\paragraph{Decisión y Justificación}
+Para el desarrollo de la interfaz de usuario (UI), se ha seleccionado \textbf{Vue.js}. La principal razón es la búsqueda de simplicidad y una curva de aprendizaje accesible, dado que la UI, aunque importante, no es el núcleo de innovación del proyecto (centrado en la \gls{ia} y gestión de archivos del backend).
+
+Aunque existe una mayor familiaridad previa con Angular, su complejidad y estructura opinada se consideraron excesivas para las necesidades de la UI de este proyecto. Vue.js ofrece un equilibrio entre funcionalidad y facilidad de desarrollo, permitiendo construir una interfaz reactiva y moderna sin la sobrecarga de frameworks más robustos.
+
+\paragraph{Implementación}
+La interfaz de Vue.js se comunica con un backend, en este caso Flask en Python, que a su vez interactúa con Prefect y ChromaDB. Las funcionalidades principales de la UI incluyen:
 \begin{itemize}
-\item \textbf{Consumo de recursos:} Aunque los contenedores son más ligeros que las máquinas virtuales, el uso de Docker y sus contenedores introduce una capa adicional que consume recursos del sistema (CPU, memoria, disco).
-\item \textbf{Complejidad adicional:} La gestión de contenedores, redes, volúmenes y la orquestación de múltiples contenedores (e.g., con Docker Compose o Kubernetes) requiere conocimientos específicos sobre Docker y sus conceptos asociados.
+    \item Un campo de búsqueda donde el usuario introduce texto.
+    \item Visualización de los resultados de la búsqueda, mostrando información relevante de los archivos encontrados (nombre, ruta, un fragmento, etc.).
+    \item Opciones para configurar los directorios a monitorizar.
+    \item Posiblemente, una vista del estado del sistema (archivos procesados, últimos eventos).
 \end{itemize}
+Se utilizan componentes de Vue para estructurar la aplicación (barra de búsqueda, lista de resultados, elemento de resultado individual). La gestión del estado, si es necesaria para datos compartidos entre componentes, se puede manejar con herramientas propias de Vue o librerías como Pinia.
 
-\clearpage
-\section{Interfaz}
-La interfaz de usuario (UI) es el punto de interacción principal del usuario con el sistema, permitiéndole realizar búsquedas, visualizar resultados y gestionar sus archivos. La elección de un framework de desarrollo para la UI impacta en la experiencia del usuario, la velocidad de desarrollo y la mantenibilidad de la aplicación. Se consideran varios frameworks web modernos.
+Se ha decidido hacer una interfaz amigable con el usuario haciendo uso de "emoticonos" por ejemplo en el mensaje inicial del buscador, para que el usuario se sienta más cómodo al usar la aplicación. Esta estrategia la sulen utilizar empresas como Amazon, sobre todo en sus apartados de soporte y se ha considerado un punto positivo a probar sobre un buscador que trata de ser un compañero que ayude al usuario a encontrar lo que busca.
 
-\subsection{Angular}
-Angular, desarrollado por Google, es un framework de desarrollo de aplicaciones web basado en TypeScript, completo y opinado. Proporciona una plataforma integral para construir aplicaciones web complejas y escalables de una sola página (SPA), ofreciendo herramientas para routing, gestión de estado, y más, directamente desde su núcleo.
+El principal desafío fue la curva de aprendizaje inicial de Vue.js, al no ser el framework con el que se tenía más experiencia previa. Esto implicó un tiempo dedicado a comprender su sistema de componentes, directivas, reactividad y ciclo de vida. La integración con el backend, definiendo los endpoints de la API y manejando las peticiones asíncronas, también requirió una planificación cuidadosa. Se priorizó una funcionalidad básica pero robusta, dejando mejoras estéticas o funcionalidades avanzadas de la UI para posibles iteraciones futuras, dado el enfoque del proyecto en el backend.
 
-\subsubsection{Ventajas}
+imagen: archivos/front_home.png
+imagen: archivos/front_config.png
+imagen: archivos/front_explorer.png
+
+\subsection{API REST}
+\label{subsec:decision_api}
+\paragraph{Decisión y Justificación}
+Para la comunicación entre las diferentes partes del sistema, se ha optado por una API RESTful utilizando \textbf{Flask} en Python. Esta elección se basa en la simplicidad y ligereza de Flask, que permite crear rápidamente endpoints para manejar las solicitudes de la interfaz de usuario y facilitar la interacción con el orquestador de tareas Prefect y la base de datos ChromaDB.
+
+\paragraph{Implementación}
+Se ha configurado para tener los archivos estáticos y la interfaz de usuario en un directorio separado, permitiendo que Flask sirva la aplicación Vue.js. Los endpoints principales incluyen:
 \begin{itemize}
-\item \textbf{Framework completo:} Angular ofrece una solución integral con herramientas integradas para el desarrollo de aplicaciones web robustas.
-\item \textbf{Arquitectura estructurada:} Su naturaleza opinada y el uso de TypeScript facilitan la escalabilidad y el mantenimiento de aplicaciones complejas a largo plazo.
-\end{itemize}
+    \item \texttt{/api/status}: Para obtener el estado del sistema.
+    \item \texttt{/api/models}: Para obtener información sobre los modelos de \gls{ia} disponibles.
+    \item \texttt{/api/query}: Para enviar consultas de búsqueda al sistema.
+    \item \texttt{/api/path\_descs}: Para obtener todos los archivos procesados.
+    \item \texttt{/api/file\_content}: envía el contenido la imagen dado su path.
+    \item \texttt{/api/file\_details}: Para obtener la descripción y los metadatos de un archivo específico dado su path.
 
-\subsubsection{Desventajas}
-\begin{itemize}
-\item \textbf{Curva de aprendizaje pronunciada:} Requiere tiempo para dominar conceptos como TypeScript, RxJS, y la inyección de dependencias, que son fundamentales en Angular.
-\item \textbf{Complejidad innecesaria para proyectos simples:} Su estructura y conjunto de herramientas pueden resultar excesivos para aplicaciones pequeñas o con funcionalidades limitadas.
-\end{itemize}
+Se han tenido algunos problemas al implementar el endpoint de status por la complejidad de tener los archivos controlados en todo momento y llevar una cuenta ordenada.
 
-\subsection{React}
-React, mantenido por Meta (anteriormente Facebook) y una comunidad de desarrolladores individuales y empresas, es una biblioteca de JavaScript de código abierto para construir interfaces de usuario o componentes de UI. Se enfoca principalmente en la capa de vista (el "V" en MVC) y a menudo se utiliza junto con otras bibliotecas para construir aplicaciones completas.
+\subsection{LMStudio}
+\label{subsec:decision_lmstudio}
+\paragraph{Decisión y Justificación}
+Se ha elegido LMStudio por la comodidad de que sea un programa de instalación directa desde el que poder descargar y usar casi cualquier modelo de \gls{ia} de manera sencilla. La alternativa habría sido instalar cada uno de estos modelos a través de Python y habría sido un código un poco más caótico, de esta manera el trabajo es más sencillo pero es más complicado porque el usuario debe buscar las cosas a mano, no hay un archivo que te instale los modelos necesarios directamente.
 
-\subsubsection{Ventajas}
-\begin{itemize}
-\item \textbf{Biblioteca flexible:} React se centra en la construcción de interfaces de usuario, permitiendo la integración con una amplia variedad de bibliotecas y herramientas según las necesidades específicas del proyecto (e.g., para routing, gestión de estado).
-\item \textbf{Amplia comunidad y recursos:} Su popularidad asegura una gran cantidad de tutoriales, bibliotecas de terceros, y soporte por parte de una comunidad activa y extensa.
-\end{itemize}
+\subsection{Terminal}
+\label{subsec:decision_terminal}
+Para crear la entrada por terminal en python se ha hecho uso de un archivo de setup:
 
-\subsubsection{Desventajas}
-\begin{itemize}
-\item \textbf{Necesidad de configuraciones adicionales:} Para funcionalidades más allá de la UI básica (como enrutamiento o gestión de estado global), es necesario integrar y configurar bibliotecas adicionales, lo que puede aumentar la complejidad inicial del proyecto.
-\end{itemize}
+% Código:
+from setuptools import setup
 
-\subsection{Vue}
-Vue.js (comúnmente referido como Vue) es un framework de JavaScript de código abierto, progresivo y accesible, utilizado para construir interfaces de usuario y aplicaciones de una sola página. Se distingue por su facilidad de integración con proyectos existentes y otras bibliotecas, y por su diseño que permite adoptarlo gradualmente.
+setup(
+    name="llmsearch",
+    version="0.1",
+    py_modules=["llmsearch"],
+    entry_points={
+        "console_scripts": [
+            "LLMSearch=llmsearch:main",
+        ],
+    },
+)
 
-\subsubsection{Ventajas}
-\begin{itemize}
-\item \textbf{Simplicidad y facilidad de uso:} Vue es conocido por su curva de aprendizaje suave y su documentación clara, lo que permite una adopción rápida por parte de los desarrolladores.
-\item \textbf{Flexibilidad:} Adecuado tanto para proyectos pequeños donde se integra en partes de una página existente, como para el desarrollo de aplicaciones de una sola página más complejas.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-\item \textbf{Menor adopción en grandes empresas:} Aunque está ganando popularidad rápidamente, Vue aún no tiene la misma penetración en entornos corporativos grandes en comparación con Angular o React, lo que podría traducirse en menos ofertas de empleo o recursos específicos para escenarios empresariales muy complejos.
-\end{itemize}
-
-\subsection{Astro}
-Astro es un framework web moderno diseñado para construir sitios web rápidos y centrados en el contenido. Su principal característica es la arquitectura de "islas" (Astro Islands), que permite renderizar componentes de UI en el servidor y enviar menos JavaScript al cliente por defecto, mejorando significativamente el rendimiento de carga y la interactividad inicial.
-
-\subsubsection{Ventajas}
-\begin{itemize}
-\item \textbf{Optimización para contenido estático y rendimiento:} Astro está diseñado para generar sitios web estáticos o renderizados en servidor (SSR) muy rápidos, lo que es beneficioso para aplicaciones donde el rendimiento y el SEO son críticos.
-\item \textbf{Integración con otros frameworks:} Permite utilizar componentes de UI escritos en React, Vue, Svelte, y otros frameworks populares dentro de los proyectos Astro, ofreciendo flexibilidad al desarrollador.
-\end{itemize}
-
-\subsubsection{Desventajas}
-\begin{itemize}
-\item \textbf{Menor madurez para aplicaciones altamente interactivas:} Aunque soporta componentes interactivos, su enfoque principal en el contenido estático y la minimización de JavaScript del lado del cliente puede hacerlo menos ideal para aplicaciones web muy complejas y altamente dinámicas en comparación con SPAs tradicionales.
-\item \textbf{Ecosistema en crecimiento:} Al ser relativamente nuevo, Astro puede carecer de la amplitud de recursos, herramientas y comunidad que tienen otros frameworks más establecidos, aunque está creciendo rápidamente.
-\end{itemize}
+y seguidamente se ha creado un archivo llmsearch.py que contiene el código para la entrada por terminal. Este archivo se encarga de gestionar la entrada del usuario y de llamar a las funciones necesarias para comunicarse con el backend y realizar las búsquedas. Se ha optado por esta solución para facilitar la interacción del usuario con el sistema pudiendo usar los comandos de la siguiente manera:
+LLMSearch --help o LLMSearch --query "mapa del mundo"
