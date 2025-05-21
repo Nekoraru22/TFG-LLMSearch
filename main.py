@@ -8,7 +8,7 @@ from controllers.prefect_controller import proccess_query
 from flask import Flask, request, jsonify, render_template, send_from_directory, send_file
 from flask_cors import CORS
 
-from controllers.chroma_controller import ChromaClient, create_graphics
+from controllers.chroma_controller import ChromaClient, create_graphics, prove
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -114,8 +114,8 @@ def get_db_desc_by_path():
     
 
 if __name__ == "__main__":
-    create_graphics("two characters with cat ears and tail", True)
-    exit(0)
+    # create_graphics("two characters with cat ears and tail", True)
+    # exit(0)
     # Initialize logging
     watcher = WatchdogsController(str(os.environ.get("TRACKED_FOLDER")))
     watcher.start()
