@@ -8,18 +8,18 @@
 \chapter{Estado del Arte}
 \label{marcoteorico}
 
-Antes de adentrarse en los detalles técnicos, es esencial establecer el contexto actual en el dominio de los buscadores multimedia basados en lenguaje natural. Esta revisión permitirá asentar una fundamentación teórica y metodológica sólida, comprender los desafíos y las limitaciones identificadas en investigaciones previas e identificar las brechas en el conocimiento existente, así como las oportunidades para realizar contribuciones significativas en LLMSearch.
+Antes de profundizar en los detalles técnicos, es importante estudiar contexto actual en el dominio de los buscadores multimedia basados en lenguaje natural. Este estudio permitirá asentar una fundamentación teórica y metodológica sólida, comprender los desafíos y las limitaciones identificadas en investigaciones previas e identificar las brechas en el conocimiento existente, así como las oportunidades para realizar contribuciones significativas en LLMSearch.
 
 \section{Modelos de Lenguaje Natural (LLMs) para Búsqueda}
 
-Los \textbf{\glspl{llm}} han revolucionado el procesamiento del lenguaje natural en años recientes. Modelos como \emph{GPT-3} y \emph{GPT-4} (base de \textbf{ChatGPT}) demuestran que, con miles de millones de parámetros entrenados en enormes corpus de texto, es posible comprender y generar lenguaje con notable fluidez y contexto. Estos modelos capturan representaciones semánticas ricas, lo que habilita nuevas formas de \textbf{búsqueda semántica} y recuperación de información.
+Los \textbf{\glspl{llm}} han revolucionado el procesamiento del lenguaje natural en los últimos años. Modelos como \emph{GPT-3} y \emph{GPT-4} demuestran que, con miles de millones de parámetros entrenados en enormes corpus de texto es posible comprender y generar lenguaje con notable fluidez y contexto. Estos modelos capturan representaciones semánticas ricas, lo que habilita nuevas maneras de buscar semanticamente y recuperar información.
 
 \textbf{Características clave:}
 
 \begin{itemize}
   \item \textbf{Búsqueda por significado}: En lugar de limitarse a coincidencias de palabras clave, un \gls{llm} puede interpretar la intención de una consulta en lenguaje natural y relacionarla con documentos relevantes aunque no compartan palabras literalmente.
   
-  \item \textbf{Embeddings semánticos}: Técnicas como \emph{embeddings} de oraciones (usando modelos tipo \gls{bert} o Sentence Transformers) convierten documentos y consultas a vectores en un espacio vectorial común, donde la similitud de coseno permite recuperar los contenidos más cercanos en significado.
+  \item \textbf{Embeddings semánticos}: Técnicas como \emph{embeddings} de oraciones usando modelos tipo \gls{bert} o Sentence Transformers convierten documentos y consultas a vectores en un espacio vectorial común, donde la similitud de coseno permite recuperar los contenidos más cercanos en significado.
   
   \item \textbf{\gls{rag}}: Los \glspl{llm} pueden integrarse en pipelines donde primero se recuperan documentos candidatos y luego el modelo genera una respuesta o resumen usando esos textos.
   
@@ -52,13 +52,13 @@ Un hito fue el modelo \textbf{\gls{clip}} de OpenAI, que entrena conjuntamente u
 
 \subsection{Modelos Generativos de Descripción de Imágenes}
 
-Otra línea de desarrollo significativa se centra en los \textbf{modelos generativos de descripción de imágenes}. Estos sistemas realizan la tarea conocida como \emph{image captioning}, que consiste en generar una descripción en lenguaje natural para una imagen dada. Modelos recientes como \textbf{\gls{blip}-2} ejemplifican esta aproximación, combinando un encoder visual pre-entrenado (por ejemplo, \glsentryshort{clip} \glsentryshort{vit}), un modelo de lenguaje grande congelado y un transformador ligero intermedio denominado Q-Former. Esta arquitectura logra puentear eficientemente la brecha entre visión y lenguaje: el encoder de imagen extrae las características visuales relevantes, mientras que el \gls{llm} se encarga de generar la descripción textual coherente.
+Otra campo de estudio importante se centra en los \textbf{modelos generativos de descripción de imágenes}. Estos sistemas realizan la tarea conocida como \emph{image captioning}, que consiste en generar una descripción en lenguaje natural para una imagen dada. Modelos recientes como \textbf{\gls{blip}-2} ejemplifican esta aproximación, combinando un encoder visual pre-entrenado, un modelo de lenguaje grande congelado y un transformador ligero intermedio denominado Q-Former. Esta arquitectura logra puentear eficientemente la brecha entre visión y lenguaje. El encoder de imagen extrae las características visuales relevantes, mientras que el \gls{llm} se encarga de generar la descripción textual coherente.
 
 \subsection{VQA y Diálogo Multimodal}
 
 Junto al desarrollo de modelos como \gls{blip}-2, han aparecido numerosos modelos abiertos que permiten la \textbf{\gls{vqa}} y el diálogo multimodal. Entre ellos destaca \textbf{\gls{llava}}, que utiliza GPT-4 para generar datos sintéticos de entrenamiento y posteriormente afina un modelo basado en \emph{Vicuna} (un derivado de LLaMA) acoplado a un encoder visual. Otro modelo relevante es \textbf{Moondream}, un \gls{vlm} open-source de tan solo 2 mil millones de parámetros (2B), capaz de operar en tiempo real incluso en CPUs o dispositivos móviles. Moondream ha demostrado capacidades notables en la generación de descripciones detalladas, la respuesta a preguntas visuales, la detección de objetos en modalidad cero-shot y el \gls{ocr} básico para leer texto en imágenes. En esta misma línea, \textbf{JoyCaption} se presenta como un modelo de captioning de imágenes libre y sin censura, concebido originalmente para generar descripciones ricas que ayuden a entrenar modelos de difusión. Finalmente, aunque de naturaleza propietaria, \textbf{GPT-4 con visión} (GPT-4V) ha demostrado capacidades impresionantes al responder con acierto a entradas que combinan imagen y texto, si bien su acceso limitado restringe su uso en entornos académicos.
 
-\textbf{En síntesis}, el estado del arte en la convergencia de imagen y lenguaje ofrece dos enfoques complementarios para la búsqueda multimedia. Por un lado, los \emph{embeddings} multimodales tipo \glsentryshort{clip} permiten realizar una \textbf{búsqueda directa por similitud} entre consultas textuales y contenido visual. Por otro lado, los \emph{modelos generativos visiolingüísticos} facilitan la \textbf{describir o entender imágenes en texto}, permitiendo indexar y razonar sobre imágenes mediante lenguaje natural.
+En resumen, el estado del arte en la convergencia de imagen y lenguaje muestra de forma clara dos enfoques complementarios para la búsqueda multimedia. Por un lado, los \emph{embeddings} multimodales tipo \glsentryshort{clip} posibilitan una \textbf{búsqueda directa por similitud} entre consultas textuales y contenido visual. Por otro lado, los \emph{modelos generativos visiolingüísticos} facilitan la \textbf{descripción o comprensión de imágenes mediante texto}, lo que permite indexar y razonar sobre ellas utilizando lenguaje natural.
 
 \section{Modelos Multimodales para Vídeo}
 
@@ -66,11 +66,11 @@ Extender la búsqueda basada en lenguaje natural al dominio del \textbf{vídeo} 
 
 \subsection{Técnicas de Procesamiento de Video}
 
-Para abordar la complejidad del vídeo, se emplean diversas técnicas. Una fundamental es el \textbf{análisis por frames}, que implica extraer fotogramas representativos del vídeo. A estos se les aplican \glspl{vlm}, convirtiendo el problema de vídeo en el manejo de un conjunto de imágenes con marcas de tiempo. Paralelamente, el \textbf{procesamiento de audio} es crucial. Mediante modelos de \textbf{\gls{asr}} como \emph{Whisper}, es posible transcribir con alta calidad el diálogo o narración presente en los vídeos, permitiendo indexar cada vídeo por su transcripción textual completa. Además, se están desarrollando \textbf{modelos vídeo-texto end-to-end}, como \emph{VideoCLIP}, que extienden la idea de \glsentryshort{clip} al dominio temporal, o transformadores específicos para vídeo que realizan \emph{video captioning}.
+Para abordar la complejidad del procesamiento de vídeo, se emplean diversas técnicas. Una fundamental es el \textbf{análisis por frames}, que implica extraer fotogramas importantes o representativos del vídeo y aplicarles \glspl{vlm}, convirtiendo el problema de vídeo en el manejo de un conjunto de imágenes con marcas de tiempo. Por otro lado, el \textbf{procesamiento de audio} es crucial por lo que mediante modelos de \textbf{\gls{asr}} como \emph{Whisper}, es posible transcribir con alta calidad el diálogo o narración presente en los vídeos, permitiendo indexar cada vídeo por su transcripción textual completa. Además, se están desarrollando \textbf{modelos vídeo-texto end-to-end}, como \emph{VideoCLIP}, que extienden la idea de \glsentryshort{clip} al dominio temporal, o transformadores específicos para vídeo que realizan \emph{video captioning}.
 
 \subsection{Arquitecturas para Búsqueda en Video}
 
-Una arquitectura emergente para la búsqueda en vídeo combina los enfoques anteriores en un pipeline \gls{rag} multimodal. Este sistema indexa, por un lado, los \emph{frames} visuales mediante embeddings y, por otro, las transcripciones de voz como texto. Ante una consulta, recupera fragmentos candidatos por similitud visual o textual, y posteriormente utiliza un modelo de lenguaje para sintetizar ambas fuentes de información y determinar la respuesta más adecuada.
+Una arquitectura reciente para la búsqueda en vídeo combina los enfoques anteriores en un pipeline \gls{rag} multimodal. Este sistema indexa, por un lado, los \emph{frames} visuales mediante embeddings y, por otro, las transcripciones de voz como texto. Para una consulta, recupera fragmentos candidatos por similitud visual o textual, y posteriormente utiliza un modelo de lenguaje para sintetizar ambas fuentes de información y determinar la respuesta más adecuada.
 
 \subsection{Modelos Unificados Multimodales}
 
@@ -117,4 +117,4 @@ La tabla \ref{tab:comparativa_modelos} resume algunos modelos representativos, d
 \section{Conclusión}
 \label{sec:conclusion}
 
-El estado del arte actual ofrece los bloques fundamentales necesarios para construir un buscador multimedia avanzado que opere mediante lenguaje natural. Este \gls{tfg} se propone integrar y adaptar estas tecnologías de vanguardia en una única plataforma unificada, denominada \emph{LLMSearch}. El proyecto evaluará el rendimiento de esta integración y buscará proponer mejoras con el objetivo de lograr búsquedas multimodales más precisas, naturales e intuitivas para el usuario.
+Estudiado el estado del arte, se ha identificado la necesidad de construir un sistema que integre las capacidades de búsqueda y recuperación de información en múltiples modalidades, como texto, imagen y audio. La combinación de \glspl{llm} con modelos visiolingüísticos y de audio permitirá abordar la búsqueda multimedia de manera más efectiva, facilitando la interacción del usuario mediante lenguaje natural.
