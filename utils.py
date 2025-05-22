@@ -21,6 +21,9 @@ def get_file_hash(path: str) -> str:
 
     Args:
         path: Ruta del archivo a calcular el hash.
+
+    Returns:
+        str: El hash MD5 del archivo.
     """
     hasher = hashlib.md5()
     with open(path, "rb") as f:
