@@ -15,4 +15,14 @@ pip install -e .
 LLMSearch --query "mapa del mundo"
 ```
 
+# Iniciar Vue
+```bash
+npm run dev
+```
+
+# Compilar Vue
+```bash
+npm run build
+```
+
 explicar los .env y el .venv
