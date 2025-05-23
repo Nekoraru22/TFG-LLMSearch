@@ -16,6 +16,8 @@ Sin embargo, el camino no estuvo exento de problemas. Aparecieron desafíos impo
 
 Al probar diferentes \gls{llm}, se comprobó que no todos se comportan igual ni piden los mismos recursos. Por ejemplo, al comparar \textit{Gemma-3-12b-it} y \textit{Mistral-7b-it}, se pudo apreciar que, aunque \textit{Gemma} daba respuestas de mejor calidad, era mucho más lento y necesitaba \gls{gpu}. Por otro lado, \textit{Mistral} ha sido más fácil de usar en ordenadores más modestos y sus respuestas han sido muy rápidas, aunque sus respuestas no eran tan precisas. Con esto se recalca la importancia de encontrar un equilibrio entre la calidad de lo que el sistema te responde y lo rápido que funciona, siempre teniendo en cuenta los recursos de hardware disponibles.
 
+Habría sido interesante probar el sistema con un volumen de datos más grande, pero esto no ha sido posible por limitaciones de tiempo y recursos, además del problema para conseguir un dataset adecuado y libre de derechos de autor. Sin embargo, se ha podido comprobar que el sistema funciona bien con un volumen de datos moderado y que es capaz de encontrar información relevante en ellos. Se deja como tarea futura probar el rendimiento y la precisión del sistema con un volumen de datos más grande y diverso.
+
 A nivel personal, este proyecto ha sido una oportunidad increíble para aprender sobre la arquitectura \gls{rag}, cómo funcionan un poco por dentro los \gls{llm} y los retos reales que surgen al ponerlos en práctica. Poder implementar y probar el sistema con una colección de datos privada fue especialmente interesante y motivador, ya que proporcionó una visión práctica que complementa todo lo que se había investigado.
 
 A pesar de que el sistema desarrollado aún tiene mucho margen de mejora, se ha logrado construir una base sólida y funcional. Su diseño modular y escalable lo convierte en una herramienta potencialmente útil para buscar información en grandes volúmenes de datos y está listo para ser usado en situaciones reales. Esto confirma que la idea principal detrás del proyecto era válida y abre la puerta a muchas posibilidades para seguir mejorándolo.
@@ -23,9 +25,10 @@ A pesar de que el sistema desarrollado aún tiene mucho margen de mejora, se ha 
 \section{Trabajo futuro}
 \label{trabajo_futuro}
 
-El sistema que se ha desarrollado en este \gls{tfg} es un buen punto de partida, pero hay muchas ideas para seguir mejorándolo y convertirlo en un buscador \gls{rag} más completo y potente. Algunas de estas ideas son:
+El sistema que se ha desarrollado en este \gls{tfg} es un buen punto de partida, pero hay muchas ideas para seguir mejorándolo y convertirlo en un buscador \gls{rag} más completo y potente.
 
 \subsection{Mejoras Funcionales y Experiencia de Usuario}
+Algunas de estas ideas son:
 
 \begin{itemize}
     \item \textbf{Implementación de una Conversación Multi-turno:} Ahora mismo, cada pregunta es independiente. Sería genial poder añadir una función en el \textit{frontend} que permita al sistema recordar lo que hemos hablado. Así se podría ir ajustando las búsquedas poco a poco, hacer preguntas de seguimiento o explorar temas relacionados con más detalle. Esto haría que el sistema fuera una herramienta de conversación mucho más natural y eficiente.
@@ -35,11 +38,12 @@ El sistema que se ha desarrollado en este \gls{tfg} es un buen punto de partida,
 \end{itemize}
 
 \subsection{Optimización y Escalabilidad del Sistema}
+Algunas de las mejoras que se podrían implementar son:
 
 \begin{itemize}
     \item \textbf{Optimización y Gestión de Recursos:} Sería muy útil añadir opciones de configuración avanzadas que permitan al usuario o al administrador del sistema controlar cuánto recurso del ordenador usa el programa (por ejemplo, limitar el uso de \gls{cpu} o \gls{ram} a un porcentaje específico). Esto es muy importante para que el sistema funcione bien y de forma estable, sobre todo en ordenadores con recursos limitados o si se comparten con otras cosas, evitando que el sistema sature el equipo donde esté funcionando.
     \item \textbf{Refactorización del Backend con Tecnologías Optimizadas:} Aunque la parte del \textit{backend} que hemos usado hasta ahora ha funcionado, sería muy útil rehacerla usando \textit{FastAPI} en lugar de la tecnología actual \textit{Flask}. \textit{FastAPI} funciona mucho más rápido, está diseñado para ser usado en entornos de producción y ayuda a crear la documentación de las \gls{api}s de forma automática, lo que haría más fácil mantenerlo, adaptarlo a más usos e integrarlo con otras herramientas.
-    \item \textbf{Integración con Modelos de Lenguaje en la Nube:} Aprovechar el potencial de los \gls{llm} más avanzados que etán en cloud y son mayoritariamente de pago para no depender de los recursos del ordenador local y tener acceso a modelos más potentes y rápidos.
+    \item \textbf{Integración con Modelos de Lenguaje en la Nube:} Aprovechar el potencial de los \gls{llm} más avanzados que están en cloud y son mayoritariamente de pago para no depender de los recursos del ordenador local y tener acceso a modelos más potentes y rápidos.
 \end{itemize}
 
 \subsection{Nuevas Vías de Despliegue}

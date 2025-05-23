@@ -12,8 +12,8 @@ La gestión y recuperación eficiente de la información digital se ha convertid
 \section{Panorama Actual: Desafíos en la Recuperación de Información}
 Los métodos que se suelen usar para buscar y organizar archivos digitales dependen mucho de lo que se conoce como ``metadatos explícitos''. Estos se basan en información como el nombre del archivo, su fecha, o etiquetas que añadimos manualmente. Pero, esta forma de trabajar presenta varios inconvenientes:
 \begin{itemize}
-\item  \textbf{Insuficiencia de los metadatos tradicionales:} Muchas veces, los metadatos son inexistentes, incompletos o especifican fielmente el contenido real del archivo.
-\item  \textbf{Falta de precisión en las búsquedas:} Las búsquedas basadas en palabras clave pueden ser ambiguas y no siempre manejan correctamente la intención del usuario, lo que lleva a resultados irrelevantes o a la omisión de la información que el usuario desea encontrar.
+    \item \textbf{Insuficiencia de los metadatos tradicionales:} Muchas veces, los metadatos son inexistentes, incompletos o no especifican fielmente el contenido real del archivo.
+    \item \textbf{Falta de precisión en las búsquedas:} Las búsquedas basadas en palabras clave pueden ser ambiguas y no siempre manejan correctamente la intención del usuario, lo que lleva a resultados irrelevantes o a la omisión de la información que el usuario desea encontrar.
 \end{itemize}
 Con la llegada de la inteligencia artificial \gls{ia}, se abren nuevas puertas para mejorar cómo encontramos y manejamos nuestra información. La IA podría permitirnos buscar archivos de formas mucho más intuitivas, por ejemplo, entendiendo el contenido de una imagen o el tema de un documento sin necesidad de que nosotros le hayamos puesto etiquetas antes. Esto sería un gran avance respecto a los métodos tradicionales.
 
@@ -41,7 +41,7 @@ Para la aplicación práctica de estos modelos, sobre todo en dispositivos como 
     \item \textbf{Modelos Ligeros (Lightweight Models):} Son arquitecturas de redes neuronales diseñadas específicamente para ser computacionalmente eficientes y tener un tamaño reducido, facilitando su despliegue en dispositivos móviles o embebidos sin sacrificar excesivamente el rendimiento.
 \end{itemize}
 
-\subsection{Sistemas de Generación Aumentada por Recuperación (\gls{rag})}
+\subsection{Sistemas de Generación Aumentada por Recuperación (RAG)}
 La Generación Aumentada por Recuperación (\gls{rag}) es una técnica que mejora el rendimiento de los \gls{llm} al conectarlos con fuentes de conocimiento externas. En lugar de depender solo de la información aprendida durante su entrenamiento, un sistema \gls{rag} funciona en dos pasos:
 \begin{enumerate}
     \item \textbf{Recuperación (Retrieval):} Dada una consulta del usuario, el sistema primero busca y recupera fragmentos de información relevante de una base de datos, un conjunto de documentos o un corpus de conocimiento. Esta base de datos puede estar compuesta por embeddings (representaciones vectoriales densas) del contenido de los archivos.

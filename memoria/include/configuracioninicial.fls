@@ -1,6 +1,6 @@
-PWD c:\Users\Neko\Downloads\TFG-TFM_EPS\include
+PWD c:\Users\Neko\Downloads\TFG-LLMSearch\memoria\include
 INPUT C:\Users\Neko\AppData\Local\MiKTeX\miktex\data\le\xetex\xelatex.fmt
-INPUT c:\Users\Neko\Downloads\TFG-TFM_EPS\include\configuracioninicial.tex
+INPUT c:\Users\Neko\Downloads\TFG-LLMSearch\memoria\include\configuracioninicial.tex
 OUTPUT configuracioninicial.log
 INPUT C:\Users\Neko\AppData\Local\Programs\MiKTeX\tex\latex\koma-script\scrbook.cls
 INPUT C:\Users\Neko\AppData\Local\Programs\MiKTeX\tex\latex\koma-script\scrbook.cls
