@@ -39,14 +39,14 @@ Un hito fue el modelo \textbf{\gls{clip}} de OpenAI, que entrena conjuntamente u
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.7\textwidth]{archivos/clip_space.png}
-  \caption[Espacio vectorial multimodal de CLIP]{Ejemplo conceptual de un espacio vectorial multimodal entrenado por \glsentryshort{clip}, donde imágenes y descripciones semánticas correspondientes se representan mediante vectores cercanos.}
+  \caption[Espacio vectorial multimodal de CLIP]{Ejemplo conceptual de un espacio vectorial multimodal entrenado por \glsentryshort{clip}, donde imágenes y descripciones semánticas correspondientes se representan mediante vectores cercanos. (Fuente: \citep{noauthor_multi-modal_nodate}).}
   \label{fig:clip_space}
 \end{figure}
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.7\textwidth]{archivos/clip_architecture.png}
-  \caption[Arquitectura de CLIP]{Arquitectura del modelo \glsentryshort{clip}: encoder de texto y encoder de imagen que proyectan al mismo espacio de embedding.}
+  \caption[Arquitectura de CLIP]{Arquitectura del modelo \glsentryshort{clip}: encoder de texto y encoder de imagen que proyectan al mismo espacio de embedding. (Fuente: \citep{noauthor_multi-modal_nodate}).}
   \label{fig:clip_architecture}
 \end{figure}
 
@@ -119,17 +119,17 @@ La tabla \ref{tab:comparativa_modelos} resume algunos modelos representativos, d
 La elección de un modelo de lenguaje grande \gls{llm} con capacidades multimodales que pueda operar eficientemente en un entorno local es un componente crítico para el proyecto LLMSearch. Esta decisión impacta directamente en la viabilidad, el rendimiento y la accesibilidad del sistema para el usuario final. Para fundamentar esta elección, se ha realizado un análisis comparativo basado en métricas de rendimiento publicadas por plataformas especializadas, como se observa en la Figura~\ref{fig:tabla_comparativa_modelos} y las visualizaciones gráficas de la Figura~\ref{fig:graficas_rendimiento_modelos}.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{archivos/tabla_comparativa_modelos.png}
-    \caption{Tabla comparativa de rendimiento de diversos modelos LLM en diferentes benchmarks (Fuente: Arena LLM).}
-    \label{fig:tabla_comparativa_modelos}
+  \centering
+  \includegraphics[width=\textwidth]{archivos/tabla_comparativa_modelos.png}
+  \caption{Tabla comparativa de rendimiento de diversos modelos LLM en diferentes benchmarks (Fuente: \citep{noauthor_lmarena_nodate}).}
+  \label{fig:tabla_comparativa_modelos}
 \end{figure}
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{archivos/elo_score_gemma_vs_deepseek.png}
-    \caption{Gráfico comparativo de rendimiento de modelos en el benchmark ELO junto al número de GPUs requeridas para su ejecución.}
-    \label{fig:graficas_rendimiento_modelos}
+  \centering
+  \includegraphics[width=\textwidth]{archivos/elo_score_gemma_vs_deepseek.png}
+  \caption{Gráfico comparativo de rendimiento de modelos en el benchmark ELO junto al número de GPUs requeridas para su ejecución. (Fuente: \citep{noauthor_gemma_nodate}).}
+  \label{fig:graficas_rendimiento_modelos}
 \end{figure}
 
 El principal requisito para LLMSearch es la capacidad de procesar información multimodal (texto e imágenes) y ejecutar todas las operaciones de inferencia en la máquina local del usuario, utilizando herramientas como LMStudio que facilitan la gestión de modelos abiertos. Esto implica descartar modelos propietarios que requieren acceso a API externas (e.g., modelos de OpenAI, Google Cloud) o aquellos con un número de parámetros excesivamente grande (e.g., superiores a $\approx$30B) que harían inviable su ejecución en hardware de consumo estándar, incluso con técnicas de cuantización.
@@ -137,9 +137,9 @@ El principal requisito para LLMSearch es la capacidad de procesar información m
 Considerando estos factores, y analizando los datos presentados, los siguientes modelos emergen como candidatos viables:
 
 \begin{itemize}
-    \item \textbf{Gemma (familia de modelos de Google):} Estos modelos, como \texttt{gemma-3-12b-it} o \texttt{gemma-3-27b-it}, son inherentemente multimodales y están diseñados para ser eficientes y abiertos. El proyecto ya contempla el uso de Gemma para el análisis multimodal, lo que facilitaría la coherencia y la integración. La variante de 12 mil millones de parámetros (12B) representa un compromiso interesante entre capacidad y requisitos computacionales para un entorno local.
-    \item \textbf{Mistral (familia de modelos de Mistral AI):} Modelos como \texttt{mistral-medium-2505} son reconocidos por su excelente rendimiento en tareas textuales y su eficiencia. Sin embargo, para una funcionalidad multimodal integrada en un único modelo, se requeriría una variante específica o la combinación con un modelo de visión dedicado, lo cual podría añadir complejidad si se busca una solución unificada.
-    \item \textbf{Modelos Gemini Flash (Google):} Versiones más ligeras como \texttt{gemini-2.0-flash-001} son también multimodales por diseño. No obstante, su disponibilidad y madurez para ejecución puramente local a través de herramientas como LMStudio podría ser un factor a considerar en comparación con Gemma o Mistral, que cuentan con un ecosistema GGUF muy consolidado.
+  \item \textbf{Gemma (familia de modelos de Google):} Estos modelos, como \texttt{gemma-3-12b-it} o \texttt{gemma-3-27b-it} \citep{noauthor_welcome_2025}, son inherentemente multimodales y están diseñados para ser eficientes y abiertos. El proyecto ya contempla el uso de Gemma para el análisis multimodal, lo que facilitaría la coherencia y la integración. La variante de 12 mil millones de parámetros (12B) representa un compromiso interesante entre capacidad y requisitos computacionales para un entorno local.
+  \item \textbf{Mistral (familia de modelos de Mistral AI):} Modelos como \texttt{mistral-medium-2505} son reconocidos por su excelente rendimiento en tareas textuales y su eficiencia. Sin embargo, para una funcionalidad multimodal integrada en un único modelo, se requeriría una variante específica o la combinación con un modelo de visión dedicado, lo cual podría añadir complejidad si se busca una solución unificada.
+  \item \textbf{Modelos Gemini Flash (Google):} Versiones más ligeras como \texttt{gemini-2.0-flash-001} son también multimodales por diseño. No obstante, su disponibilidad y madurez para ejecución puramente local a través de herramientas como LMStudio podría ser un factor a considerar en comparación con Gemma o Mistral, que cuentan con un ecosistema GGUF muy consolidado.
 \end{itemize}
 
 \section{Conclusión}
