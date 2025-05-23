@@ -7,3 +7,45 @@
 
 \chapter{Conclusiones}
 \label{conclusiones}
+
+En este \gls{tfg} se ha logrado desarrollar con éxito un sistema de búsqueda basado en \gls{rag}, pensado para encontrar y organizar información de manera eficiente en grandes volúmenes de datos.
+
+Se ha comprobado que el sistema funciona bien cuando los archivos que se buscan tienen un contenido bastante único y fácil de diferenciar. Esto confirma que \gls{rag} funciona muy bien para buscar información en colecciones de datos donde cada documento es distinto.
+
+Sin embargo, el camino no estuvo exento de problemas. Aparecieron desafíos importantes en la gestión de los recursos del ordenador. Especialmente, el límite de la ventana de contexto de los \gls{llm} utilizados fue un gran obstáculo. Esto afectó lo completo que podía ser el procesamiento y la capacidad de entender la información al procesar grandes volúmenes de datos.
+
+Al probar diferentes \gls{llm}, se comprobó que no todos se comportan igual ni piden los mismos recursos. Por ejemplo, al comparar \textit{Gemma-3-12b-it} y \textit{Mistral-7b-it}, se pudo apreciar que, aunque \textit{Gemma} daba respuestas de mejor calidad, era mucho más lento y necesitaba \gls{gpu}. Por otro lado, \textit{Mistral} ha sido más fácil de usar en ordenadores más modestos y sus respuestas han sido muy rápidas, aunque sus respuestas no eran tan precisas. Con esto se recalca la importancia de encontrar un equilibrio entre la calidad de lo que el sistema te responde y lo rápido que funciona, siempre teniendo en cuenta los recursos de hardware disponibles.
+
+A nivel personal, este proyecto ha sido una oportunidad increíble para aprender sobre la arquitectura \gls{rag}, cómo funcionan un poco por dentro los \gls{llm} y los retos reales que surgen al ponerlos en práctica. Poder implementar y probar el sistema con una colección de datos privada fue especialmente interesante y motivador, ya que proporcionó una visión práctica que complementa todo lo que se había investigado.
+
+A pesar de que el sistema desarrollado aún tiene mucho margen de mejora, se ha logrado construir una base sólida y funcional. Su diseño modular y escalable lo convierte en una herramienta potencialmente útil para buscar información en grandes volúmenes de datos y está listo para ser usado en situaciones reales. Esto confirma que la idea principal detrás del proyecto era válida y abre la puerta a muchas posibilidades para seguir mejorándolo.
+
+\section{Trabajo futuro}
+\label{trabajo_futuro}
+
+El sistema que se ha desarrollado en este \gls{tfg} es un buen punto de partida, pero hay muchas ideas para seguir mejorándolo y convertirlo en un buscador \gls{rag} más completo y potente. Algunas de estas ideas son:
+
+\subsection{Mejoras Funcionales y Experiencia de Usuario}
+
+\begin{itemize}
+    \item \textbf{Implementación de una Conversación Multi-turno:} Ahora mismo, cada pregunta es independiente. Sería genial poder añadir una función en el \textit{frontend} que permita al sistema recordar lo que hemos hablado. Así se podría ir ajustando las búsquedas poco a poco, hacer preguntas de seguimiento o explorar temas relacionados con más detalle. Esto haría que el sistema fuera una herramienta de conversación mucho más natural y eficiente.
+    \item \textbf{Expansión de Tipos de Archivos Soportados:} Nuestro sistema actual se centra sobre todo en documentos de texto e imágenes. Sería muy importante crear módulos específicos para que el sistema pueda buscar y procesar otros tipos de archivos, como vídeos, audios y documentos comprimidos. Para lograr esto, se necesitan integrar técnicas más avanzadas, por ejemplo, de procesamiento de lenguaje natural (\gls{nlp}) para entender el audio (como el reconocimiento de voz), visión por computador para analizar vídeos (detectar objetos o escenas, transcribir diálogos) y programas para descomprimir y analizar el contenido de los archivos comprimidos.
+    \item \textbf{Búsqueda Avanzada por Contenido Visual (Reconocimiento Facial/Persona):} Otra idea sería desarrollar una función que permitiera subir una fotografía de una persona para que el sistema la busque sobre el espacio de archivos. Esto significaría integrar técnicas de reconocimiento facial y crear un sistema donde el modelo pueda aprender y asociar nombres a caras a partir de las etiquetas que el usuario le de al modelo. De esta forma, el buscador no solo buscaría objetos, sino que también podría entender y buscar por personas.
+    \item \textbf{Integración de Reconocimiento de Audio Específico:} Para los archivos de audio, además de transcribir lo que se dice con reconocimiento de voz, se podría explorar la posibilidad de integrar servicios o \gls{api}s que identifiquen música o "huellas de sonido" (algo parecido a Shazam o ACRCloud). Esto permitiría reconocer canciones, melodías o incluso fragmentos de audio concretos, lo que abriría la posibilidad de hacer búsquedas más especializadas dentro de tus colecciones de música o multimedia.
+\end{itemize}
+
+\subsection{Optimización y Escalabilidad del Sistema}
+
+\begin{itemize}
+    \item \textbf{Optimización y Gestión de Recursos:} Sería muy útil añadir opciones de configuración avanzadas que permitan al usuario o al administrador del sistema controlar cuánto recurso del ordenador usa el programa (por ejemplo, limitar el uso de \gls{cpu} o \gls{ram} a un porcentaje específico). Esto es muy importante para que el sistema funcione bien y de forma estable, sobre todo en ordenadores con recursos limitados o si se comparten con otras cosas, evitando que el sistema sature el equipo donde esté funcionando.
+    \item \textbf{Refactorización del Backend con Tecnologías Optimizadas:} Aunque la parte del \textit{backend} que hemos usado hasta ahora ha funcionado, sería muy útil rehacerla usando \textit{FastAPI} en lugar de la tecnología actual \textit{Flask}. \textit{FastAPI} funciona mucho más rápido, está diseñado para ser usado en entornos de producción y ayuda a crear la documentación de las \gls{api}s de forma automática, lo que haría más fácil mantenerlo, adaptarlo a más usos e integrarlo con otras herramientas.
+    \item \textbf{Integración con Modelos de Lenguaje en la Nube:} Aprovechar el potencial de los \gls{llm} más avanzados que etán en cloud y son mayoritariamente de pago para no depender de los recursos del ordenador local y tener acceso a modelos más potentes y rápidos.
+\end{itemize}
+
+\subsection{Nuevas Vías de Despliegue}
+
+\begin{itemize}
+    \item \textbf{Despliegue en Dispositivos Edge y Móviles:} A medida que la tecnología de \gls{llm} avanza y los modelos se vuelven más pequeños y eficientes, una línea de trabajo interesante sería intentar que el sistema funcione, al menos en parte, en dispositivos \textit{edge} (como \textit{teléfonos móviles} o dispositivos inteligentes tipo \gls{iot}). Esto abriría nuevas formas de usarlo y lo haría más accesible, permitiendo hacer búsquedas rápidas y locales sin depender de una conexión constante a internet, algo que se espera que sea cada vez más fácil gracias a la mejora de los modelos y la tecnología para equipos pequeños.
+\end{itemize}
+
+En resumen, el trabajo futuro se enfocará en convertir este prototipo inicial en una herramienta de búsqueda de información completa, robusta y fácil de usar, capaz de manejar distintos tipos de datos y adaptarse a diferentes entornos de funcionamiento.
