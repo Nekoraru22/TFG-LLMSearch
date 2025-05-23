@@ -218,6 +218,7 @@ Los resultados para las dos primeras consultas ("Un gato subido a un árbol" y "
 \end{figure}
 
 Sin embargo, la consulta "Sculpture of a hand" (correspondiente a la imagen de la Figura \ref{fig:search_hand_sculpture}) no produjo una descripción final debido a un error de ventana de contexto en el modelo de lenguaje Mistral, encargado de la generación final de la respuesta y del filtrado. Este error, visible en la Figura \ref{fig:context_window_error_search}, se atribuye a la gran cantidad de metadatos asociados a la imagen (tomada con un teléfono móvil), que saturaron la capacidad del modelo. A pesar de este problema con Mistral, es importante destacar que ChromaDB sí recuperó la imagen correcta como el resultado más relevante en su búsqueda vectorial inicial.
+Una manera de evitar este error es limitar la cantidad de metadatos que se envían al modelo de lenguaje o incluso hacer una consulta a un modelo de pequeño modelo de lenguaje para que realice un resumen de los metadatos y así reducir la cantidad de información a procesar.
 
 \begin{figure}[H]
 \centering

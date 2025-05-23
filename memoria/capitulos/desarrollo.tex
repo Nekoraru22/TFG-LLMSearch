@@ -320,19 +320,6 @@ El controlador de ChromaDB implementado se encarga de gestionar la conexión, la
 
 Una decisión de diseño importante fue utilizar el campo de metadatos de ChromaDB para almacenar toda la información descriptiva del archivo, incluyendo el hash. Esto evita la necesidad de una base de datos relacional adicional (como SQLite) para la gestión de metadatos y la detección de duplicados, simplificando la arquitectura y aprovechando la eficiencia de ChromaDB para consultas basadas en estos metadatos.
 
-\subsection{Contenerización: No implementada (Docker)}
-\label{subsec:decision_docker}
-\subsubsection{Decisión y Justificación}
-Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de contenerización como \textbf{Docker}. Se reconocen plenamente sus ventajas en términos de reproducibilidad del entorno, aislamiento de dependencias y simplificación del despliegue en diferentes máquinas.
-
-Sin embargo, para la etapa actual del proyecto, y como se anticipó en el análisis inicial, se ha optado por no implementar una solución de contenerización. Esta decisión se fundamenta en varios factores prácticos:
-\begin{enumerate}
-    \item El orquestador Prefect, en su modo de ejecución local, se instala fácilmente como un paquete Python y no requiere una configuración de servidor compleja para este proyecto.
-    \item LMStudio, la herramienta seleccionada para la gestión y ejecución de los modelos de \gls{ia} locales, es una aplicación de escritorio con un instalador directo, diseñada para ser utilizada en el sistema operativo anfitrión.
-    \item La gestión de dependencias de Python se ha manejado eficazmente mediante el uso de entornos virtuales (`venv`), asegurando un aislamiento adecuado a nivel de proyecto.
-\end{enumerate}
-Dado que el objetivo principal era validar la funcionalidad central del sistema en un entorno de desarrollo local, y los componentes clave no presentaban complejidades de entorno que justificaran la sobrecarga administrativa de Docker en esta fase, se consideró más ágil proceder sin él.
-
 \subsubsection{Consideraciones Futuras}
 La arquitectura modular del sistema, con componentes bien definidos (backend API, motor de Prefect, detector de cambios), está diseñada para facilitar una futura migración a contenedores. Si el proyecto evolucionara hacia un despliegue en entornos más complejos, multiusuario o en la nube, la adopción de Docker (posiblemente junto con Docker Compose) sería un paso lógico y altamente recomendable. Esto permitiría empaquetar el servidor de la API, el agente de Prefect, la base de datos (especialmente si se optara por una versión servida de ChromaDB o una alternativa) y la interfaz de usuario en contenedores separados y orquestados, mejorando la escalabilidad y la mantenibilidad.
 
@@ -406,6 +393,19 @@ La alternativa habría sido gestionar la descarga, configuración y ejecución d
 LMStudio se utiliza como un componente externo al código principal del proyecto. El usuario debe instalar LMStudio, descargar los modelos deseados y ejecutarlos a través del servidor local que provee la aplicación. El backend de Python del sistema se comunica con este servidor local de LMStudio mediante peticiones HTTP a los endpoints estándar de la API de OpenAI (e.g., \texttt{/v1/chat/completions} para \gls{llm} o \texttt{/v1/completions} para modelos que lo soporten, adaptándose según el modelo específico y su configuración en LMStudio).
 
 Esta dependencia de un software externo implica que el usuario debe realizar estos pasos de configuración manualmente. No obstante, para el alcance de este proyecto, la simplificación en el desarrollo y la flexibilidad para probar diferentes modelos que ofrece LMStudio superan la desventaja de la configuración manual. En la documentación del proyecto se detallan los pasos para configurar LMStudio y los modelos recomendados.
+
+\subsection{Contenerización: No implementada (Docker)}
+\label{subsec:decision_docker}
+\subsubsection{Decisión y Justificación}
+Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de contenerización como \textbf{Docker}. Se reconocen plenamente sus ventajas en términos de reproducibilidad del entorno, aislamiento de dependencias y simplificación del despliegue en diferentes máquinas.
+
+Sin embargo, para la etapa actual del proyecto, y como se anticipó en el análisis inicial, se ha optado por no implementar una solución de contenerización. Esta decisión se fundamenta en varios factores prácticos:
+\begin{enumerate}
+    \item El orquestador Prefect, en su modo de ejecución local, se instala fácilmente como un paquete Python y no requiere una configuración de servidor compleja para este proyecto.
+    \item LMStudio, la herramienta seleccionada para la gestión y ejecución de los modelos de \gls{ia} locales, es una aplicación de escritorio con un instalador directo, diseñada para ser utilizada en el sistema operativo anfitrión.
+    \item La gestión de dependencias de Python se ha manejado eficazmente mediante el uso de entornos virtuales (`venv`), asegurando un aislamiento adecuado a nivel de proyecto.
+\end{enumerate}
+Dado que el objetivo principal era validar la funcionalidad central del sistema en un entorno de desarrollo local, y los componentes clave no presentaban complejidades de entorno que justificaran la sobrecarga administrativa de Docker en esta fase, se consideró más ágil proceder sin él.
 
 \subsection{Modelos de IA: Mistral y Gemma}
 \label{subsec:decision_models}
