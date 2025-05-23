@@ -245,10 +245,10 @@ Tras el estudio de las tecnologías disponibles, en esta sección se detallan la
 
 \subsection{Orquestador de Tareas: Prefect}
 \label{subsec:decision_prefect}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 Para la orquestación de las tareas de procesamiento de archivos, extracción de metadatos, generación de embeddings y su posterior almacenamiento, se ha seleccionado \textbf{Prefect}. La elección se fundamenta en su enfoque moderno, su facilidad de uso al estar escrito en Python, lenguaje principal del proyecto, y su adecuada capacidad para gestionar pipelines de datos y de \gls{ml}. Aunque herramientas como Kafka ofrecen un rendimiento superior para flujos de datos masivos y Airflow cuenta con una comunidad más extensa, Prefect proporciona un equilibrio óptimo entre simplicidad, flexibilidad y potencia para las necesidades específicas de este proyecto. Su curva de aprendizaje es más accesible en comparación con Airflow, y su infraestructura requerida es menos exigente que la de Kafka, haciéndolo idóneo para un proyecto de esta envergadura.
 
-\paragraph{Implementación}
+\subsubsection{Implementación}
 La implementación con Prefect se estructura en torno a \textit{Tasks} (tareas individuales) y \textit{Flows} (flujos de trabajo que orquestan las tareas).
 
 Las principales \textbf{Tasks} definidas son:
@@ -270,7 +270,7 @@ Estos \textit{tasks} se orquestan en los siguientes \textbf{Flows}:
 
 Si bien Prefect ofrece capacidades robustas para la ejecución paralela de tareas y flujos, en la implementación actual, el grado de paralelización se ve limitado por los recursos computacionales disponibles en un entorno de desarrollo local. Tareas intensivas como la generación de embeddings o las inferencias de modelos \gls{llm} pueden ser costosas. En un entorno de producción con un servidor adecuadamente dimensionado (con mayor capacidad de \gls{cpu}, \gls{gpu} y \gls{ram}), se podría explotar de manera mucho más efectiva la paralelización para procesar múltiples archivos o consultas simultáneamente, mejorando significativamente el rendimiento y la capacidad de respuesta del sistema.
 
-La Figura \ref{fig:prefect_dashboard} muestra una vista general del dashboard de Prefect, donde se pueden monitorizar los flujos y tareas. La Figura \ref{fig:prefect_flow_example} ilustra un ejemplo de la visualización de un flujo específico en ejecución.
+La Figura \ref{fig:prefect_dashboard} muestra una vista general del dashboard de Prefect, donde se pueden monitorizar los flujos y tareas.
 
 \begin{figure}[!htbp]
     \centering
@@ -279,33 +279,29 @@ La Figura \ref{fig:prefect_dashboard} muestra una vista general del dashboard de
     \label{fig:prefect_dashboard}
 \end{figure}
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{archivos/prefect_flow.png}
-    \caption{Visualización de un flujo de trabajo específico en Prefect.}
-    \label{fig:prefect_flow_example}
-\end{figure}
-
 \subsection{Detección de Cambios: Python con Watchdogs}
 \label{subsec:decision_watchdogs}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 La detección de cambios en el sistema de archivos se ha implementado utilizando \textbf{Python} en combinación con la biblioteca \textbf{watchdogs}. Esta elección se basa en la naturaleza multiplataforma de \texttt{watchdogs}, crucial para una aplicación destinada a la gestión de archivos personales que podría ejecutarse en diversos sistemas operativos. Python, como lenguaje principal del proyecto, facilita la integración de este componente con el resto del sistema, especialmente con el orquestador de tareas Prefect.
 
-\paragraph{Implementación}
+\subsubsection{Implementación}
 Se ha desarrollado un script de Python que utiliza \texttt{watchdogs} para monitorizar de forma recursiva un directorio específico proporcionado por el usuario, centrándose exclusivamente en archivos. El script implementa un manejador de eventos personalizado, subclase de \texttt{FileSystemEventHandler}, que reacciona a los eventos de creación (\texttt{on\_created}), modificación (\texttt{on\_modified}) y eliminación (\texttt{on\_deleted}) de archivos. Al detectar un evento relevante, el script desencadena el flujo de Prefect correspondiente. Adicionalmente, al iniciar el programa, se realiza un análisis exhaustivo inicial de toda la carpeta asignada; durante este proceso, los archivos duplicados o aquellos ya procesados y sin cambios significativos se gestionarán eficientemente gracias al sistema de detección de duplicados basado en hashes, evitando reprocesamientos innecesarios.
 
-Un desafío particular surgió con la detección de archivos modificados en tiempo real, especialmente en sistemas Windows. Este sistema operativo tiende a realizar pequeñas modificaciones en los metadatos de los archivos al abrirlos o copiarlos, lo que provocaba activaciones múltiples y no deseadas del evento \texttt{on\_modified} para un mismo archivo en cortos periodos. Para mitigar este comportamiento, se implementó una caché en memoria que almacena temporalmente información sobre los archivos recientemente procesados por eventos en tiempo real. Esta caché ayuda a prevenir la reactivación innecesaria de flujos para eventos de modificación que no representan cambios sustanciales en el contenido, optimizando el rendimiento. No obstante, la verificación definitiva de duplicados o cambios significativos se realiza mediante el cálculo y comparación de hashes de archivo en los flujos de Prefect, tanto para el escaneo inicial como para los eventos posteriores.
+Un desafío particular surgió con la detección de archivos modificados en tiempo real, especialmente en sistemas Windows. Este sistema operativo tiende a realizar pequeñas modificaciones en los metadatos de los archivos al abrirlos o copiarlos, lo que provocaba activaciones múltiples y no deseadas del evento \texttt{on\_modified} para un mismo archivo en cortos periodos. Para mitigar este comportamiento, se implementó una caché en memoria que almacena temporalmente información sobre los archivos recientemente procesados por eventos en tiempo real. Esta caché ayuda a prevenir la reactivación innecesaria de flujos para eventos de modificación que no representan cambios sustanciales en el contenido, optimizando el rendimiento.
 
 Es importante destacar que este script de detección de cambios se ejecuta en un hilo separado para no bloquear la operatividad del resto del sistema. Además, se ha diseñado para ignorar eventos relacionados con directorios en su creación o modificación, procesando únicamente archivos. En el caso de la eliminación (\texttt{on\_deleted}), dado que el objeto del sistema de archivos ya no existe en el momento de la notificación, no se realiza una comprobación para distinguir entre archivo y directorio, asumiendo que el flujo de Prefect manejará adecuadamente la solicitud de eliminación en la base de datos si el ID (basado en la ruta) existiera.
 
+\subsubsection{Detección de Duplicados}
+La detección de duplicados se basa en el cálculo de un hash SHA256 del contenido del archivo que se almacena como metadato en ChromaDB. Cuando se detecta un nuevo archivo, se calcula su hash y se consulta en la base de datos para verificar si ya existe un embedding con ese hash, lo que indicaría que el archivo ya ha sido procesado previamente y por ende, que está duplicado. Si el hash ya existe, se omite el procesamiento del archivo y se evita la creación de un nuevo embedding, optimizando así el uso de recursos y el almacenamiento.
+
 \subsection{Base de Datos: ChromaDB}
 \label{subsec:decision_chromadb}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 Para el almacenamiento de metadatos y, de forma crucial, los embeddings vectoriales generados por los modelos de \gls{ia}, se ha optado por \textbf{ChromaDB}. Inicialmente, se consideró SQLite por su simplicidad para el almacenamiento de metadatos básicos, y de hecho, se desarrolló un controlador para esta base de datos que permanece disponible en el código base como alternativa o complemento futuro. Sin embargo, la funcionalidad central del sistema reside en la capacidad de realizar búsquedas semánticas eficientes basadas en embeddings, lo que hizo de una base de datos vectorial la elección más adecuada.
 
 ChromaDB fue seleccionada por su especialización en el manejo de embeddings, su facilidad de uso a través de su API Python y su capacidad para operar de forma ligera y embebible, características ideales para el desarrollo y despliegue de este proyecto.
 
-\paragraph{Implementación}
+\subsubsection{Implementación}
 ChromaDB se utiliza para almacenar dos tipos principales de información por cada archivo procesado, organizados en una "colección":
 \begin{itemize}
     \item \textbf{Embeddings:} Vectores numéricos densos que representan el contenido semántico del archivo, permitiendo búsquedas por similitud.
@@ -318,7 +314,7 @@ ChromaDB se utiliza para almacenar dos tipos principales de información por cad
             \item \texttt{hash}: Un hash SHA256 del contenido del archivo. Este metadato es crucial para evitar el procesamiento y almacenamiento duplicado de archivos idénticos, incluso si tienen nombres o ubicaciones diferentes. Antes de procesar un nuevo archivo, se calcula su hash y se consulta en ChromaDB si ya existe un embedding con ese mismo \texttt{hash} en sus metadatos.
         \end{itemize}
 \end{itemize}
-Las búsquedas semánticas se realizan enviando un vector de embedding (generado a partir de la consulta del usuario) a ChromaDB, que devuelve los `k` embeddings más similares junto con sus metadatos asociados. Actualmente, el valor de `k` se ha limitado a 5 resultados por consulta. Esta restricción se debe principalmente a las limitaciones de la ventana de contexto de los modelos de \gls{llm} que se ejecutan localmente, ya que un mayor número de resultados (y por ende, más texto para procesar) podría exceder dicha ventana o degradar significativamente el rendimiento. Esta limitación podría mitigarse en el futuro con el uso de modelos de \gls{llm} más avanzados que soporten ventanas de contexto mayores o mediante el acceso a recursos computacionales más potentes.
+Las búsquedas semánticas se realizan enviando un vector de embedding (generado a partir de la consulta del usuario) a ChromaDB, que devuelve los `k` embeddings más similares junto con sus metadatos asociados. Actualmente, el valor de `k` se ha limitado a 3 resultados por consulta. Esta restricción se debe principalmente a las limitaciones de la ventana de contexto de los modelos de \gls{llm} que se ejecutan localmente, ya que un mayor número de resultados (y por ende, más texto para procesar) podría exceder dicha ventana o degradar significativamente el rendimiento. Esta limitación podría mitigarse en el futuro con el uso de modelos de \gls{llm} más avanzados que soporten ventanas de contexto mayores o mediante el acceso a recursos computacionales más potentes.
 
 El controlador de ChromaDB implementado se encarga de gestionar la conexión, la creación de colecciones si no existen, y las operaciones CRUD (inserción, lectura, actualización y eliminación) de embeddings y metadatos. Incluye funciones para verificar si un archivo ya ha sido procesado (basándose en su hash) y para actualizar los datos si se detectan modificaciones.
 
@@ -326,7 +322,7 @@ Una decisión de diseño importante fue utilizar el campo de metadatos de Chroma
 
 \subsection{Contenerización: No implementada (Docker)}
 \label{subsec:decision_docker}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de contenerización como \textbf{Docker}. Se reconocen plenamente sus ventajas en términos de reproducibilidad del entorno, aislamiento de dependencias y simplificación del despliegue en diferentes máquinas.
 
 Sin embargo, para la etapa actual del proyecto, y como se anticipó en el análisis inicial, se ha optado por no implementar una solución de contenerización. Esta decisión se fundamenta en varios factores prácticos:
@@ -337,17 +333,17 @@ Sin embargo, para la etapa actual del proyecto, y como se anticipó en el análi
 \end{enumerate}
 Dado que el objetivo principal era validar la funcionalidad central del sistema en un entorno de desarrollo local, y los componentes clave no presentaban complejidades de entorno que justificaran la sobrecarga administrativa de Docker en esta fase, se consideró más ágil proceder sin él.
 
-\paragraph{Consideraciones Futuras}
+\subsubsection{Consideraciones Futuras}
 La arquitectura modular del sistema, con componentes bien definidos (backend API, motor de Prefect, detector de cambios), está diseñada para facilitar una futura migración a contenedores. Si el proyecto evolucionara hacia un despliegue en entornos más complejos, multiusuario o en la nube, la adopción de Docker (posiblemente junto con Docker Compose) sería un paso lógico y altamente recomendable. Esto permitiría empaquetar el servidor de la API, el agente de Prefect, la base de datos (especialmente si se optara por una versión servida de ChromaDB o una alternativa) y la interfaz de usuario en contenedores separados y orquestados, mejorando la escalabilidad y la mantenibilidad.
 
 \subsection{Interfaz de Usuario: Vue.js}
 \label{subsec:decision_vue}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 Para el desarrollo de la interfaz de usuario (\gls{ui}), se ha seleccionado \textbf{Vue.js}. La principal razón detrás de esta elección fue la búsqueda de simplicidad y una curva de aprendizaje accesible, dado que la \gls{ui}, aunque importante para la interacción del usuario, no constituye el núcleo de innovación del proyecto, el cual está centrado en la inteligencia artificial y la gestión de archivos del backend.
 
 Aunque existía una mayor familiaridad previa con Angular por parte del desarrollador, su complejidad inherente y su estructura altamente opinada se consideraron excesivas para las necesidades de la interfaz de este proyecto. Vue.js ofrece un excelente equilibrio entre funcionalidad y facilidad de desarrollo, permitiendo construir una interfaz reactiva y moderna sin la sobrecarga asociada a frameworks más robustos y extensos.
 
-\paragraph{Implementación}
+\subsubsection{Implementación}
 La interfaz de usuario desarrollada con Vue.js se comunica con un backend implementado en Flask (Python), el cual actúa como intermediario para interactuar con Prefect y ChromaDB. Las funcionalidades principales implementadas en la \gls{ui} incluyen:
 \begin{itemize}
     \item Un campo de búsqueda central donde el usuario puede introducir sus consultas en lenguaje natural.
@@ -384,10 +380,10 @@ Las Figuras \ref{fig:front_home}, \ref{fig:front_config} y \ref{fig:front_explor
 
 \subsection{API REST: Flask}
 \label{subsec:decision_api}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 Para la comunicación entre el frontend (Vue.js) y los servicios del backend (Prefect, ChromaDB, lógica de negocio), se ha optado por desarrollar una API RESTful utilizando \textbf{Flask} en Python. Esta elección se basa en la simplicidad, ligereza y flexibilidad de Flask, que permite crear rápidamente endpoints bien definidos. Al ser Python el lenguaje principal del proyecto, Flask facilita una integración natural con los demás componentes del backend.
 
-\paragraph{Implementación}
+\subsubsection{Implementación}
 El servidor Flask se ha configurado para servir tanto la API REST como los archivos estáticos de la aplicación Vue.js (generados tras el proceso de compilación de Vue). Los principales endpoints de la API incluyen:
 \begin{itemize}
     \item \texttt{/api/status}: Proporciona información sobre el estado general del sistema, como la cantidad de archivos procesados o el estado de los servicios de monitorización.
@@ -401,22 +397,46 @@ Se implementó \gls{cors} (Cross-Origin Resource Sharing) para permitir las soli
 
 \subsection{Gestión de Modelos de IA: LMStudio}
 \label{subsec:decision_lmstudio}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 Para la gestión y ejecución local de los modelos de lenguaje grande (\gls{llm}) y modelos multimodales, se ha optado por utilizar \textbf{LMStudio}. La principal ventaja de LMStudio radica en su facilidad de uso: es una aplicación de escritorio que permite descargar, configurar y ejecutar una amplia variedad de modelos de \gls{ia} de código abierto (provenientes de plataformas como Hugging Face) a través de una interfaz gráfica intuitiva. Además, expone los modelos cargados a través de un servidor local compatible con la API de OpenAI, lo que simplifica enormemente la integración con el código Python del proyecto.
 
-La alternativa habría sido gestionar la descarga, configuración y ejecución de cada modelo directamente mediante bibliotecas de Python como `transformers` o `llama-cpp-python`. Si bien esto ofrecería un control más granular, también implicaría una mayor complejidad en el código y en el proceso de configuración inicial para el usuario final del proyecto. LMStudio abstrae esta complejidad.
+La alternativa habría sido gestionar la descarga, configuración y ejecución de cada modelo directamente mediante bibliotecas de Python como `transformers` o `llama-cpp-python`. Si bien esto ofrecería un control más granular, también implicaría una mayor complejidad en el código y en el proceso de configuración inicial para el usuario final del proyecto por lo que se deja como una tarea a futuro cuando se plantee consolidar el producto.
 
-\paragraph{Implementación}
-LMStudio se utiliza como un componente externo al código principal del proyecto. El usuario debe instalar LMStudio, descargar los modelos deseados (por ejemplo, Mistral para generación de texto y Gemma para análisis multimodal) y ejecutarlos a través del servidor local que provee la aplicación. El backend de Python del sistema se comunica con este servidor local de LMStudio mediante peticiones HTTP a los endpoints estándar de la API de OpenAI (e.g., \texttt{/v1/chat/completions} para \gls{llm} o \texttt{/v1/completions} para modelos que lo soporten, adaptándose según el modelo específico y su configuración en LMStudio).
+\subsubsection{Implementación}
+LMStudio se utiliza como un componente externo al código principal del proyecto. El usuario debe instalar LMStudio, descargar los modelos deseados y ejecutarlos a través del servidor local que provee la aplicación. El backend de Python del sistema se comunica con este servidor local de LMStudio mediante peticiones HTTP a los endpoints estándar de la API de OpenAI (e.g., \texttt{/v1/chat/completions} para \gls{llm} o \texttt{/v1/completions} para modelos que lo soporten, adaptándose según el modelo específico y su configuración en LMStudio).
 
 Esta dependencia de un software externo implica que el usuario debe realizar estos pasos de configuración manualmente. No obstante, para el alcance de este proyecto, la simplificación en el desarrollo y la flexibilidad para probar diferentes modelos que ofrece LMStudio superan la desventaja de la configuración manual. En la documentación del proyecto se detallan los pasos para configurar LMStudio y los modelos recomendados.
 
+\subsection{Modelos de IA: Mistral y Gemma}
+\label{subsec:decision_models}
+Tras el estudio del arte, se ha optado por el modelo \textbf{\texttt{gemma-3-12b-it}} como la elección principal para las capacidades multimodales de LLMSearch en ejecución local. Las razones que sustentan esta decisión son:
+
+\begin{enumerate}
+    \item \textbf{Equilibrio entre Tamaño y Rendimiento Local:} Con 12 mil millones de parámetros, \texttt{gemma-3-12b-it} es lo suficientemente robusto para tareas de comprensión multimodal y RAG, sin imponer una carga computacional excesiva en sistemas de escritorio modernos, especialmente al considerar versiones cuantizadas (e.g., GGUF Q4\_K\_M) que son gestionadas eficientemente por LMStudio.
+    \item \textbf{Capacidad Multimodal Inherente:} Al ser un modelo diseñado con la multimodalidad como característica central, se simplifica la arquitectura al no requerir la orquestación compleja de múltiples modelos especializados para visión y lenguaje por separado para la funcionalidad base.
+    \item \textbf{Optimización para Instrucciones (`-it`):} La variante "instruct-tuned" está optimizada para seguir instrucciones y participar en diálogos de pregunta-respuesta, lo cual es fundamental para la interacción del usuario con el buscador.
+    \item \textbf{Ecosistema Abierto y Soporte Local:} La naturaleza abierta de Gemma y su buen soporte en herramientas de ejecución local como LMStudio aseguran una mayor facilidad de implementación y experimentación para el usuario final del TFG.
+\end{enumerate}
+
+Si bien modelos más grandes como \texttt{gemma-3-27b-it} podrían ofrecer un rendimiento superior, sus requisitos de hardware son considerablemente mayores, lo que limitaría la aplicabilidad del sistema en un espectro más amplio de equipos personales. Por otro lado, aunque \texttt{mistral-medium} es excelente para texto, la integración nativa de multimodalidad en Gemma reduce la complejidad de desarrollo para la funcionalidad principal de LLMSearch. Por lo tanto, \texttt{gemma-3-12b-it} se presenta como la opción más pragmática y equilibrada para satisfacer los requisitos del proyecto en el contexto de un Trabajo Fin de Grado enfocado en la viabilidad y funcionalidad local.
+Mistral se ha seleccionado como el modelo de \gls{llm} para la generación de respuestas a las consultas del usuario. Este modelo es conocido por su capacidad de generar texto coherente y relevante en una variedad de contextos, lo que lo convierte en una opción adecuada para el sistema de búsqueda semántica. Al igual que con Gemma, se ha optado por una versión cuantizada (GGUF Q4\_K\_M) para optimizar el rendimiento en hardware local.
+
+Para el correcto funcionamiento de ambos modelos se han creado prompts específicos que guían al modelo en la generación de respuestas adecuadas. Estos prompts se han diseñado para maximizar la calidad de las respuestas generadas, teniendo en cuenta el contexto y la información proporcionada por el usuario y para evitar que el modelo se niegue a responder o genere respuestas irrelevantes.
+Estos prompts se detallan en los Anexos Anexo \ref{anx:prompt_img_desc} y Anexo \ref{anx:prompt_verify}
+
 \subsection{Interfaz de Línea de Comandos (CLI)}
 \label{subsec:decision_terminal}
-\paragraph{Decisión y Justificación}
+\subsubsection{Decisión y Justificación}
 Además de la interfaz gráfica de usuario, se consideró útil proporcionar una interfaz de línea de comandos (CLI) para permitir interacciones básicas con el sistema, como realizar búsquedas o iniciar el proceso de monitorización. Esto puede ser ventajoso para usuarios avanzados, para la automatización de tareas mediante scripts o para entornos donde una GUI no está disponible o no es deseada. Se utilizó el ecosistema estándar de Python para empaquetar y distribuir esta CLI.
 
-\paragraph{Implementación}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{archivos/terminal_example.png}
+    \caption{Interfaz de línea de comandos (CLI) del sistema.}
+    \label{fig:terminal}
+\end{figure}
+
+\subsubsection{Implementación}
 Para crear un punto de entrada ejecutable desde la terminal, se ha utilizado la funcionalidad de \texttt{entry\_points} de \textbf{setuptools}, la biblioteca estándar de Python para la construcción y distribución de paquetes. Se definió un archivo \texttt{setup.py} (o \texttt{pyproject.toml} con la configuración equivalente) que incluye la siguiente configuración para los scripts de consola:
 
 \begin{lstlisting}[language=Python, caption={Definición del punto de entrada en setup.py}, label=lst:setup_py_cli, basicstyle=\footnotesize\ttfamily, breaklines=true]

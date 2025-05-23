@@ -8,6 +8,24 @@
 \chapter{Análisis, Especificación y Diseño}
 \label{analisis}
 
+El fin al que se quiere llegar con el desarrollo de este proyecto es la creación de un sistema capaz de analizar ficheros de diferentes tipos y extraer información relevante de ellos. Para ello, se ha llevado a cabo un análisis exhaustivo de los requisitos del sistema, así como un diseño que permita cumplir con estos requisitos de manera eficiente y escalable. Se muestra una gráfica informal de cómo sería dicha arquitectura en la Figura \ref{fig:arquitectura_flujo}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{archivos/arquitectura_flujo.png}
+\caption[Diseño de la arquitectura del sistema]{Diseño de la arquitectura del sistema.}
+\label{fig:arquitectura_flujo}
+\end{figure}
+
+La arquitectura del sistema se ha diseñado de manera modular, permitiendo la separación de responsabilidades y facilitando la escalabilidad y el mantenimiento. La arquitectura está pensada también para poder manejar grandes volúmenes de datos de manera secuencial y paralela gracias al orquestador de tareas Prefect. En la Figura \ref{fig:arquitectura_modular} se presenta un esquema de la arquitectura modular del sistema, donde se pueden observar los diferentes conectores y como se extrae la información y los metadatos para almacenarlos en la base de datos ChromaDB.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{archivos/arquitectura_modular.png}
+\caption[Arquitectura modular del sistema]{Arquitectura modular del sistema.}
+\label{fig:arquitectura_modular}
+\end{figure}
+
 \section{Requisitos del sistema}
 En esta sección se detallan los requisitos del sistema, divididos en requisitos funcionales, no funcionales y de configuración. Los requisitos se han estructurado en formato tabular para facilitar su comprensión y seguimiento durante el desarrollo del proyecto.
 
@@ -72,6 +90,16 @@ RNF-05 & Resultados en CLI & La entrada por línea de comandos devolverá los re
 RNF-06 & Estado del sistema & La entrada por línea de comandos tendrá un parámetro \texttt{--status} que devolverá el estado del sistema: número de archivos procesados sobre el número total de archivos en observación, cantidad de ficheros de cada tipo, errores encontrados... \\
 \hline
 RNF-07 & Configuración por CLI & Se añadirán los parámetros necesarios para poder configurar el sistema desde línea de comandos. \\
+\hline
+RNF-08 & Rendimiento de Búsqueda & El sistema deberá presentar los resultados de búsqueda iniciales de la base de datos de forma rápida para consultas sobre los archivos procesados localmente. \\
+\hline
+RNF-09 & Usabilidad de la Interfaz & La interfaz gráfica de usuario (GUI) y la interfaz de línea de comandos (CLI) serán intuitivas para las operaciones básicas de búsqueda y consulta de estado. \\
+\hline
+RNF-10 & Robustez ante Errores Comunes & El sistema gestionará errores predecibles durante el procesamiento de archivos (e.g., tipos no soportados, archivos demasiado grandes para el contexto del LLM) sin causar la caída del sistema. \\
+\hline
+RNF-11 & Consumo de Recursos en Reposo & Cuando el sistema esté en modo de monitorización pasiva (sin búsquedas activas o indexación intensiva), su impacto en los recursos del sistema será bajo, permitiendo el uso normal del ordenador para otras tareas. \\
+\hline
+RNF-12 & Capacidad de Configuración Básica & El usuario podrá configurar parámetros esenciales como el modelo de lenguaje a utilizar para la generación de respuestas, a través de la interfaz proporcionada. \\
 \hline
 \end{tabular}
 \caption{Requisitos no funcionales del sistema}
@@ -173,8 +201,7 @@ Es importante señalar que el diagrama de la Figura \ref{fig:arquitectura_genera
 \subsection{Consideraciones sobre Contenerización}
 \label{subsec:docker_considerations}
 
-Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de \textbf{contenerización} para los diferentes servicios del sistema. La contenerización ofrece ventajas significativas en términos de reproducibilidad del entorno, aislamiento de dependencias y simplificación del despliegue. Sin embargo, para la etapa actual del proyecto, y dado que el objetivo principal es desarrollar y validar la funcionalidad central en un entorno local, se ha optado por no implementar una solución de contenerización inicialmente. La gestión de dependencias a través de entornos virtuales específicos del lenguaje de programación y la configuración directa de los servicios en el sistema operativo local se considera suficiente y más ágil para el desarrollo iterativo. No obstante, la arquitectura modular propuesta facilitaría una futura migración a una infraestructura basada en contenerización si el proyecto escalara o se requiriera un despliegue en entornos más complejos.
-
+Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de \textbf{contenerización} para los diferentes servicios del sistema. La contenerización ofrece ventajas significativas en términos de reproducibilidad del entorno, aislamiento de dependencias y simplificación del despliegue. Sin embargo, para la etapa actual del proyecto, y dado que el objetivo principal es desarrollar y validar la funcionalidad central en un entorno local, se ha optado por no implementar una solución de contenerización inicialmente. La gestión de dependencias a través de entornos virtuales específicos del lenguaje de programación y la configuración directa de los servicios en el sistema operativo local se considera suficiente y más ágil para el desarrollo iterativo. No obstante, la arquitectura modular propuesta facilitaría una futura migración a una infraestructura basada en contenerización si el proyecto escalara o se requiriera un despliegue en entornos más complejos. Este punto se detallará más a fondo en la sección de \textbf{Desarrollo}.
 \section{Casos de uso}
 \label{sec:casos_de_uso}
 

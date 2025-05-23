@@ -82,138 +82,238 @@ Esta evaluación preliminar valida la elección de una base de datos vectorial c
 
 \section{Ejemplo con un pequeño dataset}
 \label{sec:ejemplo_dataset}
-El dataset utilizado para la prueba consta de archivos variados incluyendo documentos de texto, imágenes, PDFs y documentos no soportados actualmente por el sistema como vídeos y ejecutables entre otros.
 
-Las imagenes utilizadas son de Pixabay https://pixabay.com/es/service/license-summary/ y Adobe Stock https://stock.adobe.com/es/search/free que son de uso libre. Todos los archivos están libres de licencia.
+Para evaluar el funcionamiento del sistema se utilizó un conjunto de datos diverso. Este dataset, compuesto por archivos variados como documentos de texto (.txt), imágenes (.png, .jpg), PDFs y algunos formatos no soportados actualmente por el sistema (vídeos, ejecutables), permitió probar las distintas facetas del procesamiento y la búsqueda.
 
-Destacar que los resultados del modelo multimodal están en inglés puesto que en la práctica ha sacado mejores resultados.
-Para la prueba se han utilizado los siguientes archivos:
+Es importante destacar que las imágenes utilizadas provienen de fuentes de uso libre como Pixabay y Adobe Stock (libres de licencia), y todos los archivos empleados están libres de derechos. Se observó que los resultados del modelo multimodal tienden a ser más precisos en inglés, por lo que se mantuvo este idioma para sus descripciones y consultas.
+
+La Figura \ref{fig:result_files_dataset} muestra una selección de los archivos utilizados en esta fase de pruebas.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/result_files.png}
 \caption[Ejemplo de archivos de prueba]{Ejemplo de archivos de prueba utilizados para la evaluación del sistema.}
-\label{fig:result_files}
+\label{fig:result_files_dataset}
 \end{figure}
 
-Una vez cargados los archivos sobre la carpeta observada y procesados por el sistema se puede observar el flujo de trabajo en Prefect. En la Figura \ref{fig:prefect} se puede observar cada una de las tareas que se han ejecutado y su estado. En este caso, todas las tareas han sido ejecutadas correctamente y el sistema ha podido generar los embeddings de cada uno de los archivos excepto por el de la figura \ref{fig:prefect_fail} que ha fallado al no poder procesar el archivo ejecutable. Este error se ha manejado correctamente y el sistema ha continuado con la ejecución de las demás tareas. En la figura \ref{fig:prefect_fail} se puede observar el error que ha ocurrido al intentar procesar el archivo ejecutable.
+Una vez que los archivos son depositados en la carpeta monitorizada por el sistema, se inicia su procesamiento. El flujo de trabajo, orquestado por Prefect, gestiona cada una de las tareas involucradas. Se observó que, en general, el sistema procesó correctamente la mayoría de los archivos, generando los embeddings correspondientes.
+
+Sin embargo, se presentaron situaciones específicas que muestran el manejo de errores del sistema:
+\begin{itemize}
+\item \textbf{Archivos demasiado grandes para el contexto del modelo:} La Figura \ref{fig:prefect_fail_size} muestra un error ocurrido al intentar procesar un archivo PDF cuyo contenido excedía la ventana de contexto del modelo de lenguaje. A pesar de este fallo, el sistema manejó la excepción y continuó con el procesamiento de los demás archivos.
+\item \textbf{Archivos no soportados:} Como se evidencia en la Figura \ref{fig:prefect_not_valid_type}, el intento de procesar un archivo ejecutable resultó en no proseguir con el procesamiento del archivo dado que este tipo de archivo no está entre los formatos soportados. De nuevo, el sistema prosiguió con las tareas restantes sin problemas.
+\end{itemize}
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/prefect_fail.png}
-\caption[Error en Prefect al procesar un archivo demasiado grande]{Error en Prefect al procesar un archivo demasiado grande.}
-\label{fig:prefect_fail}
+\caption[Error en Prefect al procesar un archivo demasiado grande]{Error reportado por Prefect debido a un archivo PDF demasiado grande para la ventana de contexto del modelo.}
+\label{fig:prefect_fail_size}
 \end{figure}
 
-El error de la figura \ref{fig:prefect_fail} se debe a que el PDF que se ha intentado procesar es demasiado grande y no cabe en la ventana de contexto del modelo de lenguaje. Este error se ha manejado correctamente y el sistema ha continuado con la ejecución de las demás tareas.
-
-Por otro lado, en la figura \ref{fig:prefect_camera} se puede observar que el resultado es satisfactorio y el sistema ha podido detectar si había duplicados, extraer los metadatos y la información de la imagen gracias al modelo multimodal Gemma3.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{archivos/prefect_camera.png}
-\caption[Resultado de Prefect al procesar una imagen captada por un teléfono móvil]{Resultado de Prefect al procesar una imagen captada por un teléfono móvil.}
-\label{fig:prefect_camera}
-\end{figure}
-
-Sin embargo, en la figura \ref{fig:prefect_not_valid} se puede observar que el sistema no ha podido procesar el archivo ejecutable ya que no es un tipo de archivo soportado por el sistema. Este error se ha manejado correctamente y el sistema ha continuado con la ejecución de las demás tareas.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/prefect_not_valid.png}
-\caption[Error en Prefect al procesar un archivo no soportado]{Error en Prefect al procesar un archivo no soportado.}
-\label{fig:prefect_not_valid}
+\caption[Error en Prefect al procesar un archivo no soportado]{Error en Prefect al intentar procesar un archivo ejecutable, un tipo no soportado.}
+\label{fig:prefect_not_valid_type}
 \end{figure}
 
-Desde la web se pueden ver en detalle y de manera gráfica los resultados obtenidos. En la figura \ref{fig:result_web} se observa el listado de los archivos procesados.
+Por otro lado, el procesamiento de archivos válidos, como imágenes, fue exitoso. La Figura \ref{fig:prefect_camera_success} detalla el flujo en Prefect para una imagen capturada por un teléfono móvil, donde se completaron tareas como la detección de duplicados, extracción de metadatos y la generación de una descripción mediante el modelo multimodal Gemma3.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/prefect_camera.png}
+\caption[Resultado de Prefect al procesar una imagen de móvil]{Flujo de Prefect mostrando el procesamiento exitoso de una imagen, incluyendo extracción de metadatos y descripción por Gemma3.}
+\label{fig:prefect_camera_success}
+\end{figure}
+
+Los resultados del procesamiento pueden ser consultados a través de la interfaz web del sistema. La Figura \ref{fig:result_web_list} presenta el listado de archivos procesados accesibles desde esta interfaz.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/result_web.png}
-\caption[Lista de archivos procesados desde la web]{Lista de archivos procesados desde la web.}
-\label{fig:result_web}
+\caption[Lista de archivos procesados desde la web]{Vista de la interfaz web mostrando la lista de archivos procesados por el sistema.}
+\label{fig:result_web_list}
 \end{figure}
 
-Para entrar en detalles se puede ver en la figura \ref{fig:result_web_detail1} el resultado de la descripción de una de las imágenes procesadas junto con los metadatos extraídos. La descripción de la imagen es la siguiente:
+Al seleccionar un archivo específico, se accede a sus detalles. Por ejemplo, la Figura \ref{fig:result_web_detail_image} muestra la descripción generada para una imagen de un horario escolar, junto con sus metadatos. La descripción proporcionada por el modelo multimodal es la siguiente:
 
-```yaml
+\begin{quote}
 Category: [Schedule, Education] Summary: This image depicts a weekly school schedule presented in a tabular format with different colored blocks representing various subjects and time slots. The schedule is written in Spanish and includes the days of the week across the top. Detailed Analysis: The layout uses distinct colors for each day of the week (Monday, Tuesday, Wednesday, Thursday, Friday) to visually separate them. Each row represents a specific time slot throughout the school day. Times are listed on the left side, beginning at 8:00 and ending at 15:00. The subjects included are Música (Music), Castellano (Spanish), Educación Física (Physical Education), Religión (Religion), Matemáticas (Maths/Mates), Inglés (English), Biología (Biology), Valencia (presumably a language or subject related to the Valencian region), Plástica (Arts/Plastics), Geografía e Historia (Geography and History), Tecno (Technology), and Tutoría (Tutoring). A "Patio" break is indicated within certain time slots. A handwritten caption at the bottom right reads "Horario de mi grupo," meaning "My group's schedule." The overall presentation suggests a classroom or student-created document. Visual Elements: Schedule, table, colored blocks, text (Spanish), handwriting, time labels, subject names, Patio label, Horario de mi grupo text Technical Properties: Image type: JPEG, Quality assessment: Good, Color profile: sRGB Search Keywords: school schedule, timetable, weekly schedule, Spanish language, classroom, education, curriculum, subjects, student, horario, Valencia, Música, Castellano, Matemáticas, Inglés
-```
+\end{quote}
 
-Se puede apreciar que la descripción es objetivamente fiel a la imagen habiendo sido capaz incluso de estraer el texto de la imagen y de identificar los diferentes colores que aparecen en la imagen. Además, ha sido capaz de identificar que la imagen es un horario escolar.
+La descripción generada es fiel a la imagen, demostrando la capacidad del modelo para extraer texto, identificar elementos visuales (colores, estructura) e inferir el contexto (horario escolar).
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{archivos/result_web_detail1.png}
-\caption[Descripción de una de las imágenes procesadas]{Descripción de una de las imágenes procesadas junto con los metadatos extraídos.}
-\label{fig:result_web_detail1}
+\caption[Descripción de una imagen de horario escolar]{Detalle de la descripción y metadatos de una imagen procesada (horario escolar) en la interfaz web.}
+\label{fig:result_web_detail_image}
 \end{figure}
 
-Otro ejemplo de un archivo procesado un archivo de texto (.txt) con un cuento infantil (https://arbolabc.com/cuentos-clasicos-infantiles/los-tres-cochinitos)
-La descripción del archivo, que no deja de ser un resumen, es la siguiente:
-```
+Se procesó también un archivo de texto (.txt) que contenía el cuento infantil "Los Tres Cerditos" (fuente: arbolabc.com). El sistema generó el siguiente resumen:
+
+\begin{quote}
 Three little pigs leave their mother and build houses of varying quality, facing a wolf who tries to blow them down, ultimately learning the importance of hard work when the most diligent pig's brick house proves too strong for him.
-```
-Se puede observar que ha sido capaz de identificar los personajes principales y el mensaje del cuento y de resumirlo en una sola frase.
+\end{quote}
 
-Los resultados hasta ahora tienen un alto grado de precisión y son satisfactorios.
+Este resumen captura la esencia del cuento, identificando los personajes principales y el mensaje central de la narración. Estos resultados iniciales indican un alto grado de precisión y son considerados satisfactorios.
 
-Prueba de modificar un archivo. Como se puede ver en la figura \ref{fig:result_web_modified} se ha modificado el archivo de texto del cuento infantil para cambiar su contenido por el de otro cuento infantil (https://arbolabc.com/cuentos-clasicos-infantiles/blancanieves) dando como resultado su reproceso correcto y la modificación de la descripción del archivo que es la siguiente:
-```
+Para probar la capacidad del sistema de detectar y reprocesar archivos modificados, se alteró el contenido del archivo de texto del cuento, reemplazándolo por "Blancanieves" (fuente: arbolabc.com). El sistema detectó el cambio, reprocesó el archivo y actualizó su descripción, como se observa en la Figura \ref{fig:result_web_modified_file}. La nueva descripción fue:
+
+\begin{quote}
 A beautiful princess named Snow White escapes her jealous stepmother, finds refuge with seven dwarfs, but is tricked into eating a poisoned apple by the queen disguised as an old woman, only to be awakened by a prince's kiss and live happily ever after.
-```
+\end{quote}
+
+De nuevo, el sistema demostró su capacidad para adaptarse a los cambios en los archivos y generar descripciones coherentes con el nuevo contenido.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/result_web_modified.png}
-\caption[Modificación de un archivo procesado]{Modificación de un archivo procesado.}
-\label{fig:result_web_modified}
+\caption[Modificación de un archivo procesado]{Moficiación de un archivo procesado en la interfaz web de Prefect.}
+\label{fig:result_web_modified_file}
 \end{figure}
 
-De la misma manera, el resultado es satisfactorio y el sistema ha sido capaz de identificar el nuevo contenido del archivo y de generar una nueva descripción del mismo.
+Finalmente, se probó la funcionalidad de eliminación. Se eliminó el archivo ejecutable (.exe) que previamente había generado un error de tipo no soportado. La Figura \ref{fig:result_web_delete_file} confirma que el archivo fue correctamente eliminado de la vista del sistema y, consecuentemente, sus metadatos y embedding asociados fueron purgados de la base de datos.
 
-Prueba de eliminar un archivo. Se ha eliminado el archivo ejecutable puesto que no representaba un archivo válido para el sistema. En la figura \ref{fig:result_web_delete} se puede observar que el archivo ha sido eliminado correctamente y por ende se han eliminado todos los metadatos y el embedding asociado al mismo de la base de datos.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/result_web_delete.png}
-\caption[Eliminación de un archivo procesado]{Eliminación de un archivo procesado.}
-\label{fig:result_web_delete}
+\caption[Eliminación de un archivo procesado]{Eliminación de un archivo procesado en la interfaz web de Prefect.}
+\label{fig:result_web_delete_file}
 \end{figure}
 
-Se procede ahora a realizar varias búsquedas de archivos en concreto. Se han elegido las siguientes imagenes con sus respectivas descripciones tratando de describir lo que aparece en la imagen de forma sencilla y concisa.:
+\subsection{Pruebas de Búsqueda Semántica sobre el Dataset}
+
+A continuación, se evaluó la funcionalidad de búsqueda semántica con consultas específicas sobre el conjunto de archivos procesados. Se utilizaron las siguientes imágenes y consultas siendo las consultas una representación textual de lo que se observa en la imagen de forma objetiva:
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/cat_example_image.png}
-\caption[Imagen de un gato subido a un árbol]{Imagen de un gato subido a un árbol. Query: "Un gato subido a un árbol".}
-\label{fig:cat_example_image}
+\caption[Imagen de un gato subido a un árbol]{Consulta relacionada: "A cat up a tree".}
+\label{fig:search_cat_tree}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/chess_example_image.png}
-\caption[Imagen de un tablero de ajedrez]{Imagen de un tablero de ajedrez. Query: "Chess game".}
-\label{fig:cat_example_image}
+\caption[Imagen de un tablero de ajedrez]{Consulta relacionada: "Chess game".}
+\label{fig:search_chess}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/sculpture_hand_example_image.png}
-\caption[Imagen de una escultura de una mano]{Imagen de una escultura de una mano. Query: "Sculpture of a hand".}
-\label{fig:cat_example_image}
+\caption[Imagen de una escultura de una mano]{Consulta relacionada: "Sculpture of a hand".}
+\label{fig:search_hand_sculpture}
 \end{figure}
+
+Los resultados para las dos primeras consultas ("Un gato subido a un árbol" y "Chess game") se muestran en la Figura \ref{fig:web_search_results_cat_chess}. El sistema identificó correctamente los archivos correspondientes.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/web_multiple_results.png}
-\caption[Resultados de búsqueda]{Resultados de búsqueda.}
-\label{fig:cat_example_image}
+\caption[Resultados de búsqueda para gato y ajedrez]{Resultados de búsqueda en la interfaz web para las consultas sobre el gato en el árbol y el juego de ajedrez.}
+\label{fig:web_search_results_cat_chess}
 \end{figure}
 
-Se puede observar que el sistema ha sido capaz de encontrar los dos primeros archivos que se buscaban y de mostrarlo en la lista de resultados. Además, se ha podido ver la descripción del archivo y los metadatos extraídos del mismo. El resultado es satisfactorio exceptuando la última consulta que no ha recibido respuesta debido al mismo error de la ventana de contexto, al ser una imagen tomada por un teléfono móvil contiene una cantidad muy grande de metadatos que han llenado la ventana de contexto del modelo de lenguaje como se puede ver en la figura \ref{fig:context_window_error}.
+Sin embargo, la consulta "Sculpture of a hand" (correspondiente a la imagen de la Figura \ref{fig:search_hand_sculpture}) no produjo una descripción final debido a un error de ventana de contexto en el modelo de lenguaje Mistral, encargado de la generación final de la respuesta y del filtrado. Este error, visible en la Figura \ref{fig:context_window_error_search}, se atribuye a la gran cantidad de metadatos asociados a la imagen (tomada con un teléfono móvil), que saturaron la capacidad del modelo. A pesar de este problema con Mistral, es importante destacar que ChromaDB sí recuperó la imagen correcta como el resultado más relevante en su búsqueda vectorial inicial.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{archivos/context_window_error.png}
-\caption[Error de ventana de contexto]{Error de ventana de contexto.}
-\label{fig:context_window_error}
+\caption[Error de ventana de contexto en búsqueda]{Error de ventana de contexto encontrado al procesar la respuesta para la búsqueda de la escultura, debido a la gran cantidad de metadatos de la imagen.}
+\label{fig:context_window_error_search}
 \end{figure}
 
-A pesar del error, la imagen ha salido como la primera opción de la búsqueda por parte de la base de datos ChromaDB, el problema ha sido con el segundo modelo Mistral.
+\subsection{Pruebas concretas de desambiguación}
+Para probar la capacidad del sistema en escenarios más complejos que requieren desambiguación, se utilizó un conjunto de datos compuesto por imágenes de gatos y perros en diferentes escenarios y con distintos colores (Figura \ref{fig:cats_dogs_dataset_mixed}).
 
-Se procede ahora a probar con un dataset de imágenes que podrían ser confundibles entre sí por el modelo.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/cats_dataset.png} % Asumo que esta imagen muestra gatos Y perros, si no, ajustar caption
+\caption[Dataset de gatos y perros para desambiguación]{Dataset de imágenes de gatos y perros utilizado para pruebas de desambiguación en la búsqueda.}
+\label{fig:cats_dogs_dataset_mixed}
+\end{figure}
 
+Al realizar una búsqueda con la consulta "cat" (limitada a 3 resultados), el sistema recuperó correctamente tres imágenes de gatos, como se observa en la Figura \ref{fig:cats_search_results}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/cats_dataset_result.png}
+\caption[Resultados de búsqueda para "cat"]{Resultados de la búsqueda para la consulta "cat", mostrando tres imágenes de gatos.}
+\label{fig:cats_search_results}
+\end{figure}
+
+En la búsqueda de "dog", los resultados iniciales de ChromaDB fueron pertinentes. Sin embargo, el modelo Mistral, encargado de refinar y presentar estos resultados, introdujo un error: aunque el número total de perros identificados fue el esperado, el primer resultado mostrado fue incorrecto (un gato en lugar de un perro), como se ilustra en la Figura \ref{fig:dogs_search_results_error}. Los logs de Prefect (Figura \ref{fig:dogs_prefect_results_correct}) confirmaron que la selección de ChromaDB sí era más acertada antes del paso por Mistral mostrando en este orden las imágenes 7(perro), 8(perro) y 4(gato).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/dogs_result.png}
+\caption[Resultados de búsqueda para "dog" con error]{Resultados de la búsqueda para "dog", donde el primer resultado es incorrecto debido al post-procesamiento de Mistral.}
+\label{fig:dogs_search_results_error}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/dogs_prefect_result.png}
+\caption[Resultados de ChromaDB para "dog" en Prefect]{Vista de Prefect mostrando los resultados (más precisos) de ChromaDB para la consulta "dog" antes del filtro de Mistral.}
+\label{fig:dogs_prefect_results_correct}
+\end{figure}
+
+Finalmente, se realizó una prueba con la consulta "orange cat". En este caso, ChromaDB identificó correctamente los gatos naranjas disponibles. No obstante, el modelo Mistral nuevamente falló en el filtrado y presentación final, mostrando solo uno de los gatos naranjas relevantes (Figura \ref{fig:orange_cat_search_result_error}), a pesar de que los resultados intermedios de ChromaDB (visibles en Prefect, Figura \ref{fig:orange_cat_prefect_result_correct}) eran más completos mostrando en este orden los gatos 4(naranja), 1(naranja) y 5(gris).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/orange_cat_result.png}
+\caption[Resultados de búsqueda para "orange cat" con error]{Resultado de la búsqueda para "orange cat", mostrando un solo gato naranja debido al filtrado de Mistral.}
+\label{fig:orange_cat_search_result_error}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/orange_cat_prefect_result.png}
+\caption[Resultados de ChromaDB para "orange cat" en Prefect]{Vista de Prefect que muestra los resultados más precisos de ChromaDB para "orange cat" antes del post-procesamiento de Mistral.}
+\label{fig:orange_cat_prefect_result_correct}
+\end{figure}
+
+Estas pruebas con el dataset mixto revelan que, si bien la base de datos vectorial ChromaDB realiza una recuperación semántica inicial efectiva, el rendimiento del modelo de lenguaje (Mistral) utilizado para el refinamiento o la generación de la respuesta final puede ser un punto crítico, introduciendo errores o perdiendo información relevante en algunos casos, especialmente con metadatos extensos o en tareas de filtrado fino.
+
+\subsubsection{Gemma3 como modelo final de lenguaje}
+\label{sec:gemma3_test}
+
+Para comparar el rendimiento y la precisión de Mistral con otro modelo de lenguaje, se repitió la búsqueda de "dog" utilizando el modelo Gemma3 dando los siguientes resultados (Figura \ref{fig:gemma3_dogs_search_results}):
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/gemma3_dogs_result.png}
+\caption[Resultados de búsqueda para "dog" con Gemma3]{Resultados de la búsqueda para "dog" utilizando el modelo Gemma3, mostrando tres perros correctamente.}
+\label{fig:gemma3_dogs_search_results}
+\end{figure}
+
+Los resultados obtenidos con Gemma3 fueron correctos, mostrando los dos perros existentes. Esto sugiere que el modelo Gemma3 podría ser una mejor opción para la tarea de búsqueda semántica en comparación con Mistral, sin embargo, el modelo Mistral ha tardado 3 segundos en procesar la consulta mientras que Gemma3 ha tardado 1 minutos y medio en procesar la misma consulta incluso dejando el equipo congelado durante algunos momentos. Esto sugiere que, aunque Gemma3 puede ofrecer resultados más precisos, su tiempo de respuesta es significativamente mayor, lo que podría ser un inconveniente en aplicaciones donde la velocidad es crítica.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/gemma3_time.png}
+\caption[Tiempo de respuesta de Gemma3]{Tiempo de respuesta del modelo Gemma3 al procesar la consulta "dog".}
+\label{fig:gemma3_time}
+\end{figure}
+
+\subsection{Ejecución sin GPU}
+\label{sec:execution_without_gpu}
+Uno de los objetivos opcionales del proyecto era la posibilidad de ejecutar el sistema en un entorno sin GPU, lo que sería útil para usuarios en dispositivos móviles.
+Gemma3, al ser un modelo grande es imposible de ejecutar sin GPU, pero Mistral puede ejecutarse en CPU desactivando la opción de GPU en LMStudio.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/no_gpu.png}
+\caption[Ejecución de Mistral sin GPU]{Ejecución del modelo Mistral en CPU, mostrando el uso de recursos del sistema.}
+\label{fig:no_gpu}
+\end{figure}
+
+Se repitió la búsqueda de "dog" utilizando el modelo Mistral en CPU, y los resultados fueron los mismos que los obtenidos con GPU con la diferencia de que el tiempo de respuesta ha sido de 42 segundos frente a los 3 segundos que tardó en GPU. Esto demuestra que el sistema es capaz de funcionar sin GPU, pero el tiempo de respuesta es significativamente mayor, lo que podría ser un inconveniente en aplicaciones donde la velocidad es crítica.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{archivos/no_gpu_time.png}
+\caption[Tiempo de respuesta de Mistral sin GPU]{Tiempo de respuesta del modelo Mistral al procesar la consulta "dog" en CPU.}
+\label{fig:no_gpu_time}
+\end{figure}
