@@ -16,9 +16,12 @@ En esta sección se analizarán diferentes opciones en áreas fundamentales como
 
 \subsection{Orquestadores de tareas}
 La gestión eficiente de flujos de trabajo complejos, especialmente aquellos que involucran procesamiento de datos y tareas de machine learning, es crucial para el sistema propuesto. Un orquestador de tareas permite automatizar, programar y monitorizar estas secuencias de operaciones.
+Para el estudio de orquestadores de tareas, se han tenido en cuenta las siguientes fuentes:
+\cite{noauthor_best_2024}
+\cite{suspicious_dress_350_airflow_2024}
 
 \subsubsection{Prefect}
-Prefect se presenta como una moderna plataforma de orquestación de flujos de trabajo, escrita principalmente en Python. Está diseñada específicamente para permitir a los desarrolladores diseñar, programar, ejecutar y monitorizar pipelines de datos y flujos de machine learning de manera fiable y escalable, con un enfoque en la simplicidad y la experiencia del desarrollador.
+Prefect se presenta como una moderna plataforma de orquestación de flujos de trabajo, escrita principalmente en Python. Está diseñada específicamente para permitir a los desarrolladores diseñar, programar, ejecutar y monitorizar pipelines de datos y flujos de machine learning de manera fiable y escalable, con un enfoque en la simplicidad y la experiencia del desarrollador \cite{noauthor_pythonic_nodate}.
 
 \paragraph{Ventajas}
 \begin{itemize}
@@ -34,7 +37,7 @@ Prefect se presenta como una moderna plataforma de orquestación de flujos de tr
 \end{itemize}
 
 \subsubsection{Kafka}
-Apache Kafka es un sistema de mensajería distribuido de código abierto, reconocido por su alto rendimiento y capacidad para manejar flujos de datos en tiempo real. Aunque su función principal es la de broker de mensajes, a menudo se utiliza en arquitecturas complejas para desacoplar sistemas y como parte de pipelines de datos más amplios, pudiendo actuar como un componente en la orquestación de eventos.
+Apache Kafka es un sistema de mensajería distribuido de código abierto, reconocido por su alto rendimiento y capacidad para manejar flujos de datos en tiempo real. Aunque su función principal es la de broker de mensajes, a menudo se utiliza en arquitecturas complejas para desacoplar sistemas y como parte de pipelines de datos más amplios, pudiendo actuar como un componente en la orquestación de eventos \cite{noauthor_apache_nodate}.
 
 \paragraph{Ventajas}
 \begin{itemize}
@@ -50,7 +53,7 @@ Apache Kafka es un sistema de mensajería distribuido de código abierto, recono
 \end{itemize}
 
 \subsubsection{Airflow}
-Apache Airflow es una plataforma de código abierto ampliamente adoptada para la creación, programación y monitorización programática de flujos de trabajo. Originalmente desarrollada por Airbnb, permite definir flujos de trabajo como Grafos Acíclicos Dirigidos (DAGs) de tareas, utilizando Python para su definición.
+Apache Airflow es una plataforma de código abierto ampliamente adoptada para la creación, programación y monitorización programática de flujos de trabajo. Originalmente desarrollada por Airbnb, permite definir flujos de trabajo como Grafos Acíclicos Dirigidos (DAGs) de tareas, utilizando Python para su definición \cite{noauthor_home_nodate}.
 
 \paragraph{Ventajas}
 \begin{itemize}
@@ -69,7 +72,7 @@ Un componente esencial del sistema es la capacidad de detectar automáticamente 
 \subsubsection{Python}
 Python, debido a su versatilidad y extenso ecosistema de bibliotecas, ofrece múltiples opciones.
 \begin{itemize}
-    \item \textbf{Watchdogs:} Biblioteca multiplataforma para observar eventos del sistema de archivos.
+    \item \textbf{Watchdogs:} Biblioteca multiplataforma para observar eventos del sistema de archivos \cite{noauthor_watchdog_nodate}.
     \item \textbf{pyinotify:} Wrapper de Python para la API inotify de Linux (no portable).
     \item \textbf{inotify-simple:} Wrapper más sencillo para inotify de Linux.
     \item \textbf{inotifyx:} Similar a pyinotify, para inotify de Linux.
@@ -108,7 +111,7 @@ El almacenamiento persistente de metadatos y embeddings es fundamental.
 Adecuadas para datos estructurados y consistencia \gls{acid}.
 
 \paragraph{SQLite}
-Autocontenida, sin servidor, transaccional. Almacena la base de datos en un único archivo.
+Autocontenida, sin servidor, transaccional. Almacena la base de datos en un único archivo \cite{noauthor_sqlite_nodate}.
 \subparagraph{Ventajas}
 \begin{itemize}
     \item \textbf{Ligereza y simplicidad.}
@@ -139,7 +142,7 @@ Fork de MySQL, de código abierto.
 Modelos de datos flexibles, escalabilidad horizontal.
 
 \paragraph{MongoDB}
-Orientada a documentos (\gls{bson}).
+Orientada a documentos (\gls{bson}) \cite{noauthor_mongodb_nodate}.
 \subparagraph{Ventajas}
 \begin{itemize}
     \item \textbf{Flexibilidad del esquema.}
@@ -172,7 +175,7 @@ Base de datos vectorial de código abierto para aplicaciones de \gls{ia}.
 \subsection{Contenerización}
 La contenerización garantiza consistencia entre entornos. Docker es la plataforma líder.
 \subsubsection{Docker}
-Plataforma para automatizar el despliegue de aplicaciones en contenedores.
+Plataforma para automatizar el despliegue de aplicaciones en contenedores \cite{noauthor_home_0800}.
 \paragraph{Ventajas}
 \begin{itemize}
     \item \textbf{Portabilidad.}
@@ -346,7 +349,7 @@ Las Figuras \ref{fig:front_home}, \ref{fig:front_config} y \ref{fig:front_explor
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.7\textwidth]{archivos/front_home.png}
+    \includegraphics[width=0.8\textwidth]{archivos/front_home.png}
     \caption{Pantalla principal de la interfaz de usuario, con el campo de búsqueda.}
     \label{fig:front_home}
 \end{figure}
@@ -354,7 +357,7 @@ Las Figuras \ref{fig:front_home}, \ref{fig:front_config} y \ref{fig:front_explor
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{archivos/front_config.png}
-    \caption{Pantalla de configuración de directorios a monitorizar.}
+    \caption{Apartado de configuración de la interfaz de usuario.}
     \label{fig:front_config}
 \end{figure}
 
@@ -385,7 +388,7 @@ Se implementó \gls{cors} (Cross-Origin Resource Sharing) para permitir las soli
 \subsection{Gestión de Modelos de IA: LMStudio}
 \label{subsec:decision_lmstudio}
 \subsubsection{Decisión y Justificación}
-Para la gestión y ejecución local de los modelos de lenguaje grande (\gls{llm}) y modelos multimodales, se ha optado por utilizar \textbf{LMStudio}. La principal ventaja de LMStudio radica en su facilidad de uso: es una aplicación de escritorio que permite descargar, configurar y ejecutar una amplia variedad de modelos de \gls{ia} de código abierto (provenientes de plataformas como Hugging Face) a través de una interfaz gráfica intuitiva. Además, expone los modelos cargados a través de un servidor local compatible con la API de OpenAI, lo que simplifica enormemente la integración con el código Python del proyecto.
+Para la gestión y ejecución local de los modelos de lenguaje grande (\gls{llm}) y modelos multimodales, se ha optado por utilizar \textbf{LMStudio}~\cite{noauthor_lm_nodate}. La principal ventaja de LMStudio radica en su facilidad de uso: es una aplicación de escritorio que permite descargar, configurar y ejecutar una amplia variedad de modelos de \gls{ia} de código abierto (provenientes de plataformas como Hugging Face) a través de una interfaz gráfica intuitiva. Además, expone los modelos cargados a través de un servidor local compatible con la API de OpenAI, lo que simplifica enormemente la integración con el código Python del proyecto \cite{noauthor_lmstudio-python_nodate}.
 
 La alternativa habría sido gestionar la descarga, configuración y ejecución de cada modelo directamente mediante bibliotecas de Python como `transformers` o `llama-cpp-python`. Si bien esto ofrecería un control más granular, también implicaría una mayor complejidad en el código y en el proceso de configuración inicial para el usuario final del proyecto por lo que se deja como una tarea a futuro cuando se plantee consolidar el producto.
 
