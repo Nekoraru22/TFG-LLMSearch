@@ -8,73 +8,73 @@
 \chapter{Metodología}
 \label{metodologia}
 
-En este capítulo se detalla la metodología empleada para la planificación, desarrollo y gestión del presente \gls{tfg}. Se describirá tanto la organización del proyecto, basada en una adaptación de la metodología ágil Scrum, como el entorno técnico configurado, abarcando el hardware y software utilizados. El objetivo es proporcionar una visión clara de los procesos y herramientas que han sustentado la realización de LLMSearch, desde su concepción hasta la implementación de sus funcionalidades.
+En este apartado se habla en detalle de la metodología aplicada a la planificación, desarrollo y gestión del \gls{tfg}. Se abordará la organización del proyecto, fundamentada en una adaptación de la metodología ágil Scrum, así como el entorno técnico configurado, comprendiendo el hardware y el software utilizados. El propósito reside en ofrecer una perspectiva nítida de los procesos y herramientas que han respaldado la ejecución de LLMSearch, desde su fase de concepción hasta la implementación final de sus funcionalidades.
 
 \section{Organización del Proyecto y Metodología Scrum Adaptada}
 \label{sec:organizacion_proyecto}
 
-La gestión y desarrollo del presente \gls{tfg} se ha articulado mediante una adaptación simplificada de la metodología ágil \textbf{Scrum}. Scrum es un marco de trabajo diseñado para abordar proyectos complejos, promoviendo la autoorganización de los equipos, el desarrollo iterativo e incremental a través de ciclos cortos denominados \textit{sprints}, y la entrega continua de valor.
+La gestión y el progreso de este \gls{tfg} se han estructurado a través de una versión adaptada y simplificada de la metodología ágil \textbf{Scrum}. Scrum constituye un marco de trabajo concebido para la gestión de proyectos complejos, fomentando la autoorganización de los equipos, el avance iterativo e incremental mediante ciclos reducidos denominados \textit{sprints}, y la aportación constante de valor.
 
 \subsection{Adaptación de Roles y Dinámicas de Scrum}
 \label{subsec:roles_scrum}
 
-Dada la naturaleza individual del proyecto, donde un único estudiante es el responsable de su ejecución, los roles tradicionales de Scrum se han concentrado en esta figura. Así, el estudiante ha asumido las responsabilidades de:
+Considerando la índole individual de este proyecto, en el que un solo estudiante asume la responsabilidad de su materialización, los roles convencionales de Scrum han convergido en esta figura. De este modo, el estudiante ha desempeñado las funciones de:
 \begin{itemize}
-    \item \textbf{Product Owner}: Definiendo la visión del producto (LLMSearch), gestionando el \textit{Product Backlog} (lista priorizada de funcionalidades y requisitos) y asegurando que el desarrollo se alinea con los objetivos del proyecto.
-    \item \textbf{Development Team}: Encargándose del diseño, implementación, pruebas y entrega de los incrementos funcionales del software en cada sprint.
-    \item \textbf{Scrum Master}: Facilitando el proceso, eliminando impedimentos, asegurando que se sigan las prácticas ágiles adaptadas y promoviendo la mejora continua.
+    \item \textbf{Product Owner}: Encargándose de la definición de la visión del producto (LLMSearch), de la administración del \textit{Product Backlog} (un listado priorizado de funcionalidades y requisitos) y de asegurar la alineación del desarrollo con los objetivos del proyecto.
+    \item \textbf{Development Team}: Responsabilizándose del diseño, la implementación, las pruebas y la entrega de los incrementos funcionales del software en cada ciclo de sprint.
+    \item \textbf{Scrum Master}: Actuando como facilitador del proceso, solventando impedimentos, velando por la aplicación de las prácticas ágiles adaptadas y propiciando la mejora ininterrumpida.
 \end{itemize}
-En este contexto adaptado, el tutor del \gls{tfg} ha desempeñado un rol fundamental como \textbf{cliente principal (Stakeholder)}, proporcionando los requisitos iniciales, ofreciendo retroalimentación continua sobre los avances y validando los entregables. Su participación ha sido clave para guiar la dirección del proyecto y definir posibles ajustes a lo largo de su desarrollo.
+Dentro de este marco adaptado, el tutor del \gls{tfg} ha ejercido una función esencial como \textbf{cliente principal (Stakeholder)}, suministrando los requisitos iniciales, brindando retroalimentación constante sobre los progresos y verificando los entregables. Su involucramiento resultó crucial para orientar el rumbo del proyecto y establecer eventuales reajustes a lo largo de su evolución.
 
 \subsection{Estructura y Ejecución de los Sprints}
 \label{subsec:sprints}
 
-El proyecto se ha dividido en una serie de \textit{sprints}, cada uno con una duración aproximada de dos semanas. Al inicio de cada cuatrimestre, y de manera continua, se establecieron reuniones periódicas (equivalentes a las \textit{Sprint Planning} y \textit{Sprint Review} de Scrum) entre el estudiante y el tutor. En estas reuniones se:
+El proyecto se estructuró en una secuencia de \textit{sprints}, cada uno con una duración estimada de dos semanas. Al comienzo de cada cuatrimestre, y de forma ininterrumpida, se concertaron encuentros regulares (análogos a las \textit{Sprint Planning} y \textit{Sprint Review} de Scrum) entre el estudiante y el tutor. En estas reuniones se:
 \begin{itemize}
-    \item Revisaba el progreso del sprint anterior.
-    \item Se presentaban y discutían los avances realizados (incremento del producto).
-    \item Se resolvían dudas y se abordaban los impedimentos identificados.
-    \item Se definían y priorizaban los objetivos y tareas para el siguiente sprint, conformando el \textit{Sprint Backlog}.
+    \item Revisaban los progresos del sprint previo.
+    \item Se presentaban los avances realizados y se generaba una discusión en torno a ellos (incremento del producto).
+    \item Se dilucidaban las dudas y se abordaban los impedimentos detectados.
+    \item Se procedía a la definición y priorización de los objetivos y tareas para el subsiguiente sprint, conformando el \textit{Sprint Backlog}.
 \end{itemize}
 
-La planificación de los sprints ha sido un proceso dinámico, ajustándose a la evolución del proyecto y los descubrimientos realizados. A continuación, se describe de forma general la progresión del trabajo a lo largo de los sprints:
+La planificación de los sprints constituyó un proceso adaptable, amoldándose a la evolución del proyecto y a los hallazgos efectuados. Seguidamente, se delinea de manera resumida el curso de los trabajos a lo largo de los diferentes sprints:
 
 \begin{itemize}
     \item \textbf{Sprint Inicial (Fase de Conceptualización e Investigación)}:
-        Este sprint se centró en la definición detallada del alcance del proyecto, la elaboración del estado del arte, la investigación exhaustiva de las tecnologías y herramientas de \gls{ia} pertinentes (especialmente \glspl{llm} y modelos multimodales), y la organización inicial de las tareas. Se sentaron las bases para la arquitectura del sistema.
+        Este sprint se focalizó en la definición pormenorizada del alcance del proyecto, la confección del estado del arte, la investigación exhaustiva de las tecnologías y herramientas de \gls{ia} pertinentes (especialmente \glspl{llm} y modelos multimodales), y la organización inicial de las tareas. Se sentaron las bases fundacionales para la arquitectura del sistema.
 
     \item \textbf{Sprints de Desarrollo del Backend y Núcleo de IA (Fase de Construcción I)}:
-        Durante estos ciclos, el foco principal fue el diseño y la implementación de la arquitectura del sistema backend. Esto incluyó el desarrollo de los módulos encargados de la lógica de negocio, la gestión de datos y, crucialmente, la integración inicial de los modelos de \gls{ia} seleccionados para el procesamiento de texto, imágenes y otros formatos multimedia.
+        Durante estos ciclos, el enfoque primordial se situó en el diseño y la implementación de la arquitectura del sistema backend. Abarcó el desarrollo de los módulos responsables de la lógica de negocio, la gestión de datos y, de manera crucial, la incorporación inicial de los modelos de \gls{ia} seleccionados para el procesamiento de texto, imágenes y otros formatos multimedia.
 
     \item \textbf{Sprints de Desarrollo de la Interfaz y Orquestación (Fase de Construcción II)}:
-        Paralelamente o a continuación, se abordó el desarrollo de la interfaz de usuario (frontend), buscando una experiencia intuitiva para la interacción mediante lenguaje natural. Se implementó un orquestador de tareas para gestionar las diferentes operaciones del buscador (indexación, consulta, recuperación multimodal). Asimismo, se estableció la comunicación entre el frontend y el backend, típicamente a través de una \gls{api} REST, para asegurar un flujo de datos coherente.
+        Paralela o consecutivamente, se procedió al desarrollo de la interfaz de usuario (frontend), procurando una experiencia intuitiva para la interacción mediante lenguaje natural. Se instauró un orquestador de tareas para gestionar las diferentes operaciones del buscador (indexación, consulta, recuperación multimodal). Asimismo, se cimentó la comunicación entre el frontend y el backend, usualmente mediante una \gls{api} REST, para garantizar una circulación de datos coherente.
 
     \item \textbf{Sprints de Integración Avanzada y Pruebas (Fase de Refinamiento)}:
-        Estos sprints se dedicaron a la integración completa de todos los componentes del sistema, con especial atención a la interacción fluida entre los modelos de \gls{ia} y el resto de la aplicación. Se llevaron a cabo pruebas de rendimiento para evaluar la eficiencia del buscador bajo grandes cargas de datos y se realizaron pruebas de usabilidad para garantizar que la interfaz cumplía con los requisitos de accesibilidad y facilidad de uso.
+        Estos sprints se dedicaron a la integración completa de todos los componentes del sistema, priorizando la interacción fluida entre los modelos de \gls{ia} y el resto de la aplicación. Se ejecutaron pruebas de rendimiento para evaluar la eficiencia del buscador bajo grandes cargas de datos y se efectuaron pruebas de usabilidad para garantizar que la interfaz satisfacía los requisitos de accesibilidad y facilidad de uso.
 
     \item \textbf{Sprints Finales (Fase de Consolidación y Documentación)}:
-        Los últimos ciclos de desarrollo se enfocaron en la corrección de errores (bug fixing), la optimización de funcionalidades existentes, la incorporación de mejoras basadas en las pruebas y la retroalimentación recibida. Una parte significativa de este periodo se dedicó también a la elaboración de la documentación técnica del proyecto y la memoria del \gls{tfg}.
+        Los últimos ciclos de desarrollo se enfocaron en la corrección de errores (bug fixing), la optimización de funcionalidades existentes y la integración de optimizaciones basadas en las pruebas y la retroalimentación recibida. Una proporción considerable de este periodo se dedicó también a la redacción de la documentación técnica del proyecto y la memoria del \gls{tfg}.
 \end{itemize}
 
 \subsection{Gestión de Tareas y Adaptabilidad}
 \label{subsec:gestion_tareas}
 
-Para cada sprint, el estudiante elaboró una lista de tareas (equivalente al \textit{Sprint Backlog}) a partir de los objetivos definidos. El progreso de estas tareas se monitorizó de forma continua, marcando aquellas completadas para mantener un control efectivo del avance y anotando las posibles dudas e inquietudes para comentarlas con el tutor en el siguiente sprint. El proceso de desarrollo seguía un ciclo de ideación (definición de la funcionalidad o mejora) seguido de su implementación y prueba.
+Por cada sprint, el estudiante confeccionó un listado de tareas (que se equipara al \textit{Sprint Backlog}) en función de los objetivos previamente definidos. El progreso de estas tareas fue objeto de seguimiento ininterrumpido, señalizando aquellas ya finalizadas con el fin de conservar una supervisión eficaz del avance, y registrando las posibles dudas e inquietudes para su discusión con el tutor en el subsiguiente sprint. El proceso de desarrollo se adhería a un ciclo de ideación (que comprendía la definición de la funcionalidad o mejora) seguido de su implementación y posterior prueba.
 
-Es importante destacar que, en consonancia con los principios ágiles, el plan del proyecto no fue rígido. A medida que se avanzaba, se identificaron nuevos desafíos técnicos, se descubrieron herramientas más adecuadas o surgieron limitaciones imprevistas. Esta realidad condujo a la redefinición de algunas tareas y al ajuste de los objetivos de ciertos sprints, siempre en comunicación con el tutor, para asegurar la viabilidad y la calidad del resultado final. Esta flexibilidad fue fundamental para navegar la complejidad inherente a un proyecto de investigación y desarrollo como LLMSearch.
+Cabe subrayar que, en consonancia con los principios ágiles, la planificación del proyecto no presentó rigidez. Conforme el avance progresaba, emergieron nuevos desafíos técnicos, se revelaron herramientas más idóneas o aparecieron limitaciones imprevistas. Esta situación propició la redefinición de algunas tareas y el reajuste de los objetivos de determinados sprints, siempre en estrecha comunicación con el tutor, con el fin de garantizar la viabilidad y la calidad del producto final. Tal flexibilidad se reveló esencial para gestionar la inherente complejidad de un proyecto de investigación y desarrollo como LLMSearch.
 
 \subsection{Buenas Prácticas}
 \label{subsec:buenas_practicas}
-Durante el desarrollo del proyecto se han seguido una serie de buenas prácticas como el uso de \textbf{Git} para el control de versiones, la revisión constante de código, la documentación de cada módulo y función intentando utilizar estructuras limpias y legibles en todo momento, y la búsqueda constante de conectar cada parte del proyecto de la manera más eficiente posible. También se ha procurado mantener una comunicación fluida con el tutor, quien ha actuado como un recurso valioso para resolver dudas y proporcionar orientación en momentos críticos del desarrollo.
+A lo largo del desarrollo del proyecto, se implementaron diversas buenas prácticas, tales como el empleo de \textbf{Git} para el control de versiones, la revisión continua del código, la documentación exhaustiva de cada módulo y función, procurando emplear estructuras limpias y legibles en todo momento, y el esfuerzo permanente por vincular cada componente del proyecto de la manera más eficiente concebible. Adicionalmente, se mantuvo el empeño en sostener una comunicación fluida con el tutor, quien se desempeñó como un recurso invaluable para dirimir interrogantes y ofrecer directrices en momentos críticos del proceso de desarrollo.
 
 
 \section{Apartado técnico}
 \label{sec:apartado_tecnico}
 
-Para la ejecución y desarrollo del presente \gls{tfg}, se ha dispuesto del siguiente entorno técnico, tanto a nivel de hardware como de software. Esta configuración ha sido la base sobre la cual se han realizado todas las pruebas, desarrollos y validaciones del sistema propuesto.
+Para la ejecución y el progreso del presente \gls{tfg}, se contó con el siguiente entorno técnico, tanto en el ámbito del hardware como del software. Esta configuración constituyó el fundamento sobre el que se llevaron a cabo todas las pruebas, desarrollos y validaciones del sistema planteado.
 
 \subsection{Equipamiento Hardware}
-El equipo informático utilizado para el desarrollo del proyecto cuenta con las siguientes especificaciones:
+El equipo informático empleado para la elaboración del proyecto posee las siguientes especificaciones:
 \begin{itemize}
     \item \textbf{Procesador (\gls{cpu}):} AMD Ryzen 9 7900X3D 4.4GHz/5.6GHz
     \item \textbf{Memoria (\gls{ram}):} Corsair Vengeance RGB DDR5 6000MHz 64GB 2x32GB CL30
@@ -86,13 +86,12 @@ El equipo informático utilizado para el desarrollo del proyecto cuenta con las 
 \subsection{Software y Herramientas de Desarrollo}
 \label{subsec:software_herramientas}
 
-La selección del software y las herramientas de desarrollo ha sido crucial para garantizar un flujo de trabajo eficiente y productivo. Para el \textbf{\gls{ide}}, se ha optado por \textbf{Visual Studio Code (VS Code)}. Esta elección se fundamenta en su ligereza, su amplia gama de extensiones que facilitan el desarrollo en múltiples lenguajes (especialmente Python, previsiblemente central en un proyecto con \glspl{llm}), su depurador integrado, y su excelente integración con sistemas de control de versiones como Git.
+La selección del software y las herramientas de desarrollo resultó determinante para asegurar un proceso de trabajo eficiente y productivo. En lo que respecta al \textbf{\gls{ide}}, la elección recayó en \textbf{Visual Studio Code (VS Code)}. Esta decisión se sustenta en su ligereza, su extenso repertorio de extensiones que propician el desarrollo en múltiples lenguajes (particularmente Python, anticipadamente medular en un proyecto que involucre \glspl{llm}), su depurador integrado y su óptima integración con sistemas de control de versiones como Git.
 
-Precisamente, para el \textbf{control de versiones}, se ha utilizado \textbf{Git}, el estándar de facto en la industria, gestionando los repositorios a través de \textbf{GitHub}. Esta plataforma no solo permite un seguimiento exhaustivo de los cambios y la experimentación segura mediante ramas, sino que también facilita la colaboración (aunque en este proyecto sea individual, es una buena práctica) y ofrece un respaldo del código en la nube.
+En cuanto al \textbf{control de versiones}, se empleó \textbf{Git}, el estándar por antonomasia en la industria, administrando los repositorios a través de \textbf{GitHub}. Esta plataforma no solo posibilita un seguimiento minucioso de los cambios y la experimentación segura a través de ramificaciones, sino que también fomenta la colaboración (a pesar de la naturaleza individual de este proyecto, es una práctica recomendada) y proporciona un respaldo del código en la nube.
 
-Considerando la naturaleza del proyecto, que involucra el uso intensivo de modelos de lenguaje y otras bibliotecas de \gls{ia}, se ha empleado Python como uno de los lenguajes de programación principales, decisión que se justificará más adelante en el desarollo. Para la \textbf{gestión de entornos y paquetes} de Python, se ha utilizado \textbf{pip}, el instalador de paquetes estándar de Python. Su simplicidad y eficacia permiten manejar las dependencias del proyecto de manera ordenada, asegurando la reproducibilidad del entorno de desarrollo en diferentes sistemas si fuera necesario.
+Considerando la índole del proyecto, que conlleva la utilización intensiva de modelos de lenguaje y otras bibliotecas de \gls{ia}, se optó por Python como uno de los lenguajes de programación principales, determinación que se fundamentará con mayor detalle en secciones posteriores. En lo referente a la \textbf{gestión de entornos y paquetes} de Python, se recurrió a \textbf{pip}, el instalador de paquetes estándar de Python. Su simplicidad y eficacia posibilitan gestionar las dependencias del proyecto de forma metódica, garantizando la reproducibilidad del entorno de desarrollo en distintos sistemas si fuese pertinente.
 
-En cuanto a la validación de la interfaz de usuario, si el proyecto la incluye, las pruebas se realizarán en una selección de navegadores web modernos. Principalmente, se utilizará \textbf{Google Chrome}, en su versión más reciente, debido a su amplia cuota de mercado y sus robustas herramientas integradas para desarrolladores, lo que facilita la depuración y asegura una alta compatibilidad con la mayoría de los usuarios. Además, se realizarán pruebas en \textbf{OperaGX}, también en su última versión. La elección de OperaGX responde, en parte, a que es el navegador principal utilizado por el desarrollador, lo que agiliza las pruebas iterativas y la verificación rápida de cambios durante el ciclo de desarrollo. Aunque ambos navegadores comparten el motor Chromium, permitiendo una base de compatibilidad similar, esta doble comprobación ayuda a identificar posibles particularidades menores y asegura una experiencia de usuario consistente en un entorno familiar para el desarrollador.
+Respecto a la validación de la interfaz de usuario, en caso de que el proyecto contemple su inclusión, las pruebas se llevarán a cabo en una selección de navegadores web contemporáneos. Primordialmente, se empleará \textbf{Google Chrome}, en su versión más reciente, dada su extensa cuota de mercado y sus sólidas herramientas integradas para desarrolladores, aspecto que facilita la depuración y asegura una elevada compatibilidad con la mayoría de los usuarios. Adicionalmente, se efectuarán comprobaciones en \textbf{OperaGX}, asimismo en su versión más actualizada. La elección de OperaGX se debe, parcialmente, a ser el navegador principal empleado por el desarrollador, lo que acelera las pruebas iterativas y la validación expedita de los cambios durante el ciclo de desarrollo. Si bien ambos navegadores poseen el mismo motor Chromium, lo que posibilita una base de compatibilidad análoga, esta doble comprobación contribuye a identificar posibles particularidades de menor envergadura y garantiza una experiencia de usuario consistente en un entorno familiar para el desarrollador.
 
-Finalmente, para la \textbf{documentación} del proyecto, se ha recurrido a \textbf{LaTeX}, utilizando la distribución \textbf{MiKTeX}. LaTeX es la herramienta por excelencia para la redacción de documentos técnicos y científicos, gracias a su insuperable calidad tipográfica, su manejo eficiente de referencias bibliográficas, y su capacidad para estructurar documentos complejos. Complementariamente, para la creación de diagramas y esquemas visuales, se ha empleado \textbf{Excalidraw}, una herramienta online que permite generar diagramas de forma rápida y con un estilo claro y moderno, facilitando la comunicación de ideas y arquitecturas complejas.
-
+Finalmente, para la \textbf{documentación} del proyecto, se apeló a \textbf{LaTeX}, empleando la distribución \textbf{MiKTeX}. LaTeX se erige como la herramienta predilecta para la redacción de documentos técnicos y científicos, gracias a su calidad tipográfica inigualable, su gestión eficaz de referencias bibliográficas y su aptitud para la estructuración de documentos complejos. Complementariamente, para la elaboración de diagramas y esquemas visuales, se utilizó \textbf{Excalidraw}, una herramienta online que posibilita la generación de diagramas de manera ágil y con un estilo claro y moderno, agilizando la transmisión de ideas y arquitecturas complejas.
