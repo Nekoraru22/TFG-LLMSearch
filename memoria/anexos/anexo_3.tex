@@ -5,25 +5,26 @@
 % Contacto: info@jmrplens.com / Telegram:@jmrplens
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Ejemplo de inclusión de páginas de un PDF
+% \chapter{Anexo II}
+\chapter{Prompt para verificación de información}
+\label{anx:prompt_verif}
 
-\chapter{Importar PDF}
+A continuación, se presenta el prompt que se le proporciona al modelo final de lenguaje para la verificación de la información recuperada de la base de datos ChromaDB. Gracias a este prompt, se logra que el modelo no solo verifique la información, sino que también la reordene y elimine entradas irrelevantes, lo que es fundamental para garantizar la calidad de los resultados obtenidos.
 
-A continuación se muestra una página importada de un PDF externo. Observar los comentarios en el código de este anexo para más información. También puedes leer el manual con todas las opciones en \url{http://osl.ugr.es/CTAN/macros/latex/contrib/pdfpages/pdfpages.pdf}.
+\begin{lstlisting}[language=Markdown, caption={Prompt para la descripción de imágenes.}, label={lst:prompt_img_desc}]
+Original Query: {query}
 
-\includepdf[pages={1}]{archivos/ES_a_DF7_Agg_Alicante.pdf}
+Relevant data (from ChromaDB):
+{data_json}
 
-% Para incluir una página:
-% [pages={0}] % Donde '0' es el número de la pagina del PDF que se quiere incluir
+Task:
+- Discard entries irrelevant to the Original Query.
+- Reorder only if strictly needed to match the query intent.
+- Extract **only** the file paths (the substring after "Path:").
+- **Output just** the final numbered list (start at 1), one path per line, with **no** additional text.
 
-% Para incluir varias páginas consecutivas
-% [pages={1-4}] % Con estos valores importa de la página 1 a la 4.
-
-% Para incluir varias páginas salteadas
-% [pages={1,4,7,10}] % Incluye las páginas 1,4,7 y 10
-
-% Para incluir todo el documento PDF
-% [pages=-]
-
-% Si ademas de pages=... se incluye landscape, se importa en horizontal
-% [pages{1},landscape]
+Example output:
+Original Query: official document from the Spanish Ministry
+1. ./filesystem/Notificacion_1742000847864 - copia.pdf
+2. <path_to_another_relevant_document>
+\end{lstlisting}

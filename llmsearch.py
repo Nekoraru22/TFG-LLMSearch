@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import argparse
-import sys
 import requests
+import sys
+import os
 
 API_BASE = "http://localhost:5000/api"
+models: list[str] = os.environ.get("LM_STUDIO_MODELS", "").split(" ")
 
 
 def do_status():
@@ -59,7 +61,7 @@ def main():
     )
     parser.add_argument(
         "-m", "--model",
-        default="default-model",
+        default="jonahhenry/mistral-7b-instruct-v0.2.Q4_K_M-GGUF",
         help="Model to use (e.g. gpt-4o-mini)"
     )
     parser.add_argument(
@@ -67,6 +69,11 @@ def main():
         type=float,
         default=0.7,
         help="LLM temperature (0.0–1.0)"
+    )
+    parser.add_argument(
+        "-l", "--list-models",
+        action="store_true",
+        help="List available models"
     )
 
     # Flags
@@ -86,6 +93,13 @@ def main():
     # If status flag is set, ignore --query and show status
     if args.status:
         do_status()
+        return
+    
+    # If list-models flag is set, show available models
+    if args.list_models:
+        print("Available models:")
+        for model in models:
+            print(f"  - {model}")
         return
 
     # If no query provided, show usage and hint
