@@ -34,6 +34,27 @@ La \gls{ia} ha experimentado avances exponenciales, especialmente con el auge de
     \item \textbf{Modelos Multimodales}: Hay modelos como \gls{clip} de OpenAI\footnote{Más información sobre \gls{clip} de OpenAI disponible en: \url{https://openai.com/es-ES/index/clip/}}, que son un gran ejemplo de cómo se juntan el lenguaje y la visión. \gls{clip} aprende a relacionar imágenes con las palabras que las describen. Gracias a esto, podemos buscar una imagen escribiendo lo que queremos encontrar, por ejemplo, ``un perro jugando en la playa'', y el sistema entiende qué buscar, o al revés. Para lograrlo, se entrena un sistema que codifica imágenes y otro que codifica texto, enseñándoles a encontrar las parejas correctas entre millones de imágenes y sus descripciones.
 \end{itemize}
 
+\subsection{Grandes Modelos de Lenguaje (\gls{llm})}
+Los Modelos de Lenguaje Grandes, conocidos como \gls{llm}, son programas de inteligencia artificial creados para entender, producir y trabajar con el lenguaje que usan las personas. Lo que los hace especiales es que tienen muchísimos "ajustes" internos y aprenden de cantidades gigantescas de texto. Esto les permite captar patrones complejos y las conexiones de significado en cómo hablamos los humanos.
+
+\subsubsection{Funcionamiento y Capacidades Clave}
+Estos modelos funcionan gracias a un tipo de estructura llamada "red neuronal profunda", especialmente una conocida como "Transformer". Esto les ayuda a manejar el texto de forma eficiente y a ver cómo se conectan las diferentes partes de una frase. Su tarea principal es adivinar cuál será la siguiente palabra en una secuencia, lo que les permite generar texto que tiene sentido y que se ajusta a lo que se les pide. Han aprendido de colecciones de texto enormes, nunca antes vistas, como libros, artículos y páginas de internet.
+
+Gracias a todo este aprendizaje masivo, los \gls{llm} desarrollan una gran variedad de habilidades:
+\begin{itemize}
+    \item \textbf{Crear texto:} Pueden escribir cosas como artículos, resúmenes, correos electrónicos o incluso código de programación, con una calidad bastante buena.
+    \item \textbf{Responder preguntas:} Son capaces de contestar preguntas abiertas sobre casi cualquier tema, usando lo que ya saben o la información que se les da en el momento.
+    \item \textbf{Hacer resúmenes:} Pueden reducir textos largos en versiones más cortas, pero manteniendo siempre la información más importante.
+    \item \textbf{Traducir idiomas:} Facilitan la traducción entre diferentes idiomas, logrando una fluidez notable.
+    \item \textbf{Comprender y razonar:} Demuestran una capacidad sorprendente para entender el contexto, lo que el usuario quiere decir, e incluso para hacer algunas formas de razonamiento lógico.
+    \item \textbf{Procesar texto:} También son buenos para trabajar con el texto de otras maneras: pueden encontrar nombres específicos, clasificar textos por temas, extraer datos importantes y analizar si un texto tiene un sentimiento positivo o negativo.
+\end{itemize}
+
+\subsubsection{Significado en el Contexto Actual}
+La aparición de los \gls{llm} ha cambiado por completo el área del Procesamiento del Lenguaje Natural (\gls{nlp}). Ahora, más personas pueden acceder a capacidades avanzadas de inteligencia artificial, algo que antes solo era posible con equipos muy especializados y muchos recursos. Nombres como la serie \gls{gpt} de OpenAI, LLaMA de Meta o Gemini de Google, son ejemplos claros del gran potencial de esta tecnología.
+
+Pero, al usarlos, también surgen retos importantes. Aunque son muy avanzados, a veces los \gls{llm} "alucinan", es decir, inventan información que suena bien pero no es cierta. También pueden tener los mismos sesgos (prejuicios) que los datos con los que aprendieron. Además, necesitan mucha capacidad de computación para ser entrenados y para funcionar a gran escala. En el marco de este proyecto, los \gls{llm} son clave. Ayudan a que el sistema entienda bien lo que los usuarios preguntan y a crear respuestas que tengan sentido dentro del contexto, especialmente cuando se combinan con sistemas \gls{rag}.
+
 \subsection{Optimización de Modelos: Cuantización y Modelos Ligeros}
 Para la aplicación práctica de estos modelos, sobre todo en dispositivos como el teléfono móvil, es muy importante considerar su eficiencia.
 \begin{itemize}
