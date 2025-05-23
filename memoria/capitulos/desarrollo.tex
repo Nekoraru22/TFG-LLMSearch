@@ -22,15 +22,15 @@ Prefect se presenta como una moderna plataforma de orquestación de flujos de tr
 
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Facilidad de uso:} Prefect ofrece una sintaxis intuitiva y una configuración sencilla, lo que facilita la definición y gestión de flujos de trabajo complejos.
-\item \textbf{Flexibilidad:} Permite la orquestación de tareas en entornos locales, en la nube o híbridos, adaptándose a diversas necesidades.
-\item \textbf{Monitoreo y gestión:} Incluye herramientas integradas para el monitoreo, registro y manejo de errores en tiempo real.
+    \item \textbf{Facilidad de uso:} Prefect ofrece una sintaxis intuitiva y una configuración sencilla, lo que facilita la definición y gestión de flujos de trabajo complejos.
+    \item \textbf{Flexibilidad:} Permite la orquestación de tareas en entornos locales, en la nube o híbridos, adaptándose a diversas necesidades.
+    \item \textbf{Monitoreo y gestión:} Incluye herramientas integradas para el monitoreo, registro y manejo de errores en tiempo real.
 \end{itemize}
 
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Madurez:} Aunque ha ganado popularidad, Prefect es relativamente nuevo en comparación con otras herramientas más consolidadas.
-\item \textbf{Comunidad:} Su comunidad es más pequeña, lo que puede limitar la disponibilidad de recursos y soporte.
+    \item \textbf{Madurez:} Aunque ha ganado popularidad, Prefect es relativamente nuevo en comparación con otras herramientas más consolidadas.
+    \item \textbf{Comunidad:} Su comunidad es más pequeña, lo que puede limitar la disponibilidad de recursos y soporte.
 \end{itemize}
 
 \subsubsection{Kafka}
@@ -38,15 +38,15 @@ Apache Kafka es un sistema de mensajería distribuido de código abierto, recono
 
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Alto rendimiento:} Kafka es conocido por su capacidad para manejar grandes volúmenes de datos con baja latencia.
-\item \textbf{Escalabilidad:} Diseñado para escalar horizontalmente, puede manejar cargas de trabajo crecientes de manera eficiente.
-\item \textbf{Ecosistema robusto:} Cuenta con una amplia gama de herramientas y conectores que facilitan su integración con otros sistemas.
+    \item \textbf{Alto rendimiento:} Kafka es conocido por su capacidad para manejar grandes volúmenes de datos con baja latencia.
+    \item \textbf{Escalabilidad:} Diseñado para escalar horizontalmente, puede manejar cargas de trabajo crecientes de manera eficiente.
+    \item \textbf{Ecosistema robusto:} Cuenta con una amplia gama de herramientas y conectores que facilitan su integración con otros sistemas.
 \end{itemize}
 
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Complejidad:} La configuración y gestión de Kafka pueden ser complejas, especialmente para usuarios sin experiencia previa.
-\item \textbf{Requisitos de recursos:} Para un rendimiento óptimo, Kafka suele requerir una infraestructura robusta, lo que puede ser excesivo para proyectos más pequeños.
+    \item \textbf{Complejidad:} La configuración y gestión de Kafka pueden ser complejas, especialmente para usuarios sin experiencia previa.
+    \item \textbf{Requisitos de recursos:} Para un rendimiento óptimo, Kafka suele requerir una infraestructura robusta, lo que puede ser excesivo para proyectos más pequeños.
 \end{itemize}
 
 \subsubsection{Airflow}
@@ -54,13 +54,13 @@ Apache Airflow es una plataforma de código abierto ampliamente adoptada para la
 
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Popularidad y comunidad:} Amplia adopción y una comunidad activa que proporciona numerosos recursos y soporte.
-\item \textbf{Flexibilidad:} Permite la programación y monitoreo de flujos de trabajo complejos.
+    \item \textbf{Popularidad y comunidad:} Amplia adopción y una comunidad activa que proporciona numerosos recursos y soporte.
+    \item \textbf{Flexibilidad:} Permite la programación y monitoreo de flujos de trabajo complejos.
 \end{itemize}
 
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Curva de aprendizaje:} Puede ser complejo de configurar y requiere conocimientos avanzados para su implementación efectiva.
+    \item \textbf{Curva de aprendizaje:} Puede ser complejo de configurar y requiere conocimientos avanzados para su implementación efectiva.
 \end{itemize}
 
 \subsection{Detección de cambios en el sistema de archivos}
@@ -69,43 +69,43 @@ Un componente esencial del sistema es la capacidad de detectar automáticamente 
 \subsubsection{Python}
 Python, debido a su versatilidad y extenso ecosistema de bibliotecas, ofrece múltiples opciones.
 \begin{itemize}
-\item \textbf{Watchdogs:} Biblioteca multiplataforma para observar eventos del sistema de archivos.
-\item \textbf{pyinotify:} Wrapper de Python para la API inotify de Linux (no portable).
-\item \textbf{inotify-simple:} Wrapper más sencillo para inotify de Linux.
-\item \textbf{inotifyx:} Similar a pyinotify, para inotify de Linux.
-\item \textbf{Polling Methods:} Verificación periódica, menos eficiente.
+    \item \textbf{Watchdogs:} Biblioteca multiplataforma para observar eventos del sistema de archivos.
+    \item \textbf{pyinotify:} Wrapper de Python para la API inotify de Linux (no portable).
+    \item \textbf{inotify-simple:} Wrapper más sencillo para inotify de Linux.
+    \item \textbf{inotifyx:} Similar a pyinotify, para inotify de Linux.
+    \item \textbf{Polling Methods:} Verificación periódica, menos eficiente.
 \end{itemize}
 
 \subsubsection{Node.js}
 \begin{itemize}
-\item \textbf{chokidar:} Biblioteca popular y eficiente para Node.js, multiplataforma.
+    \item \textbf{chokidar:} Biblioteca popular y eficiente para Node.js, multiplataforma.
 \end{itemize}
 
 \subsubsection{Java}
 \begin{itemize}
-\item \textbf{WatchService:} API integrada en Java (NIO.2) para monitoreo.
+    \item \textbf{WatchService:} API integrada en Java (\gls{nio}) para monitoreo.
 \end{itemize}
 
 \subsubsection{C++/C/C\#}
 \begin{itemize}
-\item \textbf{FileSystemWatcher:} En .NET (C\#). Para C/C++, APIs específicas del SO (inotify en Linux, ReadDirectoryChangesW en Windows).
+    \item \textbf{FileSystemWatcher:} En .NET (C\#). Para C/C++, APIs específicas del SO (inotify en Linux, ReadDirectoryChangesW en Windows).
 \end{itemize}
 
 \subsubsection{Go}
 \begin{itemize}
-\item \textbf{fsnotify:} Biblioteca popular en Go, interfaz común sobre APIs específicas.
+    \item \textbf{fsnotify:} Biblioteca popular en Go, interfaz común sobre APIs específicas.
 \end{itemize}
 
 \subsubsection{Rust}
 \begin{itemize}
-\item \textbf{notify:} Biblioteca de Rust multiplataforma.
+    \item \textbf{notify:} Biblioteca de Rust multiplataforma.
 \end{itemize}
 
 \subsection{Bases de datos}
 El almacenamiento persistente de metadatos y embeddings es fundamental.
 
 \subsubsection{Relacional}
-Adecuadas para datos estructurados y consistencia ACID.
+Adecuadas para datos estructurados y consistencia \gls{acid}.
 
 \paragraph{SQLite}
 Autocontenida, sin servidor, transaccional. Almacena la base de datos en un único archivo.
@@ -139,7 +139,7 @@ Fork de MySQL, de código abierto.
 Modelos de datos flexibles, escalabilidad horizontal.
 
 \paragraph{MongoDB}
-Orientada a documentos (BSON).
+Orientada a documentos (\gls{bson}).
 \subparagraph{Ventajas}
 \begin{itemize}
     \item \textbf{Flexibilidad del esquema.}
@@ -175,14 +175,14 @@ La contenerización garantiza consistencia entre entornos. Docker es la platafor
 Plataforma para automatizar el despliegue de aplicaciones en contenedores.
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Portabilidad.}
-\item \textbf{Aislamiento.}
-\item \textbf{Facilidad de despliegue.}
+    \item \textbf{Portabilidad.}
+    \item \textbf{Aislamiento.}
+    \item \textbf{Facilidad de despliegue.}
 \end{itemize}
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Consumo de recursos (capa adicional).}
-\item \textbf{Complejidad adicional (gestión de contenedores).}
+    \item \textbf{Consumo de recursos (capa adicional).}
+    \item \textbf{Complejidad adicional (gestión de contenedores).}
 \end{itemize}
 
 \subsection{Frameworks de Interfaz de Usuario}
@@ -192,50 +192,50 @@ La elección del framework impacta la experiencia del usuario y el desarrollo.
 Framework de Google basado en TypeScript, completo y opinado.
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Framework completo.}
-\item \textbf{Arquitectura estructurada.}
+    \item \textbf{Framework completo.}
+    \item \textbf{Arquitectura estructurada.}
 \end{itemize}
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Curva de aprendizaje pronunciada.}
-\item \textbf{Complejidad innecesaria para proyectos simples.}
+    \item \textbf{Curva de aprendizaje pronunciada.}
+    \item \textbf{Complejidad innecesaria para proyectos simples.}
 \end{itemize}
 
 \subsubsection{React}
 Biblioteca de JavaScript de Meta para construir UIs.
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Biblioteca flexible.}
-\item \textbf{Amplia comunidad y recursos.}
+    \item \textbf{Biblioteca flexible.}
+    \item \textbf{Amplia comunidad y recursos.}
 \end{itemize}
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Necesidad de configuraciones adicionales (para routing, estado global).}
+    \item \textbf{Necesidad de configuraciones adicionales (para routing, estado global).}
 \end{itemize}
 
 \subsubsection{Vue.js}
 Framework de JavaScript progresivo y accesible.
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Simplicidad y facilidad de uso.}
-\item \textbf{Flexibilidad.}
+    \item \textbf{Simplicidad y facilidad de uso.}
+    \item \textbf{Flexibilidad.}
 \end{itemize}
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Menor adopción en grandes empresas (en comparación).}
+    \item \textbf{Menor adopción en grandes empresas (en comparación).}
 \end{itemize}
 
 \subsubsection{Astro}
 Framework web moderno para sitios rápidos y centrados en contenido (arquitectura de "islas").
 \paragraph{Ventajas}
 \begin{itemize}
-\item \textbf{Optimización para contenido estático y rendimiento.}
-\item \textbf{Integración con otros frameworks.}
+    \item \textbf{Optimización para contenido estático y rendimiento.}
+    \item \textbf{Integración con otros frameworks.}
 \end{itemize}
 \paragraph{Desventajas}
 \begin{itemize}
-\item \textbf{Menor madurez para aplicaciones altamente interactivas.}
-\item \textbf{Ecosistema en crecimiento.}
+    \item \textbf{Menor madurez para aplicaciones altamente interactivas.}
+    \item \textbf{Ecosistema en crecimiento.}
 \end{itemize}
 
 \clearpage
@@ -246,135 +246,180 @@ Tras el estudio de las tecnologías disponibles, en esta sección se detallan la
 \subsection{Orquestador de Tareas: Prefect}
 \label{subsec:decision_prefect}
 \paragraph{Decisión y Justificación}
-Para la orquestación de las tareas de procesamiento de archivos, extracción de metadatos, generación de embeddings y su posterior almacenamiento, se ha seleccionado \textbf{Prefect}. La elección se fundamenta en su enfoque moderno, su facilidad de uso al estar escrito en Python (lenguaje principal del proyecto) y su adecuada capacidad para gestionar pipelines de datos y machine learning. Aunque herramientas como Kafka ofrecen un rendimiento superior para flujos de datos masivos y Airflow cuenta con una comunidad más extensa, Prefect proporciona un equilibrio óptimo entre simplicidad, flexibilidad y potencia para las necesidades específicas de este proyecto. Su curva de aprendizaje es más accesible en comparación con Airflow, y su infraestructura requerida es menos exigente que la de Kafka, haciéndolo ideal para un proyecto de esta envergadura.
+Para la orquestación de las tareas de procesamiento de archivos, extracción de metadatos, generación de embeddings y su posterior almacenamiento, se ha seleccionado \textbf{Prefect}. La elección se fundamenta en su enfoque moderno, su facilidad de uso al estar escrito en Python, lenguaje principal del proyecto, y su adecuada capacidad para gestionar pipelines de datos y de \gls{ml}. Aunque herramientas como Kafka ofrecen un rendimiento superior para flujos de datos masivos y Airflow cuenta con una comunidad más extensa, Prefect proporciona un equilibrio óptimo entre simplicidad, flexibilidad y potencia para las necesidades específicas de este proyecto. Su curva de aprendizaje es más accesible en comparación con Airflow, y su infraestructura requerida es menos exigente que la de Kafka, haciéndolo idóneo para un proyecto de esta envergadura.
 
 \paragraph{Implementación}
-Tasks:
-summarize_text: Resume el texto pasado por parámetro
-analyze_image: Analiza con ayuda de un modelo multimodal, en este caso Gemma, el contenido de una imagen
-get_image_metadata: Extrae metadatos de la imagen
-rag_query: Se le proporciona a un LLM una query y los resultados de la búsqueda en ChromaDB, y devuelve una respuesta generada por el LLM, en este caso Mistral.
-rag_query_with_db: Se le proporciona la query y el máximo de coincidencias a ChromaDB y devuelve los resultados de la búsqueda.
+La implementación con Prefect se estructura en torno a \textit{Tasks} (tareas individuales) y \textit{Flows} (flujos de trabajo que orquestan las tareas).
 
-Flows:
-new_file: Se activa cuando se detecta un nuevo archivo sobre la carpeta observada. detecta duplicados, detecta el tipo de archivo, extrae metadatos, genera embeddings de un nuevo archivo y almacena los resultados en ChromaDB.
-modified_file: funciona de forma similar a new_file, pero se activa cuando un archivo ya existente es modificado. En este caso, se actualizan los metadatos y los embeddings en ChromaDB en caso de que el hash del contenido haya cambiado.
-deleted_file: Se activa cuando un archivo es eliminado. Se elimina el documento de ChromaDB junto a sus metadatos.
-proccess_query: Se activa cuando el usuario realiza una búsqueda. Se generan los embeddings de la query y se envían a ChromaDB para buscar coincidencias. Los resultados se envían a un LLM para generar una respuesta.
+Las principales \textbf{Tasks} definidas son:
+\begin{itemize}
+    \item \texttt{summarize\_text}: Resume el texto proporcionado como parámetro.
+    \item \texttt{analyze\_image}: Analiza el contenido de una imagen utilizando un modelo multimodal (en este caso, Gemma).
+    \item \texttt{get\_image\_metadata}: Extrae metadatos específicos de archivos de imagen.
+    \item \texttt{rag\_query}: Procesa una consulta del usuario (\textit{query}) utilizando un modelo de lenguaje grande (\gls{llm}), en este caso Mistral, enriqueciendo la consulta con resultados de búsqueda vectorial obtenidos de ChromaDB para generar una respuesta contextualizada.
+    \item \texttt{rag\_query\_with\_db}: Realiza una búsqueda de similitud en ChromaDB basada en la consulta del usuario, devolviendo un número máximo especificado de coincidencias.
+\end{itemize}
 
-imagen: archivos/prefect.png
-imagen: archivos/prefect_flow.png
+Estos \textit{tasks} se orquestan en los siguientes \textbf{Flows}:
+\begin{itemize}
+    \item \texttt{new\_file}: Se activa al detectar un nuevo archivo en la carpeta monitorizada. Este flujo gestiona la detección de duplicados, la identificación del tipo de archivo, la extracción de metadatos, la generación de embeddings y el almacenamiento de los resultados en ChromaDB.
+    \item \texttt{modified\_file}: Opera de manera similar a \texttt{new\_file}, pero se desencadena cuando un archivo existente es modificado. En este caso, se actualizan los metadatos y los embeddings en ChromaDB si el hash del contenido del archivo ha cambiado, indicando una modificación sustancial.
+    \item \texttt{deleted\_file}: Se activa tras la eliminación de un archivo. Procede a eliminar el documento correspondiente y sus metadatos asociados de ChromaDB.
+    \item \texttt{process\_query}: Se inicia cuando el usuario realiza una búsqueda a través de la interfaz. Genera los embeddings de la consulta, los envía a ChromaDB para encontrar coincidencias semánticas, y los resultados se proporcionan a un \gls{llm} para generar una respuesta elaborada.
+\end{itemize}
+
+Si bien Prefect ofrece capacidades robustas para la ejecución paralela de tareas y flujos, en la implementación actual, el grado de paralelización se ve limitado por los recursos computacionales disponibles en un entorno de desarrollo local. Tareas intensivas como la generación de embeddings o las inferencias de modelos \gls{llm} pueden ser costosas. En un entorno de producción con un servidor adecuadamente dimensionado (con mayor capacidad de \gls{cpu}, \gls{gpu} y \gls{ram}), se podría explotar de manera mucho más efectiva la paralelización para procesar múltiples archivos o consultas simultáneamente, mejorando significativamente el rendimiento y la capacidad de respuesta del sistema.
+
+La Figura \ref{fig:prefect_dashboard} muestra una vista general del dashboard de Prefect, donde se pueden monitorizar los flujos y tareas. La Figura \ref{fig:prefect_flow_example} ilustra un ejemplo de la visualización de un flujo específico en ejecución.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{archivos/prefect.png}
+    \caption{Dashboard principal de Prefect para la monitorización de flujos.}
+    \label{fig:prefect_dashboard}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{archivos/prefect_flow.png}
+    \caption{Visualización de un flujo de trabajo específico en Prefect.}
+    \label{fig:prefect_flow_example}
+\end{figure}
 
 \subsection{Detección de Cambios: Python con Watchdogs}
 \label{subsec:decision_watchdogs}
 \paragraph{Decisión y Justificación}
-La detección de cambios en el sistema de archivos se ha implementado utilizando \textbf{Python} en combinación con la biblioteca \textbf{watchdogs}. Esta elección se basa en la naturaleza multiplataforma de \texttt{watchdogs}, lo cual es crucial para una aplicación destinada a la gestión de archivos personales que podría ejecutarse en diversos sistemas operativos. Python, como lenguaje principal del proyecto, facilita la integración de este componente con el resto del sistema, especialmente con el orquestador de tareas Prefect.
+La detección de cambios en el sistema de archivos se ha implementado utilizando \textbf{Python} en combinación con la biblioteca \textbf{watchdogs}. Esta elección se basa en la naturaleza multiplataforma de \texttt{watchdogs}, crucial para una aplicación destinada a la gestión de archivos personales que podría ejecutarse en diversos sistemas operativos. Python, como lenguaje principal del proyecto, facilita la integración de este componente con el resto del sistema, especialmente con el orquestador de tareas Prefect.
 
 \paragraph{Implementación}
-Se ha desarrollado un script de Python que utiliza \texttt{watchdogs} para monitorizar un directorio específico proporcionado por el usuario. El script implementa un manejador de eventos (\texttt{FileSystemEventHandler}) que reacciona a los eventos de creación (\texttt{on\_created}), modificación (\texttt{on\_modified}) y eliminación (\texttt{on\_deleted}) de archivos. Cuando se detecta un evento relevante, el script envía una notificación para iniciar el procesamiento del archivo afectado.
+Se ha desarrollado un script de Python que utiliza \texttt{watchdogs} para monitorizar de forma recursiva un directorio específico proporcionado por el usuario, centrándose exclusivamente en archivos. El script implementa un manejador de eventos personalizado, subclase de \texttt{FileSystemEventHandler}, que reacciona a los eventos de creación (\texttt{on\_created}), modificación (\texttt{on\_modified}) y eliminación (\texttt{on\_deleted}) de archivos. Al detectar un evento relevante, el script desencadena el flujo de Prefect correspondiente. Adicionalmente, al iniciar el programa, se realiza un análisis exhaustivo inicial de toda la carpeta asignada; durante este proceso, los archivos duplicados o aquellos ya procesados y sin cambios significativos se gestionarán eficientemente gracias al sistema de detección de duplicados basado en hashes, evitando reprocesamientos innecesarios.
 
-Durante el desarrollo, se encontraron desafíos particulares con la detección de archivos modificados, especialmente en sistemas Windows. Este sistema operativo realiza pequeñas modificaciones en los metadatos de los archivos simplemente al abrirlos o copiarlos, lo que provocaba que la función de detección de modificaciones (\texttt{on\_modified}) se activara constantemente de manera no deseada para un mismo archivo en un corto periodo.
+Un desafío particular surgió con la detección de archivos modificados en tiempo real, especialmente en sistemas Windows. Este sistema operativo tiende a realizar pequeñas modificaciones en los metadatos de los archivos al abrirlos o copiarlos, lo que provocaba activaciones múltiples y no deseadas del evento \texttt{on\_modified} para un mismo archivo en cortos periodos. Para mitigar este comportamiento, se implementó una caché en memoria que almacena temporalmente información sobre los archivos recientemente procesados por eventos en tiempo real. Esta caché ayuda a prevenir la reactivación innecesaria de flujos para eventos de modificación que no representan cambios sustanciales en el contenido, optimizando el rendimiento. No obstante, la verificación definitiva de duplicados o cambios significativos se realiza mediante el cálculo y comparación de hashes de archivo en los flujos de Prefect, tanto para el escaneo inicial como para los eventos posteriores.
 
-Para mitigar este comportamiento, se almacenan datos clave de cada archivo procesado en una caché local que existirá mientras el programa esté en ejecución y se harán comprobaciones de si el archivo ya ha sido procesado o no. Esto permite evitar la reactivación del flujo de trabajo para archivos que ya han sido procesados recientemente, optimizando así el rendimiento del sistema. Es solamente para evitar de manera sencilla que se active el flujo, pero en caso de activarse se hará una comprobación de archivo duplicado.
-
-destacar que este script de detección de cambios se ejecuta en un hilo separado, lo que permite que el resto del sistema funcione sin interrupciones y que no cuenta directorios, solo archivos de manera recursiva. Esto significa que si se añade un directorio, no se procesará, pero si se añade un archivo dentro de ese directorio, sí se procesará. En la función de delete esto ha sido un problema puesto que como el archivo o directorio ya ha sido eliminado el tratar de verificar si era o no un directorio no tiene sentido porque no existe, por eso mismo directamente no se comprueba.
+Es importante destacar que este script de detección de cambios se ejecuta en un hilo separado para no bloquear la operatividad del resto del sistema. Además, se ha diseñado para ignorar eventos relacionados con directorios en su creación o modificación, procesando únicamente archivos. En el caso de la eliminación (\texttt{on\_deleted}), dado que el objeto del sistema de archivos ya no existe en el momento de la notificación, no se realiza una comprobación para distinguir entre archivo y directorio, asumiendo que el flujo de Prefect manejará adecuadamente la solicitud de eliminación en la base de datos si el ID (basado en la ruta) existiera.
 
 \subsection{Base de Datos: ChromaDB}
 \label{subsec:decision_chromadb}
 \paragraph{Decisión y Justificación}
-Para el almacenamiento de metadatos y, crucialmente, los embeddings vectoriales generados por los modelos de \gls{ia}, se ha optado por \textbf{ChromaDB}. Inicialmente, se consideró SQLite por su simplicidad para el almacenamiento de metadatos básicos, y de hecho, se desarrolló un controlador para esta base de datos que permanece disponible en caso de ser necesario. Sin embargo, la funcionalidad central del sistema reside en la capacidad de realizar búsquedas semánticas eficientes basadas en embeddings, lo que hizo de una base de datos vectorial la elección más adecuada.
+Para el almacenamiento de metadatos y, de forma crucial, los embeddings vectoriales generados por los modelos de \gls{ia}, se ha optado por \textbf{ChromaDB}. Inicialmente, se consideró SQLite por su simplicidad para el almacenamiento de metadatos básicos, y de hecho, se desarrolló un controlador para esta base de datos que permanece disponible en el código base como alternativa o complemento futuro. Sin embargo, la funcionalidad central del sistema reside en la capacidad de realizar búsquedas semánticas eficientes basadas en embeddings, lo que hizo de una base de datos vectorial la elección más adecuada.
 
-ChromaDB fue seleccionada por su especialización en el manejo de embeddings, su facilidad de uso a través de su API Python y su capacidad para operar de forma ligera y embebible, ideal para el desarrollo y despliegue de este proyecto.
+ChromaDB fue seleccionada por su especialización en el manejo de embeddings, su facilidad de uso a través de su API Python y su capacidad para operar de forma ligera y embebible, características ideales para el desarrollo y despliegue de este proyecto.
 
 \paragraph{Implementación}
-ChromaDB se utiliza para almacenar dos tipos principales de información por cada archivo procesado: los vectores de embeddings y los metadatos asociados. Se crea una "colección" en ChromaDB para este propósito.
+ChromaDB se utiliza para almacenar dos tipos principales de información por cada archivo procesado, organizados en una "colección":
 \begin{itemize}
-    \item \textbf{Embeddings:} Son los vectores numéricos que representan el contenido semántico del archivo.
-    \item \textbf{Metadatos:} ChromaDB permite asociar un diccionario de metadatos a cada embedding. En este proyecto, se almacenan principalmente los siguientes metadatos pero cada tipo de archivo puede añadir metadatos diferentes:
+    \item \textbf{Embeddings:} Vectores numéricos densos que representan el contenido semántico del archivo, permitiendo búsquedas por similitud.
+    \item \textbf{Metadatos:} ChromaDB permite asociar un diccionario de metadatos a cada embedding. En este proyecto, se almacenan, como mínimo, los siguientes campos, aunque cada tipo de archivo puede añadir metadatos específicos adicionales:
         \begin{itemize}
-            \item \texttt{path}: La ruta original del archivo.
-            \item \texttt{filename}: El nombre del archivo.
-            \item \texttt{size}: Tamaño del archivo en bytes.
-            \item \texttt{creation\_time}: Fecha de creación del archivo.
-            \item \texttt{hash}: Un hash SHA256 del contenido del archivo. Este es crucial para evitar el procesamiento y almacenamiento duplicado de archivos idénticos, incluso si tienen nombres o ubicaciones diferentes. Antes de procesar un nuevo archivo, se calcula su hash y se consulta en ChromaDB si ya existe un embedding con ese mismo \texttt{hash} en sus metadatos.
-            \item Otros metadatos relevantes extraídos.
+            \item \texttt{path}: La ruta absoluta original del archivo en el sistema de archivos.
+            \item \texttt{filename}: El nombre del archivo con su extensión.
+            \item \texttt{size}: El tamaño del archivo en bytes.
+            \item \texttt{creation\_time}: La fecha y hora de creación del archivo.
+            \item \texttt{hash}: Un hash SHA256 del contenido del archivo. Este metadato es crucial para evitar el procesamiento y almacenamiento duplicado de archivos idénticos, incluso si tienen nombres o ubicaciones diferentes. Antes de procesar un nuevo archivo, se calcula su hash y se consulta en ChromaDB si ya existe un embedding con ese mismo \texttt{hash} en sus metadatos.
         \end{itemize}
-    \item \textbf{IDs:} Cada entrada en ChromaDB tiene un ID único, que en este caso se construye a partir de la ruta del archivo para facilitar su identificación y actualización.
 \end{itemize}
-Las búsquedas se realizan enviando un vector de embedding (generado a partir de la consulta del usuario) a ChromaDB, que devuelve los `k` embeddings más similares junto con sus metadatos asociados.
+Las búsquedas semánticas se realizan enviando un vector de embedding (generado a partir de la consulta del usuario) a ChromaDB, que devuelve los `k` embeddings más similares junto con sus metadatos asociados. Actualmente, el valor de `k` se ha limitado a 5 resultados por consulta. Esta restricción se debe principalmente a las limitaciones de la ventana de contexto de los modelos de \gls{llm} que se ejecutan localmente, ya que un mayor número de resultados (y por ende, más texto para procesar) podría exceder dicha ventana o degradar significativamente el rendimiento. Esta limitación podría mitigarse en el futuro con el uso de modelos de \gls{llm} más avanzados que soporten ventanas de contexto mayores o mediante el acceso a recursos computacionales más potentes.
 
-El controlador de ChromaDB se encarga de gestionar la conexión a la base de datos, la creación de colecciones y la inserción, actualización y eliminación de embeddings y metadatos y la búsqueda de similares dentro de la base de datos. Se implementan funciones para verificar si un archivo ya ha sido procesado (basándose en su hash) y para actualizar los metadatos y embeddings en caso de modificaciones.
+El controlador de ChromaDB implementado se encarga de gestionar la conexión, la creación de colecciones si no existen, y las operaciones CRUD (inserción, lectura, actualización y eliminación) de embeddings y metadatos. Incluye funciones para verificar si un archivo ya ha sido procesado (basándose en su hash) y para actualizar los datos si se detectan modificaciones.
 
-Para utilizar ChromaDB sin necesidad de utilizar SQLite aparte se ha optado por utilizar el apartado de metadatos como si fuese una tabla de SQLite, esto ha sido útil sobre todo para el hash de los archivos ya que de haber utilizado SQLite aparte, se habría tenido que hacer una comprobación de si el hash ya existía en la tabla de SQLite y luego comprobar si existía en ChromaDB, lo que habría duplicado el tiempo de búsqueda. En este caso, al ser una base de datos vectorial, la búsqueda es mucho más rápida y no se nota la diferencia entre buscar en ChromaDB o en SQLite.
+Una decisión de diseño importante fue utilizar el campo de metadatos de ChromaDB para almacenar toda la información descriptiva del archivo, incluyendo el hash. Esto evita la necesidad de una base de datos relacional adicional (como SQLite) para la gestión de metadatos y la detección de duplicados, simplificando la arquitectura y aprovechando la eficiencia de ChromaDB para consultas basadas en estos metadatos.
 
 \subsection{Contenerización: No implementada (Docker)}
 \label{subsec:decision_docker}
 \paragraph{Decisión y Justificación}
-Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de contenerización como \textbf{Docker}. Se reconocen sus ventajas en reproducibilidad, aislamiento y despliegue.
+Durante la fase de análisis, se evaluó la posibilidad de utilizar tecnologías de contenerización como \textbf{Docker}. Se reconocen plenamente sus ventajas en términos de reproducibilidad del entorno, aislamiento de dependencias y simplificación del despliegue en diferentes máquinas.
 
-Sin embargo, y como se mencionó en la fase de análisis, para la etapa actual del proyecto se ha optado por no implementar una solución de contenerización. Esta decisión se fundamenta en:
+Sin embargo, para la etapa actual del proyecto, y como se anticipó en el análisis inicial, se ha optado por no implementar una solución de contenerización. Esta decisión se fundamenta en varios factores prácticos:
 \begin{enumerate}
-    \item El orquestador Prefect ofrece un paquete Python sencillo de instalar y usar directamente.
-    \item LMStudio, utilizado para los modelos de \gls{ia}, es un programa de instalación directa.
-    \item La gestión de dependencias de Python se ha manejado eficazmente con entornos virtuales (`venv`).
+    \item El orquestador Prefect, en su modo de ejecución local, se instala fácilmente como un paquete Python y no requiere una configuración de servidor compleja para este proyecto.
+    \item LMStudio, la herramienta seleccionada para la gestión y ejecución de los modelos de \gls{ia} locales, es una aplicación de escritorio con un instalador directo, diseñada para ser utilizada en el sistema operativo anfitrión.
+    \item La gestión de dependencias de Python se ha manejado eficazmente mediante el uso de entornos virtuales (`venv`), asegurando un aislamiento adecuado a nivel de proyecto.
 \end{enumerate}
-Dado que el objetivo principal era validar la funcionalidad central en un entorno local y los componentes clave no presentaban complejidades de entorno que justificaran la sobrecarga de Docker en esta fase, se consideró más ágil proceder sin él.
+Dado que el objetivo principal era validar la funcionalidad central del sistema en un entorno de desarrollo local, y los componentes clave no presentaban complejidades de entorno que justificaran la sobrecarga administrativa de Docker en esta fase, se consideró más ágil proceder sin él.
 
 \paragraph{Consideraciones Futuras}
-La arquitectura modular del sistema está diseñada para facilitar una futura migración a contenedores. Si el proyecto escalara o requiriera despliegues en entornos más complejos, la adopción de Docker (y Docker Compose) sería un paso lógico y viable. Esto permitiría empaquetar el servidor de Prefect, el agente, la base de datos (si se opta por una versión servida de ChromaDB o similar) y la interfaz de usuario en contenedores separados y orquestados.
+La arquitectura modular del sistema, con componentes bien definidos (backend API, motor de Prefect, detector de cambios), está diseñada para facilitar una futura migración a contenedores. Si el proyecto evolucionara hacia un despliegue en entornos más complejos, multiusuario o en la nube, la adopción de Docker (posiblemente junto con Docker Compose) sería un paso lógico y altamente recomendable. Esto permitiría empaquetar el servidor de la API, el agente de Prefect, la base de datos (especialmente si se optara por una versión servida de ChromaDB o una alternativa) y la interfaz de usuario en contenedores separados y orquestados, mejorando la escalabilidad y la mantenibilidad.
 
 \subsection{Interfaz de Usuario: Vue.js}
 \label{subsec:decision_vue}
 \paragraph{Decisión y Justificación}
-Para el desarrollo de la interfaz de usuario (UI), se ha seleccionado \textbf{Vue.js}. La principal razón es la búsqueda de simplicidad y una curva de aprendizaje accesible, dado que la UI, aunque importante, no es el núcleo de innovación del proyecto (centrado en la \gls{ia} y gestión de archivos del backend).
+Para el desarrollo de la interfaz de usuario (\gls{ui}), se ha seleccionado \textbf{Vue.js}. La principal razón detrás de esta elección fue la búsqueda de simplicidad y una curva de aprendizaje accesible, dado que la \gls{ui}, aunque importante para la interacción del usuario, no constituye el núcleo de innovación del proyecto, el cual está centrado en la inteligencia artificial y la gestión de archivos del backend.
 
-Aunque existe una mayor familiaridad previa con Angular, su complejidad y estructura opinada se consideraron excesivas para las necesidades de la UI de este proyecto. Vue.js ofrece un equilibrio entre funcionalidad y facilidad de desarrollo, permitiendo construir una interfaz reactiva y moderna sin la sobrecarga de frameworks más robustos.
+Aunque existía una mayor familiaridad previa con Angular por parte del desarrollador, su complejidad inherente y su estructura altamente opinada se consideraron excesivas para las necesidades de la interfaz de este proyecto. Vue.js ofrece un excelente equilibrio entre funcionalidad y facilidad de desarrollo, permitiendo construir una interfaz reactiva y moderna sin la sobrecarga asociada a frameworks más robustos y extensos.
 
 \paragraph{Implementación}
-La interfaz de Vue.js se comunica con un backend, en este caso Flask en Python, que a su vez interactúa con Prefect y ChromaDB. Las funcionalidades principales de la UI incluyen:
+La interfaz de usuario desarrollada con Vue.js se comunica con un backend implementado en Flask (Python), el cual actúa como intermediario para interactuar con Prefect y ChromaDB. Las funcionalidades principales implementadas en la \gls{ui} incluyen:
 \begin{itemize}
-    \item Un campo de búsqueda donde el usuario introduce texto.
-    \item Visualización de los resultados de la búsqueda, mostrando información relevante de los archivos encontrados (nombre, ruta, un fragmento, etc.).
-    \item Opciones para configurar los directorios a monitorizar.
-    \item Posiblemente, una vista del estado del sistema (archivos procesados, últimos eventos).
+    \item Un campo de búsqueda central donde el usuario puede introducir sus consultas en lenguaje natural.
+    \item Visualización clara y ordenada de los resultados de la búsqueda, mostrando la ruta y si procede una miniatura del archivo.
+    \item Una sección de configuración que permite al usuario modificar el Host y el puerto del Backend, cambiar el modelo de \gls{ia} utilizado para la respuesta final y la temperatura de la respuesta generada por el \gls{llm} y un botón para reinciar el chat.
+    \item Una vista de "explorador de archivos" que permite navegar por los archivos ya procesados por el sistema.
 \end{itemize}
-Se utilizan componentes de Vue para estructurar la aplicación (barra de búsqueda, lista de resultados, elemento de resultado individual). La gestión del estado, si es necesaria para datos compartidos entre componentes, se puede manejar con herramientas propias de Vue o librerías como Pinia.
+La aplicación se ha estructurado sobre un único componente por comodidad ya que es una web sencilla y se ha puesto especial atención en crear una interfaz amigable y acogedora. Por ejemplo, se utilizan "emoticonos" en mensajes iniciales o de ayuda, una estrategia observada en plataformas orientadas al cliente, como el soporte de Amazon, con el fin de hacer la experiencia del usuario más agradable al interactuar con lo que se pretende sea un "asistente inteligente" para los archivos del usuario final.
 
-Se ha decidido hacer una interfaz amigable con el usuario haciendo uso de "emoticonos" por ejemplo en el mensaje inicial del buscador, para que el usuario se sienta más cómodo al usar la aplicación. Esta estrategia la sulen utilizar empresas como Amazon, sobre todo en sus apartados de soporte y se ha considerado un punto positivo a probar sobre un buscador que trata de ser un compañero que ayude al usuario a encontrar lo que busca.
+El principal desafío durante la implementación fue la curva de aprendizaje inicial de Vue.js, al no ser el framework con el que se tenía mayor experiencia previa. Se priorizó una funcionalidad básica pero robusta, dejando posibles mejoras estéticas avanzadas o funcionalidades secundarias de la \gls{ui} para futuras iteraciones, dado el enfoque del proyecto en la funcionalidad del backend.
 
-El principal desafío fue la curva de aprendizaje inicial de Vue.js, al no ser el framework con el que se tenía más experiencia previa. Esto implicó un tiempo dedicado a comprender su sistema de componentes, directivas, reactividad y ciclo de vida. La integración con el backend, definiendo los endpoints de la API y manejando las peticiones asíncronas, también requirió una planificación cuidadosa. Se priorizó una funcionalidad básica pero robusta, dejando mejoras estéticas o funcionalidades avanzadas de la UI para posibles iteraciones futuras, dado el enfoque del proyecto en el backend.
+Las Figuras \ref{fig:front_home}, \ref{fig:front_config} y \ref{fig:front_explorer} muestran diferentes pantallas de la interfaz de usuario desarrollada.
 
-imagen: archivos/front_home.png
-imagen: archivos/front_config.png
-imagen: archivos/front_explorer.png
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{archivos/front_home.png}
+    \caption{Pantalla principal de la interfaz de usuario, con el campo de búsqueda.}
+    \label{fig:front_home}
+\end{figure}
 
-\subsection{API REST}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{archivos/front_config.png}
+    \caption{Pantalla de configuración de directorios a monitorizar.}
+    \label{fig:front_config}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{archivos/front_explorer.png}
+    \caption{Pantalla del explorador de archivos procesados.}
+    \label{fig:front_explorer}
+\end{figure}
+
+\subsection{API REST: Flask}
 \label{subsec:decision_api}
 \paragraph{Decisión y Justificación}
-Para la comunicación entre las diferentes partes del sistema, se ha optado por una API RESTful utilizando \textbf{Flask} en Python. Esta elección se basa en la simplicidad y ligereza de Flask, que permite crear rápidamente endpoints para manejar las solicitudes de la interfaz de usuario y facilitar la interacción con el orquestador de tareas Prefect y la base de datos ChromaDB.
+Para la comunicación entre el frontend (Vue.js) y los servicios del backend (Prefect, ChromaDB, lógica de negocio), se ha optado por desarrollar una API RESTful utilizando \textbf{Flask} en Python. Esta elección se basa en la simplicidad, ligereza y flexibilidad de Flask, que permite crear rápidamente endpoints bien definidos. Al ser Python el lenguaje principal del proyecto, Flask facilita una integración natural con los demás componentes del backend.
 
 \paragraph{Implementación}
-Se ha configurado para tener los archivos estáticos y la interfaz de usuario en un directorio separado, permitiendo que Flask sirva la aplicación Vue.js. Los endpoints principales incluyen:
+El servidor Flask se ha configurado para servir tanto la API REST como los archivos estáticos de la aplicación Vue.js (generados tras el proceso de compilación de Vue). Los principales endpoints de la API incluyen:
 \begin{itemize}
-    \item \texttt{/api/status}: Para obtener el estado del sistema.
-    \item \texttt{/api/models}: Para obtener información sobre los modelos de \gls{ia} disponibles.
-    \item \texttt{/api/query}: Para enviar consultas de búsqueda al sistema.
-    \item \texttt{/api/path\_descs}: Para obtener todos los archivos procesados.
-    \item \texttt{/api/file\_content}: envía el contenido la imagen dado su path.
-    \item \texttt{/api/file\_details}: Para obtener la descripción y los metadatos de un archivo específico dado su path.
+    \item \texttt{/api/status}: Proporciona información sobre el estado general del sistema, como la cantidad de archivos procesados o el estado de los servicios de monitorización.
+    \item \texttt{/api/models}: Devuelve información sobre los modelos de \gls{ia} configurados y disponibles para el procesamiento de consultas o análisis de archivos.
+    \item \texttt{/api/query}: Recibe las consultas de búsqueda textuales del usuario desde la interfaz, las procesa y las reenvía al flujo de Prefect correspondiente para obtener resultados de ChromaDB y la respuesta generada por el \gls{llm}.
+    \item \texttt{/api/path\_descs}: Permite obtener una lista de todos los archivos que han sido procesados y están indexados en el sistema, con metadatos básicos.
+    \item \texttt{/api/file\_content}: Dado la ruta de un archivo de imagen, devuelve su contenido para ser visualizado en la interfaz.
+    \item \texttt{/api/file\_details}: Proporciona la descripción y los metadatos detallados de un archivo identificado por su ruta.
+\end{itemize}
+Se implementó \gls{cors} (Cross-Origin Resource Sharing) para permitir las solicitudes desde el servidor de desarrollo de Vue.js al servidor Flask durante la fase de desarrollo. Un desafío grande fue la gestión del estado y la sincronización de la información para el endpoint \texttt{/api/status}, asegurando que refleje de manera precisa y actualizada el estado de los diversos componentes del sistema.
 
-Se han tenido algunos problemas al implementar el endpoint de status por la complejidad de tener los archivos controlados en todo momento y llevar una cuenta ordenada.
-
-\subsection{LMStudio}
+\subsection{Gestión de Modelos de IA: LMStudio}
 \label{subsec:decision_lmstudio}
 \paragraph{Decisión y Justificación}
-Se ha elegido LMStudio por la comodidad de que sea un programa de instalación directa desde el que poder descargar y usar casi cualquier modelo de \gls{ia} de manera sencilla. La alternativa habría sido instalar cada uno de estos modelos a través de Python y habría sido un código un poco más caótico, de esta manera el trabajo es más sencillo pero es más complicado porque el usuario debe buscar las cosas a mano, no hay un archivo que te instale los modelos necesarios directamente.
+Para la gestión y ejecución local de los modelos de lenguaje grande (\gls{llm}) y modelos multimodales, se ha optado por utilizar \textbf{LMStudio}. La principal ventaja de LMStudio radica en su facilidad de uso: es una aplicación de escritorio que permite descargar, configurar y ejecutar una amplia variedad de modelos de \gls{ia} de código abierto (provenientes de plataformas como Hugging Face) a través de una interfaz gráfica intuitiva. Además, expone los modelos cargados a través de un servidor local compatible con la API de OpenAI, lo que simplifica enormemente la integración con el código Python del proyecto.
 
-\subsection{Terminal}
+La alternativa habría sido gestionar la descarga, configuración y ejecución de cada modelo directamente mediante bibliotecas de Python como `transformers` o `llama-cpp-python`. Si bien esto ofrecería un control más granular, también implicaría una mayor complejidad en el código y en el proceso de configuración inicial para el usuario final del proyecto. LMStudio abstrae esta complejidad.
+
+\paragraph{Implementación}
+LMStudio se utiliza como un componente externo al código principal del proyecto. El usuario debe instalar LMStudio, descargar los modelos deseados (por ejemplo, Mistral para generación de texto y Gemma para análisis multimodal) y ejecutarlos a través del servidor local que provee la aplicación. El backend de Python del sistema se comunica con este servidor local de LMStudio mediante peticiones HTTP a los endpoints estándar de la API de OpenAI (e.g., \texttt{/v1/chat/completions} para \gls{llm} o \texttt{/v1/completions} para modelos que lo soporten, adaptándose según el modelo específico y su configuración en LMStudio).
+
+Esta dependencia de un software externo implica que el usuario debe realizar estos pasos de configuración manualmente. No obstante, para el alcance de este proyecto, la simplificación en el desarrollo y la flexibilidad para probar diferentes modelos que ofrece LMStudio superan la desventaja de la configuración manual. En la documentación del proyecto se detallan los pasos para configurar LMStudio y los modelos recomendados.
+
+\subsection{Interfaz de Línea de Comandos (CLI)}
 \label{subsec:decision_terminal}
-Para crear la entrada por terminal en python se ha hecho uso de un archivo de setup:
+\paragraph{Decisión y Justificación}
+Además de la interfaz gráfica de usuario, se consideró útil proporcionar una interfaz de línea de comandos (CLI) para permitir interacciones básicas con el sistema, como realizar búsquedas o iniciar el proceso de monitorización. Esto puede ser ventajoso para usuarios avanzados, para la automatización de tareas mediante scripts o para entornos donde una GUI no está disponible o no es deseada. Se utilizó el ecosistema estándar de Python para empaquetar y distribuir esta CLI.
 
-% Código:
+\paragraph{Implementación}
+Para crear un punto de entrada ejecutable desde la terminal, se ha utilizado la funcionalidad de \texttt{entry\_points} de \textbf{setuptools}, la biblioteca estándar de Python para la construcción y distribución de paquetes. Se definió un archivo \texttt{setup.py} (o \texttt{pyproject.toml} con la configuración equivalente) que incluye la siguiente configuración para los scripts de consola:
+
+\begin{lstlisting}[language=Python, caption={Definición del punto de entrada en setup.py}, label=lst:setup_py_cli, basicstyle=\footnotesize\ttfamily, breaklines=true]
 from setuptools import setup
 
 setup(
@@ -387,6 +432,12 @@ setup(
         ],
     },
 )
+\end{lstlisting}
+En el ejemplo anterior, existe un módulo Python llamado \texttt{llmsearch\_cli.py} que contiene una función \texttt{main()}. Esta función se encarga de parsear los argumentos proporcionados en la línea de comandos (utilizando bibliotecas como \texttt{argparse}) y de invocar la lógica correspondiente en el backend del sistema enviando una solicitud a la API REST.
 
-y seguidamente se ha creado un archivo llmsearch.py que contiene el código para la entrada por terminal. Este archivo se encarga de gestionar la entrada del usuario y de llamar a las funciones necesarias para comunicarse con el backend y realizar las búsquedas. Se ha optado por esta solución para facilitar la interacción del usuario con el sistema pudiendo usar los comandos de la siguiente manera:
-LLMSearch --help o LLMSearch --query "mapa del mundo"
+Una vez instalado el paquete el usuario puede invocar la CLI desde cualquier ubicación en su terminal:
+\begin{verbatim}
+LLMSearch --help
+LLMSearch --query "mapa del mundo"
+\end{verbatim}
+Esta aproximación ofrece una forma estándar y robusta de crear herramientas de línea de comandos en Python, facilitando la interacción del usuario con las funcionalidades principales del sistema sin depender exclusivamente de la interfaz web.
