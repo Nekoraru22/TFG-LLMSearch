@@ -62,9 +62,7 @@ class CustomHandler(FileSystemEventHandler):
         new_stat = (st.st_mtime, st.st_size)
         old_stat = self.stats_cache.get(event.src_path)
 
-        # Check if the file has been really modified
-        if old_stat is None or old_stat == new_stat or new_stat[0] - old_stat[0] < 30:
-            print(new_stat[0] - old_stat[0])
+        if old_stat is None or old_stat == new_stat or new_stat[0] - old_stat[0] < 60:
             logging.info(f"Insufficient time between creation and modification of file: {event.src_path}")
             return
 
@@ -165,7 +163,19 @@ class WatchdogsController:
         if self.watcher_thread and self.watcher_thread.is_alive():
             logging.warning("The watchdog thread is already running.")
             return
-            
+        
+        # Process all files in the directory at startup
+        for root, _, files in os.walk(self.path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                try:
+                    st = os.stat(file_path)
+                    self.event_handler.stats_cache[file_path] = (st.st_mtime, st.st_size)
+                    new_file(file_path)
+                except FileNotFoundError:
+                    logging.warning(f"File not found during startup: {file_path}")
+
+        # Start the watchdog thread
         self.running = True
         self.watcher_thread = threading.Thread(target=self._watch_directory)
         self.watcher_thread.daemon = True  # The thread will exit when the main program exits
