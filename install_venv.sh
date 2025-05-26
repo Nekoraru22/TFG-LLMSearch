@@ -12,6 +12,9 @@ python -m pip install --upgrade pip
 # Install the latest version of Prefect
 pip install -U prefect
 
+# Install the custom package from for terminal command
+pip install -e .
+
 # Install the required packages
 pip install -r requirements.txt
 

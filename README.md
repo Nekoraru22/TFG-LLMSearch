@@ -15,27 +15,51 @@ Las evaluaciones realizadas demuestran que el sistema logra identificar archivos
 Los resultados obtenidos confirman que aplicar Inteligencia Artificial sobre este problema es viable. El proyecto no solo ofrece una solución funcional a un problema cotidiano, sino que también establece fundamentos para futuras investigaciones en búsqueda multimedia inteligente.
 En conclusión, este proyecto demuestra como la Inteligencia Artificial puede ayudar de manera considerable en la búsqueda de contenido multimedia, acercando más la tecnología al ámbito doméstico y cotidiano de los usuarios.
 
+# Cómo usar
+## Iniciar el entorno virtual (sh para Linux y bat para Windows):
+```bash
+./install_venv.sh
+./install_venv.bat
+```
 
-# Prefect Start
+### Puede que sea necesario dar permisos de ejecución al script:
+```bash
+chmod +x install_venv.sh
+chmod +x install_venv.bat
+```
+
+## Rellenar plantilla .env
+Copia el archivo `.env.example` a `.env` y rellena los campos necesarios. Puedes dejar los valores por defecto si no tienes configuraciones personalizadas.
+
+## Iniciar Prefect (Terminal 1)
 ```bash
 prefect server start
 ```
-https://docs.prefect.io/v3/manage/self-host
 
-# Para el Setup
+## Iniciar el backend (Terminal 2)
 ```bash
-pip install -e .
-LLMSearch --query "mapa del mundo"
+python main.py
 ```
 
-# Iniciar Vue
+# Aparte
+
+## Build Vue.js frontend
+```bash
+npm install vue
+npm run build
+```
+
+## Iniciar Vue
 ```bash
 npm run dev
 ```
 
-# Compilar Vue
+## Compilar Vue
 ```bash
 npm run build
 ```
 
-explicar los .env y el .venv
+## Usar comando terminal
+```bash
+LLMSearch --query "mapa del mundo"
+```

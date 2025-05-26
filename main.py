@@ -116,6 +116,7 @@ def get_db_desc_by_path():
 if __name__ == "__main__":
     # create_graphics("two characters with cat ears and tail", True)
     # exit(0)
+    
     # Initialize logging
     watcher = WatchdogsController(str(os.environ.get("TRACKED_FOLDER")))
     watcher.start()
