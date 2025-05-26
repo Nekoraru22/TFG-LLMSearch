@@ -1,7 +1,7 @@
-from watchdog.events import FileSystemEventHandler, FileSystemEvent
+from watchdog.events import FileSystemEventHandler, FileSystemEvent, FileSystemMovedEvent
 from watchdog.observers import Observer
 
-from controllers.prefect_controller import new_file, modified_file, deleted_file
+from controllers.prefect_controller import new_file, modified_file, deleted_file, moved_file
 
 import threading
 import logging
@@ -62,13 +62,15 @@ class CustomHandler(FileSystemEventHandler):
         new_stat = (st.st_mtime, st.st_size)
         old_stat = self.stats_cache.get(event.src_path)
 
-        # If nothing really changed, skip.
-        if old_stat == new_stat:
+        # Check if the file has been really modified
+        if old_stat is None or old_stat == new_stat or new_stat[0] - old_stat[0] < 30:
+            print(new_stat[0] - old_stat[0])
+            logging.info(f"Insufficient time between creation and modification of file: {event.src_path}")
             return
 
         # Update cache and fire
         self.stats_cache[event.src_path] = new_stat
-        logging.info(f"Modified (real) file: {event.src_path}")
+        logging.info(f"Modified file: {event.src_path}")
         modified_file(str(event.src_path))
         
         
@@ -87,6 +89,32 @@ class CustomHandler(FileSystemEventHandler):
 
         logging.info(f"Deleted file: {event.src_path}")
         deleted_file(str(event.src_path))
+
+
+    def on_moved(self, event: FileSystemMovedEvent) -> None:
+        """
+        Se ejecuta cuando un archivo o directorio se mueve o renombra.
+        event.src_path: ruta original
+        event.dest_path: ruta nueva
+        """
+        if event.is_directory:
+            return
+        
+        # Clean up the cache
+        if event.src_path in self.stats_cache:
+            del self.stats_cache[event.src_path]
+        if event.dest_path in self.stats_cache:
+            del self.stats_cache[event.dest_path]
+        
+        # Add the new file to the cache
+        try:
+            st = os.stat(event.dest_path)
+        except FileNotFoundError:
+            return
+        self.stats_cache[event.dest_path] = (st.st_mtime, st.st_size)
+
+        logging.info(f"Moved file: {event.src_path} → {event.dest_path}")
+        moved_file(str(event.src_path), str(event.dest_path))
 
 
 class WatchdogsController:

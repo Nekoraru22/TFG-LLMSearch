@@ -313,9 +313,7 @@ const inputFocused = ref(false);
 const typingMessageId = ref(null);
 const models = ref([]);
 const selectedModel = ref("");
-const ipAddress = import.meta.env.VITE_FLASK_IP || 'http://127.0.0.1'
-const port = import.meta.env.VITE_FLASK_PORT || '5000'
-const host = ref(`${ipAddress}:${port}`);
+const host = ref(window.location.origin);
 const inputArea = ref(null);
 
 // File browser state

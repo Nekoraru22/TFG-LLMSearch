@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 models: list[str] = os.environ.get("LM_STUDIO_MODELS", "").split(" ")
+window_limit: int = int(os.environ.get("MODEL_WINDOW_LIMIT", 4096))
 
 class LMStudioController:
     """
@@ -61,6 +62,9 @@ class LMStudioController:
             image_handle = lms.prepare_image(image)
             chat.add_user_message(self.initial_prompt, images=[image_handle])
         else:
+            # Truncate the prompt to 4096 characters if it exceeds the limit
+            if prompt and len(prompt) > window_limit:
+                prompt = prompt[:window_limit]
             chat.add_user_message(prompt or "Say 'meow :3'")
         
         return model.respond(chat, config=config)
