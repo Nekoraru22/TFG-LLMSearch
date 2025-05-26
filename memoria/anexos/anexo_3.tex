@@ -5,13 +5,13 @@
 % Contacto: info@jmrplens.com / Telegram:@jmrplens
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \chapter{Anexo II}
+% \chapter{Anexo 3}
 \chapter{Prompt para verificación de información}
-\label{anx:prompt_verif}
+\label{anx:prompt_verify}
 
 A continuación, se presenta el prompt que se le proporciona al modelo final de lenguaje para la verificación de la información recuperada de la base de datos ChromaDB. Gracias a este prompt, se logra que el modelo no solo verifique la información, sino que también la reordene y elimine entradas irrelevantes, lo que es fundamental para garantizar la calidad de los resultados obtenidos.
 
-\begin{lstlisting}[language=Markdown, caption={Prompt para la descripción de imágenes.}, label={lst:prompt_img_desc}]
+\begin{lstlisting}[caption={Prompt para la descripción de imágenes.}, label={lst:prompt_img_desc}]
 Original Query: {query}
 
 Relevant data (from ChromaDB):
