@@ -51,8 +51,8 @@ def _model_selector(file_path: str) -> None:
         img_meta = get_image_metadata.submit(file_path, file_path_hash)
 
         # Wait & combine
-        result = img_res.result()
-        metadata = img_meta.result()
+        result = img_res.result(raise_on_failure=False)
+        metadata = img_meta.result(raise_on_failure=False)
 
         # Embed + store
         embeddings = chroma_db.create_embeddings([result])
@@ -71,7 +71,7 @@ def _model_selector(file_path: str) -> None:
 
         # Summarize the content
         result = summarize_text.submit(content)
-        result = result.result()
+        result = result.result(raise_on_failure=False)
         print(content)
         print(result)
 
@@ -98,7 +98,7 @@ def _model_selector(file_path: str) -> None:
         
         # Summarize the content
         result = summarize_text.submit(content)
-        result = result.result()
+        result = result.result(raise_on_failure=False)
         print(content)
         print(result)
 
