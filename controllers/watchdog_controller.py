@@ -160,6 +160,11 @@ class WatchdogsController:
         """
         Initializes the watchdog thread and starts monitoring the directory.
         """
+        # Check if the folder path exists and create it if it doesn't
+        if not os.path.exists(self.path) or not os.path.isdir(self.path):
+            logging.error(f"The path {self.path} does not exist.")
+            os.makedirs(self.path)
+
         if self.watcher_thread and self.watcher_thread.is_alive():
             logging.warning("The watchdog thread is already running.")
             return

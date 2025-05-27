@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Create a virtual environment
-python3.10 -m venv myenv
+python3 -m venv myenv
 
 # Activate the virtual environment
 source myenv/bin/activate
 
 # Upgrade pip
-python -m pip install --upgrade pip
+python3 -m pip install --upgrade pip
 
 # Install the latest version of Prefect
 pip install -U prefect
