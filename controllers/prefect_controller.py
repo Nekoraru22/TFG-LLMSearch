@@ -323,24 +323,28 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     Relevant data (from ChromaDB):
     {data_json}
 
-    Task:
-    - If the data shows empty documents and metadatas (like {{"documents": [[]], "metadatas": [[]]}}), respond with: "No hay archivos procesados en el sistema aún."
-    - Discard entries irrelevant to the Original Query.
-    - Reorder only if strictly needed to match the query intent.
-    - Extract **only** the file paths (the substring after "Path:").
-    - If Verbose is True: include a very brief description of each file alongside its path.
-    - If Verbose is False: show only the file path.
-    - **Output just** the final numbered list (start at 1), one path per line, with **no** additional text.
+    CRITICAL INSTRUCTIONS:
+    - If data contains empty documents/metadatas like {{"documents": [[]], "metadatas": [[]]}}, respond ONLY with: "No hay archivos procesados en el sistema aún."
+    - Otherwise, filter entries relevant to the Original Query
+    - Extract ONLY file paths (after "Path:")
+    - If Verbose=True: add brief description after path
+    - If Verbose=False: show only path
+    - OUTPUT FORMAT: Numbered list starting at 1, NO explanations, NO additional text, NO code
 
-    Example output (Verbose=False):
-    1. ./filesystem/Notificacion_1742000847864 - copia.pdf
-    2. <path_to_another_relevant_document>
-    ...
+    REQUIRED OUTPUT EXAMPLES:
+    
+    For empty data:
+    No hay archivos procesados en el sistema aún.
 
-    Example output (Verbose=True):
-    1. ./filesystem/Notificacion_1742000847864 - copia.pdf - Notificación oficial sobre trámite administrativo
-    2. <path_to_another_relevant_document> - Brief description of the document
-    ...
+    For Verbose=False:
+    1. ./filesystem/document1.pdf
+    2. ./filesystem/document2.txt
+
+    For Verbose=True:
+    1. ./filesystem/document1.pdf - Contract document
+    2. ./filesystem/document2.txt - Meeting notes
+
+    DO NOT provide explanations, code, or process descriptions. Output ONLY the final result.
     """
 
     result = llm.analyze(prompt=prompt, temperature=temperature)
