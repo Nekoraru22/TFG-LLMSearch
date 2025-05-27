@@ -413,8 +413,7 @@ const isImageFile = (path) => {
 // Get file name from path
 const getFileName = (path) => {
   if (!path) return '';
-  const parts = path.split('\\');
-  return parts[parts.length - 1];
+  return path.split(/[\\/]/).pop();
 };
 
 // Format metadata key for display
