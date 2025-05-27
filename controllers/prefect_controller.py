@@ -316,23 +316,30 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     }, indent=2)
     print(data_json)
 
-    # TODO: Con verbose=True, añadir pequeñas descripciones de cada documento aparte de solamente el path.
     prompt = f"""
     Original Query: {query}
+    Verbose: {verbose}
 
     Relevant data (from ChromaDB):
     {data_json}
 
     Task:
+    - If the data shows empty documents and metadatas (like {{"documents": [[]], "metadatas": [[]]}}), respond with: "No hay archivos procesados en el sistema aún."
     - Discard entries irrelevant to the Original Query.
     - Reorder only if strictly needed to match the query intent.
     - Extract **only** the file paths (the substring after "Path:").
+    - If Verbose is True: include a very brief description of each file alongside its path.
+    - If Verbose is False: show only the file path.
     - **Output just** the final numbered list (start at 1), one path per line, with **no** additional text.
 
-    Example output:
-    Original Query: official document from the Spanish Ministry
+    Example output (Verbose=False):
     1. ./filesystem/Notificacion_1742000847864 - copia.pdf
     2. <path_to_another_relevant_document>
+    ...
+
+    Example output (Verbose=True):
+    1. ./filesystem/Notificacion_1742000847864 - copia.pdf - Notificación oficial sobre trámite administrativo
+    2. <path_to_another_relevant_document> - Brief description of the document
     ...
     """
 

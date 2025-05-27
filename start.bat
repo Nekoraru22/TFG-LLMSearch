@@ -6,6 +6,9 @@ FOR /F "eol=# tokens=*" %%i IN (.env) DO SET %%i
 @REM Configure prefect server
 prefect config set PREFECT_API_URL="http://%PREFECT_IP%:%PREFECT_PORT%/api"
 
+@REM Try to stop any existing Prefect server
+prefect server stop
+
 @REM Start the Prefect
 prefect server start --host %PREFECT_IP% --port %PREFECT_PORT% --background
 
