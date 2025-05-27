@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import chromadb
-import torch
 import os
 
 from sentence_transformers import SentenceTransformer
@@ -25,6 +24,7 @@ class ChromaClient:
         self.persist_directory = persist_directory
         self.client = chromadb.PersistentClient(path=persist_directory)
         self.collection = None
+        self.model = SentenceTransformer(model_name_or_path='all-MiniLM-L6-v2')
         
         print(f"Chroma database configured to be stored in: {persist_directory}")
 
@@ -49,19 +49,17 @@ class ChromaClient:
             print(f"Collection '{collection_name}' created successfully.")
 
 
-    def create_embeddings(self, texts: list[str]):
-        # Load model on GPU
-        model = SentenceTransformer('all-MiniLM-L6-v2', device='cuda')
-
-        # Create embeddings
-        embeddings = model.encode(texts, convert_to_tensor=True)
-
-        # Delete the model instance
-        del model
-
-        # Free up all unused CUDA memory
-        torch.cuda.empty_cache()
-
+    def create_embeddings(self, texts):
+        """
+        Creates embeddings for a list of texts using Sentence Transformers.
+        
+        Args:
+            texts: List of strings with texts to process
+        
+        Returns:
+            list: List of vector embeddings
+        """
+        embeddings = self.model.encode(texts)
         return embeddings
 
 
