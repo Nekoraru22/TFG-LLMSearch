@@ -36,7 +36,9 @@ class LMStudioController:
         """
         Get the model instance based on the selected model.
         """
-        return self.client.llm.model(self.model)
+        return self.client.llm.model(self.model, config={
+            "contextLength": 16384,
+        })
 
 
     def analyze(self, prompt: str | None = None, image: str | None = None, temperature: float = 0.7) -> lms.PredictionResult:
@@ -62,7 +64,7 @@ class LMStudioController:
             image_handle = lms.prepare_image(image)
             chat.add_user_message(self.initial_prompt, images=[image_handle])
         else:
-            # Truncate the prompt to 4096 characters if it exceeds the limit
+            # Truncate the prompt if it exceeds the limit
             if prompt and len(prompt) > window_limit:
                 prompt = prompt[:window_limit]
             chat.add_user_message(prompt or "Say 'meow :3'")

@@ -85,6 +85,8 @@ npm run build
 ```bash
 LLMSearch --query "ejemplo de consulta" --model "nombre_del_modelo"
 ```
+> [!NOTE]  
+> Use `LLMSearch --help` para ver más opciones disponibles.
 
 ## Iniciar Prefect
 Prefect se ejecuta de manera automática y en segundo plano al iniciar el sistema.

@@ -53,6 +53,8 @@ def _model_selector(file_path: str) -> None:
         # Wait & combine
         result = img_res.result(raise_on_failure=False)
         metadata = img_meta.result(raise_on_failure=False)
+        print(result)
+        print(metadata)
 
         # Embed + store
         embeddings = chroma_db.create_embeddings([result])
@@ -235,8 +237,6 @@ def analyze_image(image_path: str) -> str:
     """
     llm.model = "gemma-3-12b-it"
     result = llm.analyze(image=image_path)
-
-    print(result)
     return str(result)
 
 @task
@@ -264,33 +264,34 @@ def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
         "hash": file_path_hash,
     })
 
-    try:
-        with Image.open(image_path) as img:
-            # Basic image information
-            metadata.update({
-                "format": img.format,
-                "mode": img.mode,
-                "width": img.width,
-                "height": img.height
-            })
+    # Uncomment the following lines if you want to extract image metadata using PIL (For models with higher capabilities)
+    # try:
+    #     with Image.open(image_path) as img:
+    #         # Basic image information
+    #         metadata.update({
+    #             "format": img.format,
+    #             "mode": img.mode,
+    #             "width": img.width,
+    #             "height": img.height
+    #         })
 
-            # Specific metadata for JPEG images
-            if img.format == 'JPEG':
-                exif_data = img.getexif()
-                for tag_id, value in exif_data.items():
-                    tag = ExifTags.TAGS.get(tag_id, tag_id)
-                    if isinstance(value, bytes):
-                        try:
-                            value = value.decode('utf-8', errors='ignore')
-                        except Exception:
-                            value = str(value)
-                    metadata[f"EXIF_{tag}"] = value
-            else:
-                for key, value in img.info.items():
-                    metadata[f"INFO_{key}"] = value
+    #         # Specific metadata for JPEG images
+    #         if img.format == 'JPEG':
+    #             exif_data = img.getexif()
+    #             for tag_id, value in exif_data.items():
+    #                 tag = ExifTags.TAGS.get(tag_id, tag_id)
+    #                 if isinstance(value, bytes):
+    #                     try:
+    #                         value = value.decode('utf-8', errors='ignore')
+    #                     except Exception:
+    #                         value = str(value)
+    #                 metadata[f"EXIF_{tag}"] = value
+    #         else:
+    #             for key, value in img.info.items():
+    #                 metadata[f"INFO_{key}"] = value
 
-    except Exception as e:
-        metadata["error"] = str(e)
+    # except Exception as e:
+    #     metadata["error"] = str(e)
 
     # Filter metadata to comply with ChromaDB requirements
     chroma_metadata = {}
@@ -317,39 +318,23 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     print(data_json)
 
     prompt = f"""
-    SYSTEM: You are a file path extraction system. You MUST follow the output format exactly.
+    SYSTEM: You are a file path extractor. You MUST follow the output format EXACTLY. No explanations.
 
-    INPUT DATA:
-    Original Query: {query}
-    Verbose: {verbose}
-    ChromaDB Data: {data_json}
+    Task:
+        - Check data. If `documents` is `[[]]` or `[]`, consider data empty and **only** return 'There are no files processed in the system yet.'
+        - The data is already ordered by relevance, do not change the order.
+        - Extract **only** the file paths (the substring after "Path:").
+        - **Output just** the final numbered list (start at 1), one path per line{', with **no** additional text' if not verbose else ''}.
+        - Only in the extremely rare case where a search result is completely unrelated to the original query, you may reorder or remove that specific result. This should only happen when there is absolutely zero connection between the query and the result content.
 
-    TASK:
-    1. Check if data contains empty documents/metadatas like {{"documents": [[]], "metadatas": [[]]}}
-    2. If empty, output EXACTLY: "There are no files processed in the system yet."
-    3. If not empty, find entries relevant to the Original Query
-    4. Extract file paths from metadata (look for "path" field)
-    5. Format according to Verbose setting
+    OUTPUT FORMAT (MANDATORY):
+        1. [path]{' - [brief document description]' if verbose else ''}
+        2. [path]{' - [brief document description]' if verbose else ''}
+        3. [path]{' - [brief document description]' if verbose else ''}
 
-    OUTPUT RULES - FOLLOW EXACTLY:
-    - NO explanations before or after the list
-    - NO introductory text like "Based on" or "Here are"
-    - NO additional context or descriptions beyond what's specified
-    - START immediately with either the "No hay archivos..." message OR the numbered list
-    - END immediately after the last item
-
-    VERBOSE=False FORMAT:
-    1. [path]
-    2. [path]
-
-    VERBOSE=True FORMAT:
-    1. [path] - [brief description from document content]
-    2. [path] - [brief description from document content]
-
-    EMPTY DATA FORMAT:
-    No hay archivos procesados en el sistema aún.
-
-    CRITICAL: Output ONLY the final result. No other text allowed.
+    Original query: {query}
+    Ordered data:
+    {data_json}
     """
 
     result = llm.analyze(prompt=prompt, temperature=temperature)
