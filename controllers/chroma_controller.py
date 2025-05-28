@@ -131,15 +131,12 @@ class ChromaClient:
             raise ValueError("Chroma collection not initialized. Please create a collection first.")
 
         if embeddings is None:
-            resultados = self.collection.query(
-                query_texts=[query],
-                n_results=n_results
-            )
-        else:
-            resultados = self.collection.query(
-                query_embeddings=[embeddings],
-                n_results=n_results
-            )
+            embeddings = self.create_embeddings([query])[0]
+            
+        resultados = self.collection.query(
+            query_embeddings=[embeddings],
+            n_results=n_results
+        )
         
         return resultados
 
