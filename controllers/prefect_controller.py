@@ -317,23 +317,39 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     print(data_json)
 
     prompt = f"""
+    SYSTEM: You are a file path extraction system. You MUST follow the output format exactly.
+
+    INPUT DATA:
     Original Query: {query}
     Verbose: {verbose}
+    ChromaDB Data: {data_json}
 
-    CRITICAL INSTRUCTIONS:
-    - If data contains empty documents/metadatas like {{"documents": [[]], "metadatas": [[]]}}, respond ONLY with:
+    TASK:
+    1. Check if data contains empty documents/metadatas like {{"documents": [[]], "metadatas": [[]]}}
+    2. If empty, output EXACTLY: "There are no files processed in the system yet."
+    3. If not empty, find entries relevant to the Original Query
+    4. Extract file paths from metadata (look for "path" field)
+    5. Format according to Verbose setting
+
+    OUTPUT RULES - FOLLOW EXACTLY:
+    - NO explanations before or after the list
+    - NO introductory text like "Based on" or "Here are"
+    - NO additional context or descriptions beyond what's specified
+    - START immediately with either the "No hay archivos..." message OR the numbered list
+    - END immediately after the last item
+
+    VERBOSE=False FORMAT:
+    1. [path]
+    2. [path]
+
+    VERBOSE=True FORMAT:
+    1. [path] - [brief description from document content]
+    2. [path] - [brief description from document content]
+
+    EMPTY DATA FORMAT:
     No hay archivos procesados en el sistema aún.
-    - Otherwise, filter entries relevant to the Original Query.
-    - Extract ONLY file paths (the value after "path:" in metadata).
-    - If Verbose=True, append a brief description after each path (e.g., “- Contract document”).
-    - If Verbose=False, list only the paths.
-    - ALWAYS output a numbered list starting at 1.
-    - DO NOT include any explanations, code syntax, or additional text—ONLY the final list.
 
-    DATA:
-    {data_json}
-
-    OUTPUT:
+    CRITICAL: Output ONLY the final result. No other text allowed.
     """
 
     result = llm.analyze(prompt=prompt, temperature=temperature)
