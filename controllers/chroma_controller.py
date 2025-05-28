@@ -24,7 +24,7 @@ class ChromaClient:
         self.persist_directory = persist_directory
         self.client = chromadb.PersistentClient(path=persist_directory)
         self.collection = None
-        self.model = SentenceTransformer(model_name_or_path='all-MiniLM-L6-v2')
+        self.model = SentenceTransformer(model_name_or_path='sentence-transformers/all-mpnet-base-v2')
         
         print(f"Chroma database configured to be stored in: {persist_directory}")
 
@@ -386,7 +386,7 @@ def create_graphics(query: str, debug: bool = False) -> None:
     
     # Crear embeddings para todos los documentos y la consulta usando el mismo modelo
     print(f"Creating embeddings for {len(documents)} documents and the query...")
-    modelo = SentenceTransformer(model_name_or_path='all-MiniLM-L6-v2')
+    modelo = SentenceTransformer(model_name_or_path='sentence-transformers/all-mpnet-base-v2')
     document_embeddings = modelo.encode(documents)
     query_embedding = modelo.encode([query])
     
