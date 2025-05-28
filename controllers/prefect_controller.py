@@ -33,6 +33,30 @@ chroma_db = ChromaClient(str(os.environ.get("CHROMA_DB_PATH")))
 chroma_db.create_chroma_collection(collection_name=str(os.environ.get("CHROMA_COLLECTION_NAME")))
 
 
+def _transform_data(input_data: dict) -> list:
+    """
+    Converts the input data structure to the desired output structure.
+
+    Args:
+        input_data: data directly from the ChromaDB search result.
+
+    Returns:
+        list: data in the correct format
+    """
+    output_list = []
+    document_contents = input_data["documents"][0]
+    metadata_items = input_data["metadatas"][0]
+
+    for content, metadata in zip(document_contents, metadata_items):
+        transformed_item = {
+            "content": content,
+            "metadatas": metadata
+        }
+        output_list.append(transformed_item)
+
+    return output_list
+
+
 def _model_selector(file_path: str) -> None:
     # 1) File hash
     file_path_hash = get_file_hash(file_path)
@@ -194,7 +218,7 @@ def moved_file(file_path: str, new_file_path: str) -> None:
 
 
 @flow(log_prints=True, flow_run_name='Query')
-def proccess_query(query: str, model: str, temperature: float, verbose: bool) -> PredictionResult:
+def proccess_query(query: str, model: str, temperature: float, verbose: bool) -> str:
     """
     Process a query
 
@@ -304,17 +328,17 @@ def get_image_metadata(image_path: str, file_path_hash: str) -> dict:
     return chroma_metadata
 
 @task
-def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature: float, verbose: bool) -> PredictionResult:
+def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature: float, verbose: bool) -> str:
     """
     Process a query using RAG (Retrieval-Augmented Generation)
     """
     llm.model = model
 
     # Pre‑serialize to avoid f‑string brace issues
-    data_json = json.dumps({
+    data_json = json.dumps(_transform_data({
         "documents": relevant_db_data["documents"],
         "metadatas": relevant_db_data["metadatas"]
-    }, indent=2)
+    }), indent=2)
     print(data_json)
 
     prompt = f"""
@@ -338,6 +362,7 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     """
 
     result = llm.analyze(prompt=prompt, temperature=temperature)
+    result = str(result).strip()
     print(result)
     return result
 
