@@ -30,7 +30,7 @@
                     <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
                       <FolderOpen class="h-4 w-4 text-white" />
                     </div>
-                    <h2 class="text-lg font-semibold text-white">File Explorer</h2>
+                    <h2 class="text-lg font-semibold text-white">File Explorer ({{ files.length }} files)</h2>
                   </div>
                   <button @click="isFileExplorerOpen = false" class="text-zinc-400 hover:text-white">
                     <X class="h-5 w-5" />
@@ -71,11 +71,11 @@
             <Transition name="zoom">
               <div v-if="isFileDetailsOpen" class="w-4/5 max-w-2xl max-h-[80vh] bg-zinc-900 border border-zinc-800 rounded-xl text-white overflow-hidden shadow-2xl flex flex-col">
                 <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
                     <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center">
                       <Info class="h-4 w-4 text-white" />
                     </div>
-                    <h2 class="text-lg font-semibold text-white truncate">{{ getFileName(selectedFile) }}</h2>
+                    <h2 class="flex-1 text-lg font-semibold text-white truncate">{{ getFileName(selectedFile) }}</h2>
                   </div>
                   <button @click="isFileDetailsOpen = false" class="text-zinc-400 hover:text-white">
                     <X class="h-5 w-5" />
