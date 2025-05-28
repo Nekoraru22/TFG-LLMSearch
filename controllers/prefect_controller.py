@@ -13,7 +13,7 @@ from chromadb import QueryResult
 from prefect import flow, task
 from lmstudio import PredictionResult
 
-from utils import get_mime_type, IMAGE_PREFIX, TEXT_PREFIX, PDF_MIME, get_file_hash
+from utils import IMAGE_PREFIX, TEXT_PREFIX, PDF_MIME, get_file_hash, get_mime_type
 
 # Load environment variables
 from dotenv import load_dotenv

@@ -16,34 +16,56 @@ Los resultados obtenidos confirman que aplicar Inteligencia Artificial sobre est
 En conclusión, este proyecto demuestra como la Inteligencia Artificial puede ayudar de manera considerable en la búsqueda de contenido multimedia, acercando más la tecnología al ámbito doméstico y cotidiano de los usuarios.
 
 # Cómo usar
-## Iniciar el entorno virtual (sh para Linux y bat para Windows):
-```bash
-./install_venv.sh
-./install_venv.bat
-```
-
-### Puede que sea necesario dar permisos de ejecución al script:
-```bash
-chmod +x install_venv.sh
-chmod +x install_venv.bat
-```
 
 ## Rellenar plantilla .env
 Copia el archivo `.env.example` a `.env` y rellena los campos necesarios. Puedes dejar los valores por defecto si no tienes configuraciones personalizadas.
 
-## Iniciar Prefect (Terminal 1)
+## Iniciar el entorno virtual (sh para Linux y bat para Windows)
+
+#### Windows
 ```bash
-prefect server start
+./install_venv.bat
 ```
 
-## Iniciar el backend (Terminal 2)
+#### Linux
 ```bash
-python main.py
+./install_venv.sh
 ```
 
-# Aparte
+### Puede que sea necesario dar permisos de ejecución al script
+```bash
+chmod +x install_venv.sh
+```
 
-## Build Vue.js frontend
+## Activar el entorno virtual (En caso de que no se haya activado automáticamente)
+
+#### Windows
+```bash
+.\myenv\Scripts\Activate.ps1
+```
+
+#### Linux
+```bash
+source myenv/bin/activate
+```
+
+## Iniciar el sistema
+Asegúrate de que el entorno virtual está activado. Si no lo está, puedes activarlo con el siguiente comando:
+
+#### Windows
+```bash
+./start.bat
+```
+
+#### Linux
+```bash
+./start.sh
+```
+
+# Comandos Adicionales
+
+## Build Vue.js Frontend
+Para compilar el frontend de Vue.js, asegúrate de que tienes Node.js y npm instalados. Luego, ejecuta los siguientes comandos en la terminal:
 ```bash
 npm install vue
 npm run build
@@ -61,5 +83,23 @@ npm run build
 
 ## Usar comando terminal
 ```bash
-LLMSearch --query "mapa del mundo"
+LLMSearch --query "ejemplo de consulta" --model "nombre_del_modelo"
+```
+
+## Iniciar Prefect
+Prefect se ejecuta de manera automática y en segundo plano al iniciar el sistema.
+
+### Iniciar Prefect Server
+```bash
+prefect server start
+```
+
+### Iniciar Prefect Server en segundo plano y con host y puerto personalizados
+```bash
+prefect server start --host 0.0.0.0 --port 4200 --background
+```
+
+### Detener Prefect Server
+```bash
+prefect server stop
 ```
