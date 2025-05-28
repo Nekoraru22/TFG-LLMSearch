@@ -320,31 +320,20 @@ def rag_query(query: str, relevant_db_data: QueryResult, model: str, temperature
     Original Query: {query}
     Verbose: {verbose}
 
-    Relevant data (from ChromaDB):
+    CRITICAL INSTRUCTIONS:
+    - If data contains empty documents/metadatas like {{"documents": [[]], "metadatas": [[]]}}, respond ONLY with:
+    No hay archivos procesados en el sistema aún.
+    - Otherwise, filter entries relevant to the Original Query.
+    - Extract ONLY file paths (the value after "path:" in metadata).
+    - If Verbose=True, append a brief description after each path (e.g., “- Contract document”).
+    - If Verbose=False, list only the paths.
+    - ALWAYS output a numbered list starting at 1.
+    - DO NOT include any explanations, code syntax, or additional text—ONLY the final list.
+
+    DATA:
     {data_json}
 
-    CRITICAL INSTRUCTIONS:
-    - If data contains empty documents/metadatas like {{"documents": [[]], "metadatas": [[]]}}, respond ONLY with: "No hay archivos procesados en el sistema aún."
-    - Otherwise, filter entries relevant to the Original Query
-    - Extract ONLY file paths (after "Path:")
-    - If Verbose=True: add brief description after path
-    - If Verbose=False: show only path
-    - OUTPUT FORMAT: Numbered list starting at 1, NO explanations, NO additional text, NO code
-
-    REQUIRED OUTPUT EXAMPLES:
-    
-    For empty data:
-    No hay archivos procesados en el sistema aún.
-
-    For Verbose=False:
-    1. ./filesystem/document1.pdf
-    2. ./filesystem/document2.txt
-
-    For Verbose=True:
-    1. ./filesystem/document1.pdf - Contract document
-    2. ./filesystem/document2.txt - Meeting notes
-
-    DO NOT provide explanations, code, or process descriptions. Output ONLY the final result.
+    OUTPUT:
     """
 
     result = llm.analyze(prompt=prompt, temperature=temperature)
