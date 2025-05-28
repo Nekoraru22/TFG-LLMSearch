@@ -4,11 +4,11 @@ from controllers.watchdog_controller import WatchdogsController
 from controllers.sqlite_controller import DatabaseController
 from controllers.lm_studio_controller import LMStudioController
 from controllers.prefect_controller import proccess_query
+from controllers.chroma_controller import ChromaClient, create_graphics, prove
 
 from flask import Flask, request, jsonify, render_template, send_from_directory, send_file
 from flask_cors import CORS
 
-from controllers.chroma_controller import ChromaClient, create_graphics, prove
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -40,17 +40,16 @@ def serve_assets(path):
 def favicon():
     return send_from_directory("./llm-search-front/dist", "favicon.ico")
 
-# TODO: Modificar el contolador de ChromaDB para que devuelva los datos requeridos
 @app.route("/api/status", methods=["GET"])
 def get_status():
     # Get total processed files in the ChromaDB database
-    total_processed_files = DatabaseController.get_total_files()
+    total_processed_files = chroma_db.get_total_files()
     # Get total files in the filesystem
-    total_files = WatchdogsController.get_total_files()
+    total_files = WatchdogsController.get_total_files_on_path(str(os.environ.get("TRACKED_FOLDER")))
     # Get total in process files in the filesystem
     total_in_process_files = WatchdogsController.get_total_in_process_files()
     # Get total of each file type in the database
-    total_files_by_type = DatabaseController.get_total_files_by_type()
+    total_files_by_type = chroma_db.get_total_files_by_type()
     # Get encountered errors
     encountered_errors = WatchdogsController.get_encountered_errors()
 

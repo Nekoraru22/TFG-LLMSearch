@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 models: list[str] = os.environ.get("LM_STUDIO_MODELS", "").split(" ")
-window_limit: int = int(os.environ.get("MODEL_WINDOW_LIMIT", 4096))
+query_window_limit: int = int(os.environ.get("QUERY_MODEL_WINDOW_LIMIT", 4096))
+processing_window_limit: int = int(os.environ.get("PROCESSING_MODEL_WINDOW_LIMIT", 4096))
 
 class LMStudioController:
     """
@@ -32,12 +33,12 @@ class LMStudioController:
         return models
     
 
-    def get_actual_model(self) -> lms.LLM:
+    def get_actual_model(self, is_image: bool) -> lms.LLM:
         """
         Get the model instance based on the selected model.
         """
         return self.client.llm.model(self.model, config={
-            "contextLength": 16384,
+            "contextLength": processing_window_limit if is_image else query_window_limit
         })
 
 
@@ -54,7 +55,7 @@ class LMStudioController:
         if not prompt and not image:
             raise ValueError("At least one of prompt or image must be provided.")
 
-        model = self.get_actual_model()
+        model = self.get_actual_model(image != None)
         chat = lms.Chat()
         config = lms.LlmPredictionConfig(
             temperature=temperature,
@@ -65,8 +66,8 @@ class LMStudioController:
             chat.add_user_message(self.initial_prompt, images=[image_handle])
         else:
             # Truncate the prompt if it exceeds the limit
-            if prompt and len(prompt) > window_limit:
-                prompt = prompt[:window_limit]
+            if prompt and len(prompt) > query_window_limit:
+                prompt = prompt[:query_window_limit]
             chat.add_user_message(prompt or "Say 'meow :3'")
         
         return model.respond(chat, config=config)

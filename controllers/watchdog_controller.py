@@ -13,6 +13,9 @@ class CustomHandler(FileSystemEventHandler):
     """
     Class that handles file creation, modification, and deletion events.
     """
+
+    PROCESSING_FILES_COUNT = 0
+    ERRORS_COUNT = 0
     
     def __init__(self) -> None:
         """
@@ -39,9 +42,11 @@ class CustomHandler(FileSystemEventHandler):
             return
         self.stats_cache[event.src_path] = (st.st_mtime, st.st_size)
 
+        self._add_processing_file()
         logging.info(f"Created file: {event.src_path}")
         new_file(str(event.src_path))
-        
+        self._remove_processing_file()
+
 
     def on_modified(self, event) -> None:
         """
@@ -50,6 +55,7 @@ class CustomHandler(FileSystemEventHandler):
         Args:
             event: Event of modification
         """
+    
         # Ignore directories
         if event.is_directory:
             return
@@ -68,10 +74,13 @@ class CustomHandler(FileSystemEventHandler):
 
         # Update cache and fire
         self.stats_cache[event.src_path] = new_stat
+        
+        self._add_processing_file()
         logging.info(f"Modified file: {event.src_path}")
         modified_file(str(event.src_path))
-        
-        
+        self._remove_processing_file()
+
+
     def on_deleted(self, event: FileSystemEvent) -> None:
         """
         Method that is executed when a file is deleted.
@@ -92,8 +101,9 @@ class CustomHandler(FileSystemEventHandler):
     def on_moved(self, event: FileSystemMovedEvent) -> None:
         """
         Se ejecuta cuando un archivo o directorio se mueve o renombra.
-        event.src_path: ruta original
-        event.dest_path: ruta nueva
+        
+        Args:
+            event: Evento de movimiento
         """
         if event.is_directory:
             return
@@ -111,8 +121,26 @@ class CustomHandler(FileSystemEventHandler):
             return
         self.stats_cache[event.dest_path] = (st.st_mtime, st.st_size)
 
+        self._add_processing_file()
         logging.info(f"Moved file: {event.src_path} → {event.dest_path}")
         moved_file(str(event.src_path), str(event.dest_path))
+        self._remove_processing_file()
+
+
+    def _add_processing_file(self) -> None:
+        """
+        Increment the count of processing files.
+        """
+        global PROCESSING_FILES_COUNT
+        CustomHandler.PROCESSING_FILES_COUNT += 1
+
+
+    def _remove_processing_file(self) -> None:
+        """
+        Decrement the count of processing files.
+        """
+        global PROCESSING_FILES_COUNT
+        CustomHandler.PROCESSING_FILES_COUNT -= 1
 
 
 class WatchdogsController:
@@ -203,3 +231,36 @@ class WatchdogsController:
             self.observer.join()
             
         logging.info("Watchdog thread stopped.")
+
+    @staticmethod
+    def get_total_files_on_path(path: str) -> int:
+        """
+        Get total files in the path being monitored.
+        
+        Returns:
+            int: Total number of files in the monitored directory.
+        """
+        total_files = 0
+        for root, _, files in os.walk(path):
+            total_files += len(files)
+        return total_files
+
+    @staticmethod
+    def get_total_in_process_files() -> int:
+        """
+        Get total files currently being processed.
+
+        Returns:
+            int: Total number of files currently being processed.
+        """
+        return CustomHandler.PROCESSING_FILES_COUNT
+
+    @staticmethod
+    def get_encountered_errors() -> int:
+        """
+        Get the number of errors encountered during file processing.
+        
+        Returns:
+            int: Total number of errors encountered.
+        """
+        return CustomHandler.ERRORS_COUNT

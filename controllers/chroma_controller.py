@@ -349,6 +349,46 @@ class ChromaClient:
         document_names = [metadata for metadata in results["metadatas"]] if results["metadatas"] else []
         
         return document_names
+    
+    def get_total_files(self) -> int:
+        """
+        Returns the total number of files in the Chroma collection.
+        
+        Returns:
+            int: Total number of files
+        """
+        if self.collection is None:
+            raise ValueError("Chroma collection not initialized. Please create a collection first.")
+        
+        # Get all documents in the collection
+        results = self.collection.get()
+        
+        # Return the number of documents
+        return len(results["documents"]) if results["documents"] else 0
+    
+    def get_total_files_by_type(self) -> dict:
+        """
+        Returns the total number of files in the Chroma collection grouped by type.
+        
+        Returns:
+            dict: Dictionary with files grouped by type
+        """
+        if self.collection is None:
+            raise ValueError("Chroma collection not initialized. Please create a collection first.")
+        
+        # Get all documents in the collection
+        results = self.collection.get()
+        
+        if not results["metadatas"]:
+            return {}
+
+        # Count files by type
+        file_types = {}
+        for metadata in results["metadatas"]:
+            file_type = metadata.get("type", "unknown")
+            file_types[file_type] = file_types.get(file_type, 0) + 1
+        
+        return file_types
 
 
 def create_graphics(query: str, debug: bool = False) -> None: 
