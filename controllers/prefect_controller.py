@@ -74,9 +74,9 @@ def _model_selector(file_path: str) -> None:
         img_res = analyze_image.submit(file_path)
         img_meta = get_image_metadata.submit(file_path, file_path_hash)
 
-        # Wait & combine
-        result = img_res.result(raise_on_failure=False)
-        metadata = img_meta.result(raise_on_failure=False)
+        # Wait and combine results
+        result = img_res.result()
+        metadata = img_meta.result()
         print(result)
         print(metadata)
 
@@ -97,7 +97,7 @@ def _model_selector(file_path: str) -> None:
 
         # Summarize the content
         result = summarize_text.submit(content)
-        result = result.result(raise_on_failure=False)
+        result = result.result()
         print(content)
         print(result)
 
@@ -125,7 +125,7 @@ def _model_selector(file_path: str) -> None:
         
         # Summarize the content
         result = summarize_text.submit(content)
-        result = result.result(raise_on_failure=False)
+        result = result.result()
         print(content)
         print(result)
 

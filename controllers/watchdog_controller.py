@@ -44,7 +44,13 @@ class CustomHandler(FileSystemEventHandler):
 
         self._add_processing_file()
         logging.info(f"Created file: {event.src_path}")
-        new_file(str(event.src_path))
+
+        try:
+            new_file(str(event.src_path))
+        except Exception as e:
+            logging.error(f"Error processing new file {event.src_path}: {e}")
+            CustomHandler.increment_error_count()
+
         self._remove_processing_file()
 
 
@@ -77,7 +83,13 @@ class CustomHandler(FileSystemEventHandler):
         
         self._add_processing_file()
         logging.info(f"Modified file: {event.src_path}")
-        modified_file(str(event.src_path))
+
+        try:
+            modified_file(str(event.src_path))
+        except Exception as e:
+            logging.error(f"Error processing modified file {event.src_path}: {e}")
+            CustomHandler.increment_error_count()
+
         self._remove_processing_file()
 
 
@@ -123,24 +135,35 @@ class CustomHandler(FileSystemEventHandler):
 
         self._add_processing_file()
         logging.info(f"Moved file: {event.src_path} → {event.dest_path}")
-        moved_file(str(event.src_path), str(event.dest_path))
+
+        try:
+            moved_file(str(event.src_path), str(event.dest_path))
+        except Exception as e:
+            logging.error(f"Error processing moved file {event.src_path} to {event.dest_path}: {e}")
+            CustomHandler.increment_error_count()
+
         self._remove_processing_file()
 
-
-    def _add_processing_file(self) -> None:
+    @staticmethod
+    def _add_processing_file() -> None:
         """
         Increment the count of processing files.
         """
-        global PROCESSING_FILES_COUNT
         CustomHandler.PROCESSING_FILES_COUNT += 1
 
-
-    def _remove_processing_file(self) -> None:
+    @staticmethod
+    def _remove_processing_file() -> None:
         """
         Decrement the count of processing files.
         """
-        global PROCESSING_FILES_COUNT
         CustomHandler.PROCESSING_FILES_COUNT -= 1
+
+    @staticmethod
+    def increment_error_count() -> None:
+        """
+        Increment the count of errors encountered during file processing.
+        """
+        CustomHandler.ERRORS_COUNT += 1
 
 
 class WatchdogsController:
@@ -232,6 +255,7 @@ class WatchdogsController:
             
         logging.info("Watchdog thread stopped.")
 
+
     @staticmethod
     def get_total_files_on_path(path: str) -> int:
         """
@@ -245,6 +269,7 @@ class WatchdogsController:
             total_files += len(files)
         return total_files
 
+
     @staticmethod
     def get_total_in_process_files() -> int:
         """
@@ -254,6 +279,7 @@ class WatchdogsController:
             int: Total number of files currently being processed.
         """
         return CustomHandler.PROCESSING_FILES_COUNT
+
 
     @staticmethod
     def get_encountered_errors() -> int:
