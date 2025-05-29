@@ -242,7 +242,7 @@
                 <div
                   :class="`rounded-2xl p-4 ${message.sender === 'user'
                       ? 'bg-gradient-to-br from-emerald-500/90 to-teal-600/90 shadow-lg shadow-emerald-500/10 text-white'
-                      : 'bg-zinc-800/80 border border-zinc-700/50 shadow-lg shadow-violet-500/5 text-white'} whitespace-pre-wrap break-words`"
+                      : 'bg-zinc-800/80 border border-zinc-700/50 shadow-lg shadow-violet-500/5 text-white'} whitespace-pre-wrap break-words overflow-wrap-anywhere min-w-0`"
                 >
                   <template v-if="message.id === typingMessageId">
                     <div class="typing-indicator">
@@ -489,6 +489,14 @@ const handleSendMessage = async () => {
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   animation: typing 1s infinite ease-in-out;
+}
+
+.message-content {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .better-scroll-bar::-webkit-scrollbar {
