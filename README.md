@@ -17,6 +17,13 @@ En conclusión, este proyecto demuestra como la Inteligencia Artificial puede ay
 
 # Cómo usar
 
+## Descargar modelos en LMStudio
+- `mistral-7b-instruct-v0.2` -> https://huggingface.co/jonahhenry/mistral-7b-instruct-v0.2.Q4_K_M-GGUF
+- `gemma-3-12b-it` -> https://huggingface.co/lmstudio-community/gemma-3-12b-it-GGUF
+
+![image](https://github.com/user-attachments/assets/227818f9-4f63-4e2a-a1cd-7be4c79e0d18)
+
+
 ## Rellenar plantilla .env
 Copia el archivo `.env.example` a `.env` y rellena los campos necesarios. Puedes dejar los valores por defecto si no tienes configuraciones personalizadas.
 
