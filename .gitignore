@@ -3,7 +3,7 @@ data/*
 __pycache__
 .vscode
 filesystem/*
-!filesystem/dataset.zip
+!filesystem/dataset*.zip
 !data/initial_prompt.md
 *.egg-info
 .env
